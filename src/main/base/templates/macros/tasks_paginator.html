@@ -1,0 +1,210 @@
+{% macro tasks_paginator(paginator, endpoint) %}
+
+    <div class="tasks-filter flex justify-start items-center gap-5 mb-5">
+
+        <div class="tasks-perpage form-field-container relative" x-data="tasksPerPage()">
+            <div class="form-field-prefix absolute rounded-l
+              flex justify-center items-center
+              text-gray-400 h-8 w-8"
+            style="top: 1.85px; left: 1.75px; padding: 0.39rem">
+
+            <img src="/static/icons/outline/layers-outline.svg"
+                style="filter: invert(0.5); user-select: none;">
+            </div>
+
+            <select name="" id="sl-tasks-to-show"
+                @change="updateFilter($event.target.value)"
+                class="
+                float-left
+                bg-transparent rounded-md
+                transition duration-300
+                py-1 px-2 pl-8
+                border-2 border-gray-150
+                hover:bg-gray-100
+                focus:outline-none
+                focus:border-blue-400
+                focus:bg-white">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+            </select>
+
+            <script>
+                per_page = {{ paginator['per_page'] }};
+
+                if (document.readyState == 'complete') {
+                    updateSelectedAmount(per_page);
+                }
+                else {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        updateSelectedAmount(per_page);
+                    });
+                }
+
+
+                function updateSelectedAmount(amount) {
+                    $('#sl-tasks-to-show').val(amount);
+                }
+
+                function tasksPerPage() {
+                    return {
+                        updateFilter(per_page) {
+                            const url = "{{ url_for(endpoint) }}" + `?per_page=${per_page}`;
+                            navigateTo(url);
+                        }
+                    };
+                }
+            </script>
+        </div>
+
+
+        <div class="tasks-status-type form-field-container relative" x-data="tasksStatusType()">
+            <div class="form-field-prefix absolute rounded-l
+              flex justify-center items-center
+              text-gray-400 h-8 w-8"
+            style="top: 1.85px; left: 1.75px; padding: 0.39rem">
+
+            <img src="/static/icons/outline/checkmark-done-outline.svg"
+                style="filter: invert(0.5); user-select: none;">
+            </div>
+
+            <select name="" id="sl-tasks-status-type"
+                @change="updateFilter($event.target.value)"
+                class="
+                float-left
+                bg-transparent rounded-md
+                transition duration-300
+                py-1 px-2 pl-8
+                border-2 border-gray-150
+                hover:bg-gray-100
+                focus:outline-none
+                focus:border-blue-400
+                focus:bg-white">
+                <option value="-1">All status</option>
+                <option value="0">Undone</option>
+                <option value="1">Done</option>
+            </select>
+
+            <script>
+                if (document.readyState == 'complete') {
+                    setTimeout(() => {
+                        const url = new URL(location.href);
+                        const done = url.searchParams.get('done');
+
+                        updateDoneStatus(done);
+                    }, 0);
+                }
+                else {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        setTimeout(() => {
+                            const url = new URL(location.href);
+                            const done = url.searchParams.get('done');
+
+                            updateDoneStatus(done);
+                        }, 0);
+                    });
+                }
+
+                function updateDoneStatus(doneStatus) {
+                    //console.log(doneStatus);
+                    document.getElementById('sl-tasks-status-type').value = doneStatus || -1;
+                }
+
+                function tasksStatusType() {
+                    return {
+                        updateFilter(per_page) {
+                            const url = per_page == -1 ? "{{ url_for(endpoint) }}" : "{{ url_for(endpoint) }}" + `?done=${per_page}`;
+                            navigateTo(url);
+                        }
+                    };
+                }
+            </script>
+        </div>
+
+
+        <div class="tasks-paginator">
+            <ul class="flex">
+                <li> <!-- prev button -->
+                    <a href="
+                        {% if paginator.has_prev %}
+                           {{ url_for(endpoint, per_page=paginator.per_page, page_index=paginator.prev_num) }}
+                        {% else %}
+                            #
+                        {% endif %}"
+
+                        class="
+                        bg-gray-100 hover:bg-gray-200
+                        text-gray-500 hover-text-white
+                        rounded-l-md
+                        border-t-2 border-l-2 border-b-2 border-gray-300
+                        block h-full flex justify-center items-center p-2"
+
+                        style="min-height: 20px;">
+
+                        <img src="{{ url_for('static', filename='icons/outline/chevron-back-outline.svg') }}"
+                            class="w-4">
+                    </a>
+                </li>
+
+                 <!-- items button -->
+                {% if paginator.iter_pages() %}
+                    {% for page in paginator.iter_pages() %}
+                        <li>
+                            <a href="{{ url_for(endpoint, per_page=paginator.per_page, page_index=page) }}"
+
+                               class="
+                               {% if page == paginator.page %}
+                                    bg-blue-400
+                                    text-white
+                                    hover:text-gray-600
+                                    disabled
+                               {% else %}
+                                    bg-white-300
+                                    text-gray-500
+                               {% endif %}
+
+                               hover:bg-gray-200
+                               border-t-2 border-l-2 border-b-2 border-gray-300
+                               block h-full flex justify-center items-center px-3 py-1"
+
+                               style="min-height: 20px;"
+
+                                {% if page == paginator.page %}
+                                    disabled
+                                {% endif %}>
+
+                                {{ page }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+
+                <li> <!-- next button -->
+                    <a href="
+                        {% if paginator.has_next %}
+                           {{ url_for(endpoint, per_page=paginator.per_page, page_index=paginator.next_num) }}
+                        {%- else -%}
+                        {%- endif -%}"
+
+                        {% if not paginator.has_next %}
+                            onclick="return false;"
+                        {% endif %}
+
+                        class="
+                           bg-gray-100 hover:bg-gray-200 hover-text-white
+                           text-gray-500 rounded-r-md
+                           border-t-2 border-l-2 border-b-2 border-r-2 border-gray-300
+                           block h-full flex justify-center items-center px-2 py-1"
+                        style="min-height: 20px;">
+
+                        <img src="{{ url_for('static', filename='icons/outline/chevron-forward-outline.svg') }}"
+                            class="w-4">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+{% endmacro %}

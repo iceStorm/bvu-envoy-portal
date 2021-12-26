@@ -1,0 +1,87 @@
+<!-- small-screen nav bar ( < 640px)-->
+<div x-data="drawer()"
+    class="mobile-menu md:hidden flex items-center justify-center">
+
+    <!-- drawer trigger (hamburger button) -->
+    <div @click="toggle()" class="hamburger-button flex flex-col items-center justify-center gap-1"
+        :style="`transform: ${isOpen() ? 'translatex(-12px)': ''}`">
+
+        <span class="w-6 h-1 bg-gray-400 cursor-pointer rounded-md transition duration 700"
+              :style="`transform: ${isOpen() ? 'rotate(45deg) translate(12px, 0px)': ''}`"></span>
+
+        <span class="w-6 h-1 bg-gray-400 cursor-pointer rounded-md transition duration 700"
+              :style="`opacity:  ${isOpen() ? '0' : ''}`"></span>
+
+        <span class="w-6 h-1 bg-gray-400 cursor-pointer rounded-md transition duration 700"
+              :style="`transform: ${isOpen() ? 'rotate(-45deg) translate(12px, 0px)': ''}`"></span>
+    </div>
+
+
+    <!-- the nav bar (drawer) -->
+    <div
+        id="mobile-drawer"
+        class="md:hidden fixed left-0 h-screen z-10">
+
+
+        <!-- the overlay background -->
+        <div
+            x-show.transition.opacity.duration.1000="isOpen()"
+            @click="close()"
+            class="mobile-drawer-overlay fixed w-screen h-screen"
+            style="background: rgba(0, 0, 0, 0.75); ">
+        </div>
+
+
+        <!-- actual menu -->
+        <ul :style="`left: ${isOpen() ? '0' : '-500px'};`"
+            class="fixed transition-all duration-500
+                flex flex-col items-stretch w-2/3
+                pt-2 bg-white h-screen
+                border-r-2 border-gray-300" >
+
+            <!-- rendering the content (would be performed by the jinja engine) -->
+            {% for item in vm.nav_items %}
+                <li>
+                    <a
+                    href="{{ item.href }}"
+                    class="px-3 py-3 pl-7 ajax
+                        text-left text-sm
+                        font-semibold text-gray-300
+                        flex justify-start items-center
+                        transition duration-300
+                        hover:bg-gray-50
+                        hover:text-black
+                        {%- if item.is_active -%}
+                            active text-blue-500
+                        {%- endif -%}">
+                    {{ item.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+
+<!-- alpinejs data declaration -->
+<script>
+    function drawer() {
+        return {
+            _show: false,
+
+            isOpen() {
+                return this._show === true;
+            },
+
+            open() {
+                this._show = true;
+            },
+            close() {
+                this._show = false;
+            },
+            toggle() {
+                this._show = !this._show;
+            },
+        }
+    }
+</script>

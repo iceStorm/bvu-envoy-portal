@@ -1,0 +1,116 @@
+<div x-data="addNewDropdown()"
+    @click="open()"
+    data-tippy-content="Add new"
+    class="nav-user-notification
+    cursor-pointer relative
+    rounded-full shadow-sm
+    border border-gray-200
+    flex justify-center items-center
+    bg-white p-1">
+
+    <!-- the plus icon | dropdown trigger -->
+    <div class="nav-icon-container h-5 w-5">
+        <img src="{{ url_for('static', filename='icons/outline/add-outline.svg') }}">
+    </div>
+
+    <!-- actual dropdown -->
+    <div x-show.transition.origin.top.right="isOpen()" @click.away="close()"
+        class="nav-user-area-dropdown addnew
+        flex flex-col justify-start align-start
+        absolute z-50 left-0
+        rounded-lg bg-white "
+        style="top: 180%; min-width: 100px;
+        box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.04) 0px 0px 0px 1px;">
+
+        <!-- a menu group -->
+        <div class="menu-group py-1.5">
+            <a href="{{ url_for('task.add') }}"
+                class="py-2.5 px-4 pl-3 min-w-max pr-14
+                flex justify-start items-center gap-2
+                text-gray-500 text-sm
+                transition duration-300">
+                <span class="w-4 h-4" style="filter: invert(0.5);">
+                    <img src="{{ url_for('static', filename='icons/outline/flag-outline.svg') }}">
+                </span>
+                <span>Task</span>
+            </a>
+
+            <a href="{{ url_for('project.add') }}"
+                class="py-2.5 px-4 pl-3 min-w-max pr-14
+                flex justify-start items-center gap-2
+                text-gray-500 text-sm
+                transition duration-300">
+                <span class="w-4 h-4" style="filter: invert(0.5);">
+                    <img src="{{ url_for('static', filename='icons/outline/cube-outline.svg') }}">
+                </span>
+                <span>Project</span>
+            </a>
+        </div> <!-- .menu-group -->
+    </div> <!-- .nav-user-area-dropdown -->
+</div>
+
+
+<!-- alpinejs data -->
+<script>
+    function addNewDropdown() {
+        return {
+            _show: false,
+
+            dropdowns: [
+                {
+                    title: 'Task',
+                    href: "{{ url_for('task.add') }}",
+                    icon: "{{ url_for('static', filename='icons/outline/flag-outline.svg') }}",
+                },
+                {
+                    title: 'Project',
+                    href: '{{ url_for('project.add') }}',
+                    icon: "{{ url_for('static', filename='icons/outline/cube-outline.svg') }}",
+                }
+            ],
+
+            navigate(e) {
+                console.log(e.target.href);
+                navigateTo(e.target.href);
+            },
+
+            isOpen() {
+                return this._show === true;
+            },
+            open() {
+                this._show = true;
+            },
+            close() {
+                this._show = false;
+            },
+            toggle() {
+                this._show == !this._show;
+            }
+        };
+    }
+
+    if (document.readyState === 'complete') {
+        setATagNavigate();
+    } else {
+        document.addEventListener('DOMContentLoaded', () => {
+            setATagNavigate();
+        });
+    }
+</script>
+
+
+<style>
+    .nav-user-area-dropdown.addnew::after,
+    .nav-user-area-dropdown.addnew::before {
+        right: unset;
+    }
+    
+
+    .nav-user-area-dropdown.addnew::after {
+        left: 10px;
+    }
+    .nav-user-area-dropdown.addnew::before {
+        left: 11px;
+    }
+
+</style>
