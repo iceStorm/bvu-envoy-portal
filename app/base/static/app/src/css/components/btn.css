@@ -1,8 +1,0 @@
-@layer components {
-  .btn {
-    @apply focus:outline-none;
-    &:hover {
-      @apply bg-opacity-75;
-    }
-  }
-}
