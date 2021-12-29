@@ -1,0 +1,172 @@
+<div x-data="searchDropdown()"
+    @click="open()"
+    data-tippy-content="Search"
+    class="nav-user-notification
+    cursor-pointer relative
+    rounded-full shadow-sm
+    border border-gray-200
+    flex justify-center items-center
+    bg-white p-1.5">
+
+    <!-- the plus icon | dropdown trigger -->
+    <div class="nav-icon-container h-5 w-5">
+        <img src="{{ url_for('static', filename='icons/outline/search-outline.svg') }}">
+    </div>
+
+
+    <!-- actual dropdown -->
+    <div id="search-modal" x-show.transition.origin.center.center="isOpen()">
+        <form action="/search" method="GET" id="search-modal-content">
+            <div id="search-modal-content-header" class="flex justify-between align-center">
+                <h5 class="font-bold">Search</h5>
+                <img src="{{ url_for('static', filename='icons/outline/close-outline.svg') }}" class="w-5" @click.stop="close()">
+            </div>
+
+            <div id="search-modal-content-body">
+                <div>
+                    <label for="sl-search-obj" class="" style="margin-bottom: 0;">Search for</label>
+                    <select name="search-obj" id="sl-search-obj">
+                        <option value="0">Project</option>
+                        <option value="1">Task</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="sl-search-by" class="" style="margin-bottom: 0;">Search by</label>
+                    <select name="search-by" id="sl-search-by" onchange="handleSearchByChanges(event)">
+                        <option value="0">Name</option>
+                        <option value="1">Status</option>
+                    </select>
+                </div>
+
+
+                <input type="text" name="search-name"
+                       id="txt-search-name" class="border border-gray-400 p-2 rounded"
+                       required placeholder="Enter object name...">
+
+                <select name="" id="sl-search-status" style="display: none;"
+                    class="border border-gray-400 p-2 rounded">
+                    <option value="" disabled selected hidden>Choose Status type</option>
+                    {% for status in statuses %}
+                        <option value="{{ status.id }}">{{ status.name }}</option>
+                    {% endfor %}
+                </select>
+
+
+                <script>
+                    function handleSearchByChanges(e) {
+                        console.log(e.target.value);
+
+                        if (e.target.value == 0) { // by Name, show an input
+                            document.getElementById('txt-search-name').setAttribute('name', 'search-name');
+                            document.getElementById('txt-search-name').setAttribute('required', true);
+                            document.getElementById('txt-search-name').style.display = 'block';
+
+                            document.getElementById('sl-search-status').style.display = 'none';
+                            document.getElementById('sl-search-status').removeAttribute('name');
+                            document.getElementById('sl-search-status').removeAttribute('required');
+                        }
+                        else {
+                            document.getElementById('sl-search-status').setAttribute('name', 'search-status');
+                            document.getElementById('sl-search-status').setAttribute('required', true);
+                            document.getElementById('sl-search-status').style.display = 'block';
+
+                            document.getElementById('txt-search-name').style.display = 'none';
+                            document.getElementById('txt-search-name').removeAttribute('name');
+                            document.getElementById('txt-search-name').removeAttribute('required');
+                        }
+                    }
+                </script>
+            </div>
+
+            <div id="search-modal-content-footer" class="flex justify-end align-center">
+                <button type="submit" class="py-1 px-3 rounded bg-green-500 text-white">Submit</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+<style>
+    #search-modal {
+        position: fixed;
+        overflow: hidden;
+        z-index: 9;
+
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        background: rgba(0, 0, 0, 0.75);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #search-modal-content {
+        position: relative;
+        z-index: 999;
+
+        background: white;
+        min-height: 250px;
+        min-width: 400px;
+
+        border-radius: 4px;
+        overflow: hidden;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    #search-modal-content-header {
+        padding: 15px;
+        background: #eee;
+    }
+
+    #search-modal-content-body {
+        flex: auto;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    #search-modal-content-footer {
+        border-top: 1px solid #ddd;
+        background: #eee;
+        padding: 15px;
+    }
+
+    #search-modal-content-footer btn[type=submit] {
+        background: #eee;
+        padding: 10px;
+    }
+</style>
+
+
+<!-- alpinejs data -->
+<script>
+    function searchDropdown() {
+        return {
+            _show: false,
+
+            isOpen() {
+                return this._show === true;
+            },
+            open() {
+                this._show = true;
+            },
+            close() {
+                this._show = false;
+            },
+            toggle() {
+                this._show == !this._show;
+            }
+        };
+    }
+</script>

@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    {{ center_main() }}
+
+    <form action="" method="post"
+        x-data="loginForm()" x-init="init()"
+        id="login-form"
+        class="py-5 px-9 rounded-md ajax"
+        style="min-width: 350px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
+
+
+        {{ form.csrf_token }}
+
+
+        {% for field in form if field.name != 'csrf_token' and field.name != 'remember' %}
+            <div class="form-field py-2">
+
+                <!-- form-field-label -->
+                <div class="form-field-label pb-0.5 text-gray-700">{{ field.label(class="text-sm font-medium") }}</div>
+
+                <!-- .form-field-container -->
+                <div class="form-field-container relative" data-name="{{ field.name }}">
+                    <div class="form-field-prefix absolute rounded-l
+                                flex justify-center items-center
+                                text-gray-400 h-8 w-8"
+                        style="top: 1.85px; left: 1.75px; padding: 0.39rem">
+
+                        <img src="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
+                            style="filter: invert(0.5); user-select: none;"
+                            data-original-icon="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
+                            data-alternate-icon="{{ url_for('static', filename=field.description.icon.get('alternate', '')) }}">
+                    </div>
+                    {{
+                        field(
+                            class="
+                            bg-transparent rounded-md
+                            transition duration-300
+                            w-full py-1 px-2 pl-8
+                            border-2 border-gray-150
+                            hover:bg-gray-100
+                            focus:outline-none
+                            focus:border-blue-400
+                            focus:bg-white",
+                        )
+                    }}
+                  
+                    {% if field.name == 'email'  %}
+                      <script>
+                        document.getElementById('email').setAttribute('x-model.debounce.1250', '_email');
+                      </script>
+                    {% endif %}
+                </div>
+
+                <!-- .form-field-errors-container -->
+                <div class="form-field-errors-container">
+                    {% if field.errors %}
+                        <script>
+                            // adding the following error style classes to the input's class attribute
+                            document.getElementById('{{ field.id }}').classList.add('bg-red-100', 'border-red-500');
+                        </script>
+                        {% for error in field.errors %}
+                            <p class="form-field-error text-xs text-red-500">{{ error }}.</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+            </div> <!-- .form-field -->
+        {% endfor %}
+
+        <div class="form-field py-2 mt-3 flex justify-between items-center gap-2">
+            <div class="form-remember-group flex justify-start items-center gap-2">
+                <div class="switch">
+                  <div class="switch-checker">
+                    {{ form.remember(class='switch-checkbox') }}
+                    <label for="chb-remember" class="switch-delegate"></label>
+                  </div>
+                    {{ form.remember.label(class="switch-title text-sm font-medium") }}
+                </div>
+            </div>
+            <div class="form-forgot-password">
+                <a href="{{ url_for('auth.reset_password') }}" class="text-blue-700 text-sm font-medium">Forgot password ?</a>
+            </div>
+        </div>
+
+        <button type="submit"
+               class="
+               flex justify-between items-center
+               relative overflow-hidden cursor-pointer
+               mx-auto mt-9 w-full
+               rounded-md bg-gray-200
+               text-gray-700 font-medium
+               transition-all duration-300
+               focus:outline-none
+               focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
+               hover:bg-gray-300">
+
+            <span class="flex-auto">Login</span>
+            <span class="h-full p-2 bg-blue-500 text-white flex justify-center items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </span>
+        </button>
+    </form>
+
+
+    <!-- alpinejs data -->
+    <script>
+      function loginForm() {
+        return {
+          _email: '',
+
+          init() {
+            this.$watch('_email', (value) => {
+              this.checkEmailExist(value);
+            });
+          },
+          checkEmailExist(value) {
+            console.log(document.getElementById('email').validity);
+
+            if (!document.getElementById('email').validity.typeMismatch) {
+              checkEmailFormData = new FormData();
+              checkEmailFormData.append('email', value);
+  
+              axios.post('/check-email', checkEmailFormData)
+                .then(res => {
+                  console.log(res);
+                  document.getElementById('email').setCustomValidity('');
+                })
+                .catch(err => {
+                  console.log(err);
+                  document.getElementById('email').setCustomValidity('The email is not registered');
+                });
+            }
+          }
+        };
+      }
+    </script>
+
+
+    <script>
+      passwordFieldsQuery = '#login-form .form-field .form-field-container[data-name*="password"] .form-field-prefix';
+      passwordFields = $(passwordFieldsQuery);
+      $(passwordFields).addClass('cursor-pointer');
+
+
+      // binding the click event foreach password-like field
+      $(passwordFields).each(function(index, elem) {
+          $(this).click(function(e) {
+              const theInput = $(this).next();
+
+              const theImage = $(this).find('> img');
+              const imageDefaultIcon = $(theImage).attr('data-original-icon');
+              const imageAlternateIcon = $(theImage).attr('data-alternate-icon');
+  
+              if ($(theInput).attr('type') == 'text') {
+                  $(theInput).attr('type', 'password');
+                  $(theImage).attr('src', imageDefaultIcon);
+              } else {
+                  $(theInput).attr('type', 'text');
+                  $(theImage).attr('src', imageAlternateIcon);
+              }
+          });
+      });
+    </script>
+
+
+    <style>
+        :root {
+          --width: 35px;
+          --height: 20px;
+          --radius: 30px;
+
+          --track: 1px;
+          --border-color: rgba(0,0,0,0.15);
+          --bg-active-color: rgba(100, 245, 100);
+
+          --duration: .45s;
+        }
+
+
+        .switch {
+          display: flex;
+          justify-content: start;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .switch-title {
+          user-select: none;
+          color: black;
+        }
+
+        .switch-delegate  {
+          transition: all var(--duration) ease-in-out;
+          position: relative;
+          display: block;
+
+          width: var(--width);
+          height: var(--height);
+
+          background: #fff;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius);
+        }
+
+        .switch-delegate::after {
+          content: '';
+
+          position: absolute;
+          top: 0;
+          left: 0;
+
+          width: calc(var(--height) - var(--track) + 1px);
+          height: calc(var(--height));
+
+          top: 50%;
+          left: -1px;
+          transform: translatey(-50%);
+
+          transition: all var(--duration) ease-in-out;
+          box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.10);
+
+          background: #fff;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius);
+        }
+
+
+        .switch-checkbox {
+          position: absolute;
+          visibility: hidden;
+          display: none;
+        }
+        .switch-checkbox:checked + .switch-delegate {
+          background: var(--bg-active-color);
+          border-color: transparent;
+        }
+        .switch-checkbox:checked + .switch-delegate::after {
+          border-color: transparent;
+
+          left: calc(var(--width) - var(--height) - 1px);
+
+          width: calc(var(--width) - var(--height) + 4px);
+          height: calc(var(--height) - 2px);
+
+
+          box-shadow: -2px 2px 18px 0 rgba(0,0,0,0.35);
+        }
+
+    </style>
+
+{% endblock %}

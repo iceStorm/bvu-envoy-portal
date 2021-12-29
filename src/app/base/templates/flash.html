@@ -1,0 +1,18 @@
+{# rendering toasts messages from flash messages #}
+
+{% with flash_msgs = get_flashed_messages(with_categories=True) %}
+    {% if flash_msgs %}
+        {% for cat, msg in flash_msgs -%}
+            <script>
+                if (document.readyState == 'complete') {
+                    showToast('{{ msg }}', '{{ cat }}');
+                }
+                else {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        showToast('{{ msg }}', '{{ cat }}');
+                    });
+                }
+            </script>
+        {% endfor -%}
+    {% endif %}
+{% endwith %}
