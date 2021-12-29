@@ -1,0 +1,56 @@
+{
+	"name": "tailpress",
+	"version": "2.0.0",
+	"description": "Boilerplate WordPress theme with Tailwind CSS.",
+	"author": "Jeffrey van Rossum",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jeffreyvr/tailpress"
+	},
+	"theme_uri": "https://github.com/jeffreyvr/tailpress",
+	"author_uri": "https://vanrossum.dev",
+	"text_domain": "tailpress",
+	"license": "MIT",
+	"scripts": {
+		"build:css": "tailwindcss -i ./src/css/app.css -o ./dist/css/app.css --postcss --minify",
+		"build:js": "./node_modules/.bin/esbuild ./src/js/base.js --bundle --outfile=./dist/js/base.js --minify",
+		"build": "cross-env NODE_ENV=production concurrently \"npm run build:css\" \"npm run build:js\"",
+
+		"dev:css": "tailwindcss -i ./src/css/app.css -o ./dist/css/app.css --postcss",
+		"dev:js": "./node_modules/.bin/esbuild ./src/js/app.js --bundle --outfile=./dist/js/app.js",
+		"dev": "cross-env NODE_ENV=development concurrently \"npm run dev:css\" \"npm run dev:js\"",
+
+		"watch:css": "tailwindcss -i ./src/css/app.css -o ./dist/css/app.css --postcss --watch",
+		"watch:js": "./node_modules/.bin/esbuild ./src/js/base.js --format=esm --outdir=dist/js --bundle --watch",
+		"watch": "cross-env NODE_ENV=development concurrently \"npm run watch:css\" \"npm run watch:js\"",
+
+		"browser-sync": "cross-env NODE_ENV=development browser-sync start --proxy \"tailpress.test\" --host=\"tailpress.test\" --no-inject-changes --files=\"./\"",
+		"watch-sync": "concurrently \"npm run browser-sync\" \"npm run watch\"",
+		"observe": "node build-scripts/watch.js"
+	},
+	"devDependencies": {
+		"autoprefixer": "^10.4.0",
+		"browser-sync": "^2.26.14",
+		"concurrently": "^6.2.1",
+		"cross-env": "^6.0.3",
+		"esbuild": "^0.12.24",
+		"eslint": "^8.5.0",
+		"eslint-config-airbnb-base": "^15.0.0",
+		"eslint-plugin-import": "^2.25.3",
+		"postcss": "^8.4.5",
+		"postcss-each": "^1.1.0",
+		"postcss-for": "^2.1.1",
+		"postcss-import": "^14.0.0",
+		"postcss-nested": "^5.0.3",
+		"postcss-nested-ancestors": "^2.0.0",
+		"postcss-scss": "^4.0.2",
+		"postcss-simple-vars": "^6.0.3",
+		"resolve-url-loader": "^3.1.2",
+		"tiny-glob": "^0.2.9"
+	},
+	"dependencies": {
+		"@jeffreyvr/tailwindcss-tailpress": "^0.1.0",
+		"minimasonry": "^1.3.0",
+		"tailwindcss": "^3.0.7"
+	}
+}

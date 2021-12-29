@@ -1,0 +1,63 @@
+<header id="header" class="container flex-col justify-between bg-white">
+
+
+  <!-- banner -->
+  <a href="/" id="header-bg" data-tippy-content="Home" class="p-5 text-center flex justify-center items-center not-ajax" style="gap: 15px;">
+      <!-- banner image -->
+      <img src="{{ url_for('static', filename='logo.png') }}" class="inline-block" style="width: 55px">
+
+      <!-- banner title -->
+      <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-dark"
+         style="font-size: 27px; ">{{ config.APP_NAME }}</span>
+  </a>
+
+
+
+  <!-- menu -->
+  <nav id="nav" class="px-7 py-3 md:py-0 flex justify-between items-stretch"
+      style="border-top: 1px solid #eee; background: #fcfcfc;">
+
+      {# using the |safe filter to ensure the content returned from the function is safe, no need escaping #}
+      {{ NavbarComponent()|safe }}
+  </nav>
+</header>
+
+
+
+<script>
+  function getHeaderHeight() {
+      return document.getElementById('header').offsetHeight;
+  }
+
+
+  // set the mobile drawer top position
+  document.getElementById('mobile-drawer').style.top = `${getHeaderHeight()}px`;
+
+  // binding scroll event
+  window.onscroll = function(e) {
+      let scrolledPosition = document.documentElement.scrollTop;
+      const headerBgHeight = document.getElementById('nav').offsetHeight;
+
+      // console.log(scrolledPosition, headerBgHeight);
+
+      if (scrolledPosition > (headerBgHeight)) {
+          if (!document.getElementById('root').classList.contains('sticky')) {
+              document.getElementById('root').classList.add('sticky');
+
+              if (!document.getElementById('header').style.top) {
+                  const headerBgHeight = document.getElementById('header-bg').offsetHeight;
+                  document.getElementById('header').style.top = `-${headerBgHeight}px`;
+              }
+          }
+
+          document.getElementById('mobile-drawer').style.top = `${headerBgHeight}px`;
+      }
+      else {
+          if (document.getElementById('root').classList.contains('sticky')) {
+              document.getElementById('root').classList.remove('sticky');
+          }
+
+          document.getElementById('mobile-drawer').style.top = `${getHeaderHeight()}px`;
+      }
+  };
+</script>
