@@ -9,6 +9,8 @@ node_modules/
 
 # virtual environment
 venv/
+.env
+.flaskenv
 
 # private folder
 #src/instance/
