@@ -13,4 +13,4 @@ from src.main import limiter
 @home.route("/", methods=["GET"])
 @limiter.limit('1/second')
 def index():
-    return render_template('index.html')
+    return render_template('index.html' if not current_user.is_authenticated else f"index-{current_user.role}")

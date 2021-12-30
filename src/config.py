@@ -40,4 +40,4 @@ class DevelopmentEnvironment(DefaultEnvironment):
 
 
 class ProductionEnvironment(DefaultEnvironment):
-  pass
+  PREFERRED_URL_SCHEME = 'https'

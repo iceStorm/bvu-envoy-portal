@@ -12,15 +12,15 @@
 	"text_domain": "tailpress",
 	"license": "MIT",
 	"scripts": {
-		"build:css": "tailwindcss -i ./src/css/src.css -o ./dist/css/src.css --postcss --minify",
+		"build:css": "tailwindcss -i ./src/css/app.css -o ./dist/css/app.css --postcss --minify",
 		"build:js": "./node_modules/.bin/esbuild ./src/js/base.js --bundle --outfile=./dist/js/base.js --minify",
 		"build": "cross-env NODE_ENV=production concurrently \"npm run build:css\" \"npm run build:js\"",
 
-		"dev:css": "tailwindcss -i ./src/css/src.css -o ./dist/css/src.css --postcss",
+		"dev:css": "tailwindcss -i ./src/css/app.css -o ./dist/css/app.css --postcss",
 		"dev:js": "./node_modules/.bin/esbuild ./src/js/src.js --bundle --outfile=./dist/js/src.js",
 		"dev": "cross-env NODE_ENV=development concurrently \"npm run dev:css\" \"npm run dev:js\"",
 
-		"watch:css": "tailwindcss -i ./src/css/src.css -o ./dist/css/src.css --postcss --watch",
+		"watch:css": "tailwindcss -i ./src/css/app.css -o ./dist/css/app.css --postcss --watch",
 		"watch:js": "./node_modules/.bin/esbuild ./src/js/base.js --format=esm --outdir=dist/js --bundle --watch",
 		"watch": "cross-env NODE_ENV=development concurrently \"npm run watch:css\" \"npm run watch:js\"",
 

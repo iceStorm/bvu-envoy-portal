@@ -62,7 +62,7 @@ class LoginForm(FlaskForm):
 
         # checking if the provided password is not True (with the one in the database)
         # the user instance below is always exists because the form's email validation did check.
-        user = User.query.get(self.email.data)
+        user = AuthService.get_user_from_email(self.email.data)
 
         if not user.check_password(self.password.data):
             self.password.errors.append('The password you just provided was wrong')

@@ -37,7 +37,7 @@ function showToast(text, type, duration=5000) {
 /*
  * Setting ajax navigating for a tags that don't have the '' class.
  */
-setATagNavigate();
+// setATagNavigate();
 function setATagNavigate() {
     $('a:not(.not-ajax)').each(function(index, elem) {
         $(this).unbind('click').click((e) => {
@@ -100,14 +100,14 @@ function replaceContent(axiosResponse) {
     //  replacing html
     $('#main').html(ajaxContent.find('#main').html());
     $('#nav').html(ajaxContent.find('#nav').html());
-
+    // $('html').html(ajaxContent);
 
     //  changing the url bar's content
     window.history.pushState('', '', `${path}`);
 
 
     // re-set for new-in a tags
-    src.initTippy();
+    app.initTippy();
     setATagNavigate();
     setSubmit();
 }

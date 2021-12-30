@@ -48,9 +48,9 @@ class App(Flask):
         """
         Registering the app's blueprints.
         """
+        # PORTAL subdomain
         from .modules.home.home_controller import home
         from .modules.auth.auth_controller import auth
-
         self.register_blueprint(home, url_prefix="/")
         self.register_blueprint(auth, url_prefix="/")
 
@@ -93,7 +93,7 @@ class App(Flask):
         """
         from dotenv import load_dotenv
         load_dotenv()  # take environment variables from .env.
-        print(os.environ)
+        print('/n', os.environ)
 
         # USING DEFAULT CONFIG
         from .config import DefaultEnvironment
@@ -105,4 +105,4 @@ class App(Flask):
         self.config.from_object(environment_configuration)
 
         # 
-        print(self.config)
+        print('\n', self.config)

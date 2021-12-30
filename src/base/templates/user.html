@@ -2,7 +2,6 @@
 
 {# importing global macros #}
 {% from "macros/center_main.html" import center_main %}
-{% from "macros/tasks_paginator.html" import tasks_paginator %}
 
 
 <html lang="en">
@@ -20,20 +19,15 @@
 </head>
 <body>
     <div id="root">
-        {% include "header.html" %}
+        {# include "components/user/header/index.html" #}
 
 
-        <main id="main" class="container relative flex flex-col flex-auto bg-white p-7">
+        <main id="main" class="relative flex flex-col flex-auto bg-white p-7">
             {# the "flash.html" have to placed inside the #main, because only the #main (& #nav) would be appended from ajax calls. #}
             {% include "flash.html" %}
 
             {% block content %} {% endblock %}
         </main>
-
-
-        <footer id="footer" class="container text-center text-sm text-gray-400 font-medium px-9 py-3" style="background: #fcfcfc;">
-            Copyright &copy; 2021 - Nguyễn Anh Tuấn - Web Portfolio
-        </footer>
     </div>
 
 

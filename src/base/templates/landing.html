@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+{# importing global macros #}
+{% from "macros/center_main.html" import center_main %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8" >
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {# including javascript, css files, #}
+    {% include "head-files.html" %}
+
+
+    <!--  showing the APP_NAME environment variable  -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <title>{{ config.APP_NAME }} {% block title %} {% endblock %}</title>
+</head>
+<body>
+    <div id="root">
+        <header id="header" class="overflow-hidden py-4 backdrop-blur-lg bg-white bg-opacity-20 fixed z-10 top-0 left-0 right-0 flex justify-center items-center">
+            <nav class="container flex justify-between items-center">
+              <a href="/">
+                <img src="{{ url_for('static', filename='vang-trong.png') }}" class="w-48">
+              </a>
+
+              <div class="flex justify-between items-center gap-5">
+                <a href="{{ url_for('auth.signup') }}" id="btn-header"
+                    class=" btn inline-block bg-primary-dark text-white
+                    py-3 px-14 shadow-lg rounded text-center min-w-fit
+                    font-medium">
+                    Đăng ký làm đại sứ
+                </a>
+                  <a href="{{ url_for('auth.login')}}" class="btn text-primary bg-white font-semibold rounded px-8 py-3">Đăng nhập</a>
+              </div>
+            </nav>
+        </header>
+
+        
+        <div id="lobby" class="lobby h-screen bg-cover pt-28"
+            style="background: url({{ url_for('.static', filename='lobby-bg.jpeg') }});
+            background-size: cover; background-position: right center;">
+            <div class="container flex flex-col justify-between min-h-full">
+                <h1 class="font-medium text-white text-base xl:text-3xl">BVU Admission Envoy Portal.</h1>
+
+                <div class="text-3xl xl:text-7xl">
+                    <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="50" data-aos-duration="750">Kết nối.</h1>
+                    <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="250" data-aos-duration="750">Chia sẻ.</h1>
+                    <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="350" data-aos-duration="750">Hướng tới tương lai.</h1>
+                </div>
+
+                <div class="plate bg-white flex flex-col justify-between items-start md:flex-row gap-10 md:gap-20 p-8 -mb-4 shadow-lg">
+                    <div class="">
+                        <h3 class="font-bold text-xl pb-5">Cổng thông tin kết nối Đại sứ tuyển sinh BVU.</h3>
+                        <h5>Trở thành đại sứ tuyển sinh của BVU ngay hôm nay để kết người quen của bạn với
+                             môi trường học tập hiện đại bậc nhất thành phố biển Vũng Tàu - 
+                             Nhận hoa hồng trên mỗi người bạn giới thiệu thành công nhập học tại BVU.</h5>
+                    </div>
+                    <a href="{{ url_for('auth.signup') }}" id="btn-register"
+                        class=" btn inline-block bg-primary-dark text-white
+                        py-5 px-14 shadow-lg rounded text-center min-w-fit
+                        font-medium text-base md:lg:text-2xl">
+                        Đăng ký làm đại sứ
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <main id="main" class="container relative flex flex-col flex-auto bg-white pt-16">
+            {# the "flash.html" have to placed inside the #main, because only the #main (& #nav) would be appended from ajax calls. #}
+            {% include "flash.html" %}
+
+            {% block content %} {% endblock %}
+        </main>
+
+
+        <footer id="footer" class="text-center text-sm bg-primary-dark text-white font-medium px-9 py-3">
+            <h4 class="container">
+                Copyright &copy; 2021 - Trường Đại học Bà Rịa - Vũng Tàu
+            </h4>
+        </footer>
+    </div>
+
+
+
+    <!--  base  -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='app/dist/css/app.css') }}">
+    <script type="module" src="{{ url_for('static', filename='app/dist/js/base.js') }}"></script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            //headerHeight = document.getElementById('header').clientHeight;
+            //document.getElementById('lobby').style.paddingTop = `${headerHeight + 30}px`;
+
+            window.onscroll = function() {
+                registerButtonDistanceToTop = document.getElementById('btn-register').offsetTop;
+                console.log(registerButtonDistanceToTop);
+                if (window.scrollY >= registerButtonDistanceToTop) {
+                    document.getElementById('header').setAttribute('scrolled', '');
+                } else {
+                    document.getElementById('header').removeAttribute('scrolled');
+                }
+            };
+        });
+    </script>
+</body>
+</html>

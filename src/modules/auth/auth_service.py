@@ -12,13 +12,18 @@ from src.modules.auth.forms.signup_form import SignUpForm
 
 class AuthService:
     @staticmethod
+    def get_user_from_email(email: str):
+        return db.session.query(User).filter_by(email = email).first()
+
+    @staticmethod
     def send_reset_password_email(email: str) -> None:
         raise Exception("The email is not exists on the system")
 
 
     @staticmethod
     def is_user_already_exists(email):
-        return User.query.get(email) is not None
+        print(f'Checking user exists on the system: {email}');
+        return db.session.query(User).filter_by(email = email).first() is not None
 
 
     @staticmethod
@@ -30,6 +35,9 @@ class AuthService:
         # creating a new user based-on the Form's data
         # the user's password auto encrypted via the User's constructor
         new_user = User(email=email, full_name=fullName, raw_password=password)
+
+        # role 3 == envoy
+        new_user.user_roles.role_id = 3
 
         db.session.add(new_user)
         db.session.commit()

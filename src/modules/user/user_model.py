@@ -14,14 +14,15 @@ class User(UserMixin, db.Model):
     __table_args__ = {'extend_existing': True}
 
     # base user fields
-    id = db.Column(db.Integer, primary_key=True, index=True)
+    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(USER_EMAIL_LENGTH), index=True)
     phone_number = db.Column(db.String(USER_PHONE_LENGTH), nullable=False, index=True)
+    full_name = db.Column(db.String(USER_FIRST_NAME_LENGTH + USER_LAST_NAME_LENGTH), index=True)
     first_name = db.Column(db.String(USER_FIRST_NAME_LENGTH), nullable=False, index=True)
-    last_name = db.Column(db.String(USER_LAST_NAME_LENGTH), nullable=False, index=True) 
+    last_name = db.Column(db.String(USER_LAST_NAME_LENGTH), nullable=False, index=True)
     password_hash = db.Column(db.String(USER_PASSWORD_LENGTH), nullable=False)
     avatar_url = db.Column(db.String(USER_AVATAR_URL_LENGTH))
-
+    activated = db.Column(db.Boolean)
 
 
     def __init__(self, email=None, full_name=None, raw_password=None, avatar_url=None):
@@ -51,9 +52,9 @@ class User(UserMixin, db.Model):
         """
         return self.id
 
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+    # @property
+    # def full_name(self):
+    #     return f"{self.first_name} {self.last_name}"
 
 
     def __repr__(self):
@@ -68,13 +69,14 @@ class User(UserMixin, db.Model):
 
 
 
-
 class Role(db.Model):
     __tablename__ = 'Roles'
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(USER_ROLE_LENGTH), nullable=False, unique=True)
+    name = db.Column(db.String(USER_ROLE_LENGTH), nullable=False, unique=True, index=True)
+    code = db.Column(db.String(USER_ROLE_LENGTH), nullable=False, unique=True, index=True)
+
 
 
 class UserRole(db.Model):

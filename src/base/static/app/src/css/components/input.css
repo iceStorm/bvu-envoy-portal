@@ -1,0 +1,5 @@
+@layer components {
+  .text-field {
+    @apply bg-transparent rounded-md transition duration-300 w-full py-1 px-2 pl-8 border-2 border-gray-200 hover:bg-gray-100 focus:outline-none focus:border-blue-400 focus:bg-white;
+  }
+}

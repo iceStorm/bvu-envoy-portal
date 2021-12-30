@@ -1,4 +1,6 @@
+/* COMPONENTS */
 @import './components/btn';
+@import './components/input';
 
 /* LAYOUTS */
 @import './layouts/header';
@@ -24,31 +26,27 @@ body {
 
 #root {
     min-height: 100vh;
-    background: #f8f8f8;
 
     display: flex;
     flex-direction: column;
-}
-@media (max-height: 400px) {
-    #root {
+
+    @media (max-height: 400px) {
         min-height: unset;
     }
 }
 
-
 .container {
+    margin: 0 auto;
+}
+
+
+/* .container {
     max-width: 1280px;
     min-width: 710px;
     margin: 0 auto;
 
     border: 1px solid #eee;
-}
-/* @media (max-width: 1279px) {
-    .container {
-        width: 100vw;
-    }
 } */
-
 
 #main {
     border-top: none;

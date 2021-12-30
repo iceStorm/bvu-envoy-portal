@@ -18,6 +18,7 @@ module.exports = class App {
         this.initTippy();
 
         this.setAxiosResponseInterceptor();
+        AOS.init();
 
         if (this.scrollTopButton?.visible) {
             this.setupScrollTopButton();

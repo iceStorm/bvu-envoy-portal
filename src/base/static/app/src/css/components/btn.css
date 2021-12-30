@@ -1,8 +1,23 @@
 @layer components {
   .btn {
     @apply focus:outline-none;
+    transition: transform .35s;
+    position: relative;
+    overflow: hidden;
+
     &:hover {
       @apply bg-opacity-75;
+      transform: translatey(-2px);
+
+      &::after {
+        content: "";
+        position: absolute;
+        /* top: 50%; */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        box-shadow: 0 7px 38px 0 rgb(0 0 0 / 31%);
+      }
     }
   }
 }

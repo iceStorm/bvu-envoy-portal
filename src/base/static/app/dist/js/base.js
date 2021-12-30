@@ -20,9 +20,9 @@ var __toModule = (module) => {
   return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
 };
 
-// src/js/src.js
+// src/js/app.js
 var require_app = __commonJS({
-  "src/js/src.js"(exports, module) {
+  "src/js/app.js"(exports, module) {
     "use strict";
     module.exports = class App {
       constructor({
@@ -37,6 +37,7 @@ var require_app = __commonJS({
         this.initNProgress();
         this.initTippy();
         this.setAxiosResponseInterceptor();
+        AOS.init();
         if (this.scrollTopButton?.visible) {
           this.setupScrollTopButton();
         }
@@ -107,14 +108,6 @@ var require_app = __commonJS({
               });
               break;
             }
-            case 429: {
-              $.message({
-                type: "error",
-                text: theErrorMessage ?? "Too many requests, please calm down..",
-                position: "bottom-center"
-              });
-              break;
-            }
             case 500: {
               $.message({
                 type: "error",
@@ -154,7 +147,6 @@ function showToast(text, type, duration = 5e3) {
     position: "bottom-center"
   });
 }
-setATagNavigate();
 function setATagNavigate() {
   $("a:not(.not-ajax)").each(function(index, elem) {
     $(this).unbind("click").click((e) => {
@@ -182,7 +174,7 @@ function replaceContent(axiosResponse) {
   $("#main").html(ajaxContent.find("#main").html());
   $("#nav").html(ajaxContent.find("#nav").html());
   window.history.pushState("", "", `${path}`);
-  src.initTippy();
+  app.initTippy();
   setATagNavigate();
   setSubmit();
 }

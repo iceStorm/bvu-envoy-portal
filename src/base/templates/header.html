@@ -1,4 +1,4 @@
-<header id="header" class="container flex-col justify-between bg-white">
+<header id="header" class="flex-col justify-between bg-white">
 
 
   <!-- banner -->
@@ -28,36 +28,4 @@
   function getHeaderHeight() {
       return document.getElementById('header').offsetHeight;
   }
-
-
-  // set the mobile drawer top position
-  document.getElementById('mobile-drawer').style.top = `${getHeaderHeight()}px`;
-
-  // binding scroll event
-  window.onscroll = function(e) {
-      let scrolledPosition = document.documentElement.scrollTop;
-      const headerBgHeight = document.getElementById('nav').offsetHeight;
-
-      // console.log(scrolledPosition, headerBgHeight);
-
-      if (scrolledPosition > (headerBgHeight)) {
-          if (!document.getElementById('root').classList.contains('sticky')) {
-              document.getElementById('root').classList.add('sticky');
-
-              if (!document.getElementById('header').style.top) {
-                  const headerBgHeight = document.getElementById('header-bg').offsetHeight;
-                  document.getElementById('header').style.top = `-${headerBgHeight}px`;
-              }
-          }
-
-          document.getElementById('mobile-drawer').style.top = `${headerBgHeight}px`;
-      }
-      else {
-          if (document.getElementById('root').classList.contains('sticky')) {
-              document.getElementById('root').classList.remove('sticky');
-          }
-
-          document.getElementById('mobile-drawer').style.top = `${getHeaderHeight()}px`;
-      }
-  };
 </script>

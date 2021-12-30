@@ -32,8 +32,10 @@ def login():
         return render_template('login.html', form=form)
 
     from src.modules.user.user_model import User
-    user = User.query.get(form.email.data)
-
+    from src.main import db
+    user = db.session.query(User).filter_by(email=form.email.data).first()
+    # user = User.query.get(form.email.data)
+ 
     # let's log the user in
     login_user(user, remember=form.remember)
 
