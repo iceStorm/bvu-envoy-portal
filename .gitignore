@@ -16,3 +16,5 @@ venv/
 # caching files
 __pycache__/
 **/__pycache__/
+
+# environment variables

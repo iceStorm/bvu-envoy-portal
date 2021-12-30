@@ -7,5 +7,7 @@ export FLASK_ENV=default
 
 
 # export # showing all environment variables
-cd ..
+pwd
+# cd ..
+# pwd
 python3 index.py

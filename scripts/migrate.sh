@@ -1,6 +1,6 @@
-export APP_CONFIG_FILE=config/default.py
-export FLASK_ENV=default
-export FLASK_APP=src/app.py
+# export APP_CONFIG_FILE=config/default.py
+# export FLASK_ENV=default
+# export FLASK_APP=src/src.py
 
 # adding paths
 # ROOT_DIR=.
@@ -9,6 +9,6 @@ export FLASK_APP=src/app.py
 
 #export # showing all environment variables
 
-flask db init --directory db/migrations
-flask db migrate --directory db/migrations -m "create Priority table"
-flask db upgrade --directory db/migrations
+flask db init --directory migrations
+flask db migrate --directory migrations -m "create Priority table"
+flask db upgrade --directory migrations
