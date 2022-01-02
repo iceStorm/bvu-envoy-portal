@@ -5,6 +5,9 @@ def start_seeding(db: SQLAlchemy):
   seed_roles(db)
   seed_root_user(db)
 
+  seed_admission_types(db)
+
+
 
 def seed_roles(db: SQLAlchemy):
   """
@@ -63,4 +66,24 @@ def seed_root_user(db: SQLAlchemy):
 
     root_user.role_id = 1
     db.session.add(root_user)
+    db.session.commit()
+
+
+def seed_admission_types(db: SQLAlchemy):
+  """
+  Seeding AdmissionType for the app if there is no one.
+  """
+  from .modules.admission.admission_model import AdmissionType
+
+  if (len(db.session.query(AdmissionType).all()) == 0):
+    print('\nNO ADMISSION TYPE DETECTED, START SEDDING...')
+
+    app_admission_types = [
+      AdmissionType(name="Đại học chính quy"),
+      AdmissionType(name="Liên thông"),
+      AdmissionType(name="Thạc sĩ"),
+      AdmissionType(name="TIến sĩ"),
+    ]
+
+    db.session.add_all(app_admission_types)
     db.session.commit()

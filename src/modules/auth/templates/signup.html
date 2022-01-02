@@ -14,18 +14,16 @@
         <div class="flex flex-col pt-5 pb-14">
             <h1 class="py-3 font-semibold">Bạn là ai?</h1>
             <div class="flex flex-col gap-3">
- 
                 <div class="pretty p-icon p-round">
-                    <input type="radio" name="envoy-type" />
+                    <input type="radio" name="envoy-type" data-envoy-id=1 />
                     <div class="state p-success">
                         <i class="icon mdi mdi-check"></i>
                         <label>Công ty/Tổ chức/Trường học</label>
                     </div>
                 </div>
-            
 
                 <div class="pretty p-icon p-round">
-                    <input type="radio" name="envoy-type" />
+                    <input type="radio" name="envoy-type" data-envoy-id=2 />
                     <div class="state p-success">
                         <i class="icon mdi mdi-check"></i>
                         <label>Thành viên thuộc tập đoàn NHG (Sinh viên, giảng viên, nhân viên...)</label>
@@ -34,17 +32,13 @@
             </div>
         </div>
 
-        <a href="" class="items-center gap-2 inline-flex p-3 text-gray-700 border border-gray-300 bg-gray-100 hover:bg-gray-200">
-            <img src="{{ url_for('static', filename='icons/microsoft.svg') }}" alt="">
-            <span class="font-semibold">Đăng ký bằng tài khoản email Microsoft được cấp</span>
-        </a>
-    
+
+        <!-- NORMAL SIGNUP -->
         <form action="" method="post"
-            id="signup-form"
-            class="py-5 rounded-md ajax max-w-md">
+            id="signup-form" data-envoy-id=1
+            class="signup-option py-5 pt-0 rounded-md ajax max-w-md">
     
             {{ form.csrf_token }}
-    
     
             {% for field in form if field.name != 'csrf_token' %}
             <div class="form-field py-2">
@@ -100,6 +94,13 @@
                 <span class="flex-auto">Tạo tài khoản</span>
             </button>
         </form>
+
+        <!-- MICROSOFT SIGNUP -->
+        <a href="{{ url_for('auth.login') }}" data-envoy-id=2
+            class="signup-option items-center gap-2 inline-flex p-3 text-gray-700 border border-gray-300 bg-gray-100 hover:bg-gray-200">
+            <img src="{{ url_for('static', filename='icons/microsoft.svg') }}" alt="">
+            <span class="font-semibold">Đăng ký bằng tài khoản email Microsoft được cấp</span>
+        </a>
     </div>
 
     <style>
@@ -154,6 +155,28 @@
     </style>
 
     <script>
+        // onload
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log('...');
+            $('input[name="envoy-type"]').each(function(index, e) {
+                console.log($(e));
+
+                if ($(e).attr('checked') == true) {
+                    $(`.signup-option[data-envoy-id="${$(e).attr('data-envoy-id')}"]`).show();
+                } else {
+                    $(`.signup-option[data-envoy-id="${$(e).attr('data-envoy-id')}"]`).hide();
+                }
+            });
+        });
+
+        // onchange
+        $('input[name="envoy-type"]').change(function(e) {
+            $(`.signup-option`).hide();
+            $(`.signup-option[data-envoy-id="${e.target.getAttribute('data-envoy-id')}"]`).show();
+        });
+    </script>
+
+    <script>
         passwordFieldsQuery = '#signup-form .form-field .form-field-container[data-name*="password"] .form-field-prefix';
         passwordFields = $(passwordFieldsQuery);
         $(passwordFields).addClass('cursor-pointer');
@@ -192,4 +215,3 @@
     </script>
 
 {% endblock %}
-

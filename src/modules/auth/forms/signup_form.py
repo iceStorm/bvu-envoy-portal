@@ -74,8 +74,6 @@ class SignUpForm(FlaskForm):
         },
         validators=[
             InputRequired(),
-            EmailValidator,
-            IsEmailExists,
         ]
     )
 
@@ -105,7 +103,6 @@ class SignUpForm(FlaskForm):
         },
         validators=[
             InputRequired(message='Please fill out this field'),
-            PasswordValidator,
             EqualTo(fieldname='password', message='Password fields does not match'),
         ]
     )

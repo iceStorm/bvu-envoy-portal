@@ -2,7 +2,9 @@
 
 /* LAYOUTS */
 
-/* transition: all .45s; */
+#header {
+  transition: all .45s;
+}
 
 #header #btn-header {
     opacity: 0;
@@ -1187,6 +1189,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .pl-10 {
   padding-left: 2.5rem;
+}
+
+.pt-0 {
+  padding-top: 0px;
 }
 
 .text-left {

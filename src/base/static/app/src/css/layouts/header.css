@@ -1,5 +1,5 @@
 #header {
-  /* transition: all .45s; */
+  transition: all .45s;
 
   #btn-header {
     opacity: 0;

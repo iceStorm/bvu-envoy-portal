@@ -68,7 +68,7 @@ def create_app():
             migrate.init_app(app, db)
 
     # importing all model (tables) is needed for flask-migrate to detect changes
-    # ...
+    from .modules.admission.admission_model import Admission
 
     print('\n\n[NEW APP RETURNED...]')
     return app
