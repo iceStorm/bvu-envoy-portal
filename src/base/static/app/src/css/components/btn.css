@@ -1,7 +1,7 @@
 @layer components {
   .btn {
     @apply focus:outline-none;
-    transition: transform .35s;
+    transition: all .35s;
     position: relative;
     overflow: hidden;
 

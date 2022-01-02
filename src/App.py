@@ -83,8 +83,8 @@ class App(Flask):
         @login_manager.user_loader
         def load_user(id):
             # register user_loader
-            from .modules.user.user_model import User
-            return User.query.get(id)
+            from .modules.user.user_model import User, db
+            return db.session.query(User).get()
 
 
     def load_environment_variables(self):
@@ -105,4 +105,4 @@ class App(Flask):
         self.config.from_object(environment_configuration)
 
         # 
-        print('\n', self.config)
+        print('\n', self.config, '\n\n\n')

@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 
 
+
 # INIT DATABASE
 print("\n[DEFINING DATABASE INSTANCE...]")
 from flask_sqlalchemy import SQLAlchemy
@@ -44,10 +45,13 @@ def add_sys_paths():
 def create_app():
     print("\n[INITIALIZING THE APP...]")
     from .App import App
-    # app = App(instance_path=add_sys_paths()[0])
     app = App()
 
     db.init_app(app=app)
+    with app.app_context():
+        from .seeding import start_seeding
+        start_seeding(db)
+
     limiter.init_app(app)
     # rbac.init_app(app)
 
@@ -64,12 +68,7 @@ def create_app():
             migrate.init_app(app, db)
 
     # importing all model (tables) is needed for flask-migrate to detect changes
-    # import main.modules.user.user_model # no need to import the User model, which causing circular importing to relationships
-    # import main.modules.project.project_model
-    # import main.modules.task.task_model
-    # import main.modules.priority.priority_model
-    # import main.modules.status.status_model
-    # import main.modules.project.project_model
+    # ...
 
     print('\n\n[NEW APP RETURNED...]')
     return app

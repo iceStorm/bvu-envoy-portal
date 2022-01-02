@@ -15,11 +15,11 @@
 
     <!--  showing the APP_NAME environment variable  -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <title>{{ config.APP_NAME }} {% block title %} {% endblock %}</title>
+    <title>{% block title %} {% endblock %} - {{ config.APP_NAME }}</title>
 </head>
 <body>
     <div id="root">
-        <header id="header" class="overflow-hidden py-4 backdrop-blur-lg bg-white bg-opacity-20 fixed z-10 top-0 left-0 right-0 flex justify-center items-center">
+        <header id="header" class="overflow-hidden py-4 backdrop-blur-md bg-white bg-opacity-20 fixed z-10 top-0 left-0 right-0 flex justify-center items-center">
             <nav class="container flex justify-between items-center">
               <a href="/">
                 <img src="{{ url_for('static', filename='vang-trong.png') }}" class="w-48">
@@ -45,15 +45,18 @@
                 <h1 class="font-medium text-white text-base xl:text-3xl">BVU Admission Envoy Portal.</h1>
 
                 <div class="text-3xl xl:text-7xl">
-                    <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="50" data-aos-duration="750">Kết nối.</h1>
+                    <div class="flex">
+
+                    <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="50" data-aos-duration="750">Kết nối.&nbsp;</h1>
                     <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="250" data-aos-duration="750">Chia sẻ.</h1>
-                    <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="350" data-aos-duration="750">Hướng tới tương lai.</h1>
+                    </div>
+                    <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="350" data-aos-duration="750">Vuơn tới tương lai.</h1>
                 </div>
 
                 <div class="plate bg-white flex flex-col justify-between items-start md:flex-row gap-10 md:gap-20 p-8 -mb-4 shadow-lg">
                     <div class="">
                         <h3 class="font-bold text-xl pb-5">Cổng thông tin kết nối Đại sứ tuyển sinh BVU.</h3>
-                        <h5>Trở thành đại sứ tuyển sinh của BVU ngay hôm nay để kết người quen của bạn với
+                        <h5>Trở thành đại sứ tuyển sinh của BVU ngay hôm nay để kết nối người quen của bạn với
                              môi trường học tập hiện đại bậc nhất thành phố biển Vũng Tàu - 
                              Nhận hoa hồng trên mỗi người bạn giới thiệu thành công nhập học tại BVU.</h5>
                     </div>

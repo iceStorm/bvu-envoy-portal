@@ -15,7 +15,7 @@
 
     <!--  showing the APP_NAME environment variable  -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <title>{{ config.APP_NAME }} {% block title %} {% endblock %}</title>
+    <title>{% block title %} {% endblock %} - {{ config.APP_NAME }}</title>
 </head>
 <body>
     <div id="root">

@@ -98,9 +98,9 @@ function replaceContent(axiosResponse) {
 
 
     //  replacing html
-    $('#main').html(ajaxContent.find('#main').html());
-    $('#nav').html(ajaxContent.find('#nav').html());
-    // $('html').html(ajaxContent);
+    // $('#main').html(ajaxContent.find('#main').html());
+    // $('#nav').html(ajaxContent.find('#nav').html());
+    $('html').html(ajaxContent);
 
     //  changing the url bar's content
     window.history.pushState('', '', `${path}`);

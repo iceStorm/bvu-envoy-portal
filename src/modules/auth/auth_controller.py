@@ -5,6 +5,7 @@ from flask_login import login_required, current_user, logout_user, login_user
 from werkzeug.utils import redirect
 
 from src.main import limiter
+from src.base.constants.base_constanst import FlashCategory
 
 # defining controller
 auth = Blueprint('auth', __name__, template_folder='templates', static_folder='static', static_url_path='auth/static')
@@ -74,7 +75,7 @@ def signup():
     AuthService.register(form)
 
     # showing a flash message -> redirecting to the home page
-    flash(message='Successfully registered!', category='success')
+    flash(message='Successfully registered!', category=FlashCategory.Success)
 
     # showing the login page and auto filling data
     return redirect(url_for('auth.login', email=form.email.data))
@@ -138,7 +139,7 @@ def profile():
     AuthService.update(current_user.get_id(), user)
 
 
-    flash('Updated !', category='success')
+    flash('Updated !', category=FlashCategory.Success)
     return redirect(location='profile')
 
 

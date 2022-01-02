@@ -13,27 +13,14 @@ def IsEmailExists(form, field):
 
 
 class SignUpForm(FlaskForm):
-    email = EmailField(
-        label='Email',
-        render_kw={'autocomplete': 'email'},
-        description={
-            'icon': {
-                'origin': 'icons/outline/finger-print-outline.svg',
-            },
-        },
-        validators=[
-            InputRequired(),
-            EmailValidator,
-            IsEmailExists,
-        ]
-    )
 
-    full_name = StringField(
-        label='Full name',
+
+    first_name = StringField(
+        label='Họ và tên đệm',
         render_kw={'autocomplete': 'name'},
         description={
             'icon': {
-                'origin': 'icons/outline/scan-outline.svg',
+                'origin': 'icons/outline/text-outline.svg',
             },
         },
         filters=[
@@ -45,8 +32,55 @@ class SignUpForm(FlaskForm):
         ]
     )
 
+    last_name = StringField(
+        label='Tên',
+        render_kw={'autocomplete': 'name'},
+        description={
+            'icon': {
+                'origin': 'icons/outline/text-outline.svg',
+            },
+        },
+        filters=[
+            lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
+        ],
+        validators=[
+            DataRequired(message='Please fill out this field'),
+            Length(min=2, max=50, message='The length must between 2 and 50 letters'),
+        ]
+    )
+
+    email = EmailField(
+        label='Email',
+        render_kw={'autocomplete': 'email'},
+        description={
+            'icon': {
+                'origin': 'icons/outline/mail-outline.svg',
+            },
+        },
+        validators=[
+            InputRequired(),
+            EmailValidator,
+            IsEmailExists,
+        ]
+    )
+
+    phone = StringField(
+        label='Số điện thoại',
+        render_kw={'autocomplete': 'email'},
+        description={
+            'icon': {
+                'origin': 'icons/outline/keypad-outline.svg',
+            },
+        },
+        validators=[
+            InputRequired(),
+            EmailValidator,
+            IsEmailExists,
+        ]
+    )
+
     password = PasswordField(
-        label='Password',
+        label='Mật khẩu',
         render_kw={'autocomplete': 'new-password'},
         description={
             'icon': {
@@ -61,7 +95,7 @@ class SignUpForm(FlaskForm):
     )
 
     re_password = PasswordField(
-        label='Re-enter password',
+        label='Nhập lại mật khẩu',
         render_kw={'autocomplete': 'new-password'},
         description={
             'icon': {

@@ -1,76 +1,157 @@
 {% extends "user.html" %}
+{% block title %}Đăng ký{% endblock title %}
+
 
 {% block content %}
-    {{ center_main() }}
+    <div class="lg:pl-20">
 
-    <form action="" method="post"
-        id="signup-form"
-        class="py-5 px-9 rounded-md ajax"
-        style="min-width: 350px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
+        <div class="inline-flex flex-col">
+            <h1 class="text-xl lg:text-3xl font-bold leading-tight">Đăng ký trở thành Đại sứ BVU<span class="hidden md:inline-block font-black text-5xl text-primary">.</span>
+            </h1>
+            <h1 class="py-3">Đã có tài khoản? <a href="{{ url_for('auth.login') }}" class="text-primary">Đăng nhập.</a></h1>
+        </div>
 
-        {{ form.csrf_token }}
-
-
-        {% for field in form if field.name != 'csrf_token' %}
-        <div class="form-field py-2">
-
-            <!-- .form-field-label -->
-            <div class="form-field-label pb-0.5 text-gray-700">{{ field.label(class="text-sm font-medium") }}</div>
-
-            <!-- .form-field-container -->
-            <div class="form-field-container relative" data-name="{{ field.name }}">
-                <!-- prefix -->
-                <div class="form-field-prefix absolute rounded-l
-                            flex justify-center items-center
-                            text-gray-400 h-8 w-8"
-                    style="top: 1.85px; left: 1.75px; padding: 0.39rem">
-                    <!-- icon -->
-                    <img src="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
-                        style="filter: invert(0.5); user-select: none;"
-                        data-original-icon="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
-                        data-alternate-icon="{{ url_for('static', filename=field.description.icon.get('alternate', '')) }}">
+        <div class="flex flex-col pt-5 pb-14">
+            <h1 class="py-3 font-semibold">Bạn là ai?</h1>
+            <div class="flex flex-col gap-3">
+ 
+                <div class="pretty p-icon p-round">
+                    <input type="radio" name="envoy-type" />
+                    <div class="state p-success">
+                        <i class="icon mdi mdi-check"></i>
+                        <label>Công ty/Tổ chức/Trường học</label>
+                    </div>
                 </div>
+            
 
-                <!-- the field -->
-                {{ field(class="text-field") }}
+                <div class="pretty p-icon p-round">
+                    <input type="radio" name="envoy-type" />
+                    <div class="state p-success">
+                        <i class="icon mdi mdi-check"></i>
+                        <label>Thành viên thuộc tập đoàn NHG (Sinh viên, giảng viên, nhân viên...)</label>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <!-- .form-field-errors-container -->
-            <div class="form-field-errors-container">
-                {% if field.errors %}
-                    <script>
-                        // adding the following error style classes to the input's class attribute
-                        document.getElementById('{{ field.id }}').classList.add('bg-red-100', 'border-red-500');
-                    </script>
-                    {% for error in field.errors %}
-                        <p class="form-field-error text-xs text-red-500">{{ error }}.</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
+        <a href="" class="items-center gap-2 inline-flex p-3 text-gray-700 border border-gray-300 bg-gray-100 hover:bg-gray-200">
+            <img src="{{ url_for('static', filename='icons/microsoft.svg') }}" alt="">
+            <span class="font-semibold">Đăng ký bằng tài khoản email Microsoft được cấp</span>
+        </a>
+    
+        <form action="" method="post"
+            id="signup-form"
+            class="py-5 rounded-md ajax max-w-md">
+    
+            {{ form.csrf_token }}
+    
+    
+            {% for field in form if field.name != 'csrf_token' %}
+            <div class="form-field py-2">
+    
+                <!-- .form-field-label -->
+                <div class="form-field-label pb-0.5 text-gray-700 {% if field.flags.required %}required{% endif %}">{{ field.label(class="text-sm font-medium") }}</div>
+    
+                <!-- .form-field-container -->
+                <div class="form-field-container relative" data-name="{{ field.name }}">
+                    <!-- prefix -->
+                    <div class="form-field-prefix absolute rounded-l
+                                flex justify-center items-center
+                                text-gray-400 h-8 w-8 top-1/2 left-2 -translate-y-1/2"
+                        style="padding: 0.39rem">
+                        <!-- icon -->
+                        <img src="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
+                            style="filter: invert(0.5); user-select: none;"
+                            data-original-icon="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
+                            data-alternate-icon="{{ url_for('static', filename=field.description.icon.get('alternate', '')) }}">
+                    </div>
+    
+                    <!-- the field -->
+                    {{ field(class="text-field") }}
+                </div>
+    
+                <!-- .form-field-errors-container -->
+                <div class="form-field-errors-container">
+                    {% if field.errors %}
+                        <script>
+                            // adding the following error style classes to the input's class attribute
+                            document.getElementById('{{ field.id }}').classList.add('bg-red-100', 'border-red-500');
+                        </script>
+                        {% for error in field.errors %}
+                            <p class="form-field-error text-xs text-red-500">{{ error }}.</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+    
+            </div> <!-- form-field -->
+            {% endfor %}
+    
+            <button type="submit"
+                   class="
+                   flex justify-between items-center
+                   relative overflow-hidden cursor-pointer
+                   mx-auto mt-9 w-full py-4 bg-primary
+                   text-white font-medium
+                   transition-all duration-300
+                   focus:outline-none
+                   focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
+                   hover:bg-primary-dark">
+    
+                <span class="flex-auto">Tạo tài khoản</span>
+            </button>
+        </form>
+    </div>
 
-        </div> <!-- form-field -->
-        {% endfor %}
+    <style>
+        #signup-form {
+            display: grid;
+            gap: 20px;
+            grid-template-areas:
+            "lastName"
+            "firstName"
+            "email"
+            "phone"
+            "password"
+            "rePassword";
+        }
+        @media (min-width: 640px) {
+            #signup-form {
+                grid-template-areas:
+                "lastName firstName"
+                "email email"
+                "phone phone"
+                "password rePassword";
+            }
+            #signup-form button {
+                grid-column: 2;
+            }
+        }
 
-        <button type="submit"
-               class="
-               flex justify-between items-center
-               relative overflow-hidden cursor-pointer
-               mx-auto mt-9 w-full
-               rounded-md bg-gray-200
-               text-gray-700 font-medium
-               transition-all duration-300
-               focus:outline-none
-               focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
-               hover:bg-gray-300">
+        #signup-form .form-field:nth-of-type(1) {
+            grid-area: lastName;
+        }
+        #signup-form .form-field:nth-of-type(2) {
+            grid-area: firstName;
+        }
+        #signup-form .form-field:nth-of-type(3) {
+            grid-area: email;
+        }
+        #signup-form .form-field:nth-of-type(4) {
+            grid-area: phone;
+        }
+        #signup-form .form-field:nth-of-type(5) {
+            grid-area: password;
+        }
+        #signup-form .form-field:nth-of-type(6) {
+            grid-area: rePassword;
+        }
 
-            <span class="flex-auto">Register</span>
-            <span class="h-full p-2 bg-primary text-white flex justify-center items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </span>
-        </button>
-    </form>
+        .form-field-label.required::after {
+            content: "(*)";
+            padding-left: 5px;
+            color: red;
+        }
+    </style>
 
     <script>
         passwordFieldsQuery = '#signup-form .form-field .form-field-container[data-name*="password"] .form-field-prefix';

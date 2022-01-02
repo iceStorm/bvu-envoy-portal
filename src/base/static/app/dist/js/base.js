@@ -171,8 +171,7 @@ function replaceContent(axiosResponse) {
   const html = axiosResponse.data;
   const path = axiosResponse.request.responseURL;
   const ajaxContent = $("<div>").append($.parseHTML(html, document, true));
-  $("#main").html(ajaxContent.find("#main").html());
-  $("#nav").html(ajaxContent.find("#nav").html());
+  $("html").html(ajaxContent);
   window.history.pushState("", "", `${path}`);
   app.initTippy();
   setATagNavigate();
