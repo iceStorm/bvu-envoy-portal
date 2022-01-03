@@ -6,6 +6,7 @@ import sys
 import os
 from pathlib import Path
 
+from .App import App
 
 
 # INIT DATABASE
@@ -42,21 +43,15 @@ def add_sys_paths():
     return WORKING_DIR, ROOT_DIR
 
 
-def create_app():
-    print("\n[INITIALIZING THE APP...]")
-    from .App import App
-    app = App()
-
+def init_db(app: App):
+    """
+    Initializing DB connnection.
+    Migrating models to DB schema/tables.
+    Seeding initial data.
+    """
     db.init_app(app=app)
-    with app.app_context():
-        from .seeding import start_seeding
-        start_seeding(db)
 
-    limiter.init_app(app)
-    # rbac.init_app(app)
-
-
-    # migrating Models to DB
+    # MIGRATING MODELS TO DB SCHEMAS
     from flask_migrate import Migrate
     print("\n\n[MIGRATING THE DATABASE...]")
     migrate = Migrate()
@@ -67,8 +62,34 @@ def create_app():
         else:
             migrate.init_app(app, db)
 
-    # importing all model (tables) is needed for flask-migrate to detect changes
+    # IMPORTING MODELS IS NEEDED FOR FLASK-MIGRATE TO DETECT CHANGES
     from .modules.admission.admission_model import Admission
+
+    # START SEEDING INITIAL DATA
+    with app.app_context():
+        from .seeding import start_seeding
+        start_seeding(db)
+
+
+def init_protections(app: App):
+    """
+    Initializing application's protection/security extensions.
+    """
+    limiter.init_app(app)
+    # rbac.init_app(app)
+
+
+def create_app():
+    """
+    Initializing the App and plug-in extensions.
+    Return a runnable Flask application.
+    """
+    print("\n[INITIALIZING THE APP...]")
+    app = App()
+
+    init_db(app=app)
+    init_protections(app=app)
 
     print('\n\n[NEW APP RETURNED...]')
     return app
+

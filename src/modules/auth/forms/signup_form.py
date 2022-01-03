@@ -13,8 +13,6 @@ def IsEmailExists(form, field):
 
 
 class SignUpForm(FlaskForm):
-
-
     first_name = StringField(
         label='Họ và tên đệm',
         render_kw={'autocomplete': 'name'},
@@ -70,6 +68,19 @@ class SignUpForm(FlaskForm):
         description={
             'icon': {
                 'origin': 'icons/outline/keypad-outline.svg',
+            },
+        },
+        validators=[
+            InputRequired(),
+        ]
+    )
+
+    address = StringField(
+        label='Địa chỉ',
+        render_kw={'autocomplete': 'address'},
+        description={
+            'icon': {
+                'origin': 'icons/outline/locate-outline.svg',
             },
         },
         validators=[

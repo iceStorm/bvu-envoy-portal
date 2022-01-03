@@ -12,9 +12,6 @@ class DefaultEnvironment(object):
   DEBUG = False
   TESTING = False
 
-  # authorization
-  RBAC_USE_WHITE = True
-
   # database
   SQLALCHEMY_TRACK_MODIFICATIONS = False
   SQLALCHEMY_DATABASE_URI = os.environ["SQLALCHEMY_DATABASE_URI"]
@@ -24,6 +21,7 @@ class DefaultEnvironment(object):
   SESSION_COOKIE_HTTPONLY = True
   CSRF_ENABLED = True
   SECRET_KEY = os.environ["SECRET_KEY"]
+  RBAC_USE_WHITE = True
 
   # mail
   MAIL_SERVER = 'smtp.gmail.com'

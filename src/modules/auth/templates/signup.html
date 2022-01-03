@@ -8,14 +8,16 @@
         <div class="inline-flex flex-col">
             <h1 class="text-xl lg:text-3xl font-bold leading-tight">Đăng ký trở thành Đại sứ BVU<span class="hidden md:inline-block font-black text-5xl text-primary">.</span>
             </h1>
-            <h1 class="py-3">Đã có tài khoản? <a href="{{ url_for('auth.login') }}" class="text-primary">Đăng nhập.</a></h1>
+            <h1 class="py-3">Đã có tài khoản?
+                <a href="{{ url_for('auth.login') }}" class="link text-primary font-semibold">Đăng nhập.</a>
+            </h1>
         </div>
 
-        <div class="flex flex-col pt-5 pb-14">
+        <div class="flex flex-col pt-5 pb-10">
             <h1 class="py-3 font-semibold">Bạn là ai?</h1>
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-3 font-light">
                 <div class="pretty p-icon p-round">
-                    <input type="radio" name="envoy-type" data-envoy-id=1 />
+                    <input type="radio" name="envoy-type" data-envoy-id=1 autocomplete="off"/>
                     <div class="state p-success">
                         <i class="icon mdi mdi-check"></i>
                         <label>Công ty/Tổ chức/Trường học</label>
@@ -23,10 +25,10 @@
                 </div>
 
                 <div class="pretty p-icon p-round">
-                    <input type="radio" name="envoy-type" data-envoy-id=2 />
+                    <input type="radio" name="envoy-type" data-envoy-id=2 autocomplete="off"/>
                     <div class="state p-success">
                         <i class="icon mdi mdi-check"></i>
-                        <label>Thành viên thuộc tập đoàn NHG (Sinh viên, giảng viên, nhân viên...)</label>
+                        <label>Cá nhân thuộc tập đoàn NHG (Sinh viên, giảng viên, nhân viên)</label>
                     </div>
                 </div>
             </div>
@@ -36,7 +38,7 @@
         <!-- NORMAL SIGNUP -->
         <form action="" method="post"
             id="signup-form" data-envoy-id=1
-            class="signup-option py-5 pt-0 rounded-md ajax max-w-md">
+            class="signup-option rounded-md ajax max-w-lg">
     
             {{ form.csrf_token }}
     
@@ -84,7 +86,7 @@
                    class="
                    flex justify-between items-center
                    relative overflow-hidden cursor-pointer
-                   mx-auto mt-9 w-full py-4 bg-primary
+                   mx-auto mt-5 w-full py-4 bg-primary
                    text-white font-medium
                    transition-all duration-300
                    focus:outline-none
@@ -112,6 +114,7 @@
             "firstName"
             "email"
             "phone"
+            "address"
             "password"
             "rePassword";
         }
@@ -119,8 +122,8 @@
             #signup-form {
                 grid-template-areas:
                 "lastName firstName"
-                "email email"
-                "phone phone"
+                "email phone"
+                "address address"
                 "password rePassword";
             }
             #signup-form button {
@@ -141,12 +144,14 @@
             grid-area: phone;
         }
         #signup-form .form-field:nth-of-type(5) {
-            grid-area: password;
+            grid-area: address;
         }
         #signup-form .form-field:nth-of-type(6) {
+            grid-area: password;
+        }
+        #signup-form .form-field:nth-of-type(7) {
             grid-area: rePassword;
         }
-
         .form-field-label.required::after {
             content: "(*)";
             padding-left: 5px;
@@ -157,10 +162,7 @@
     <script>
         // onload
         document.addEventListener("DOMContentLoaded", function() {
-            console.log('...');
             $('input[name="envoy-type"]').each(function(index, e) {
-                console.log($(e));
-
                 if ($(e).attr('checked') == true) {
                     $(`.signup-option[data-envoy-id="${$(e).attr('data-envoy-id')}"]`).show();
                 } else {

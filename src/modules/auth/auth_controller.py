@@ -51,9 +51,9 @@ def logout():
     return redirect(location="/")
 
 
-@auth.route('/signup', methods=['GET', 'POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 @limiter.limit('1/second')
-def signup():
+def register():
     # grabbing the form
     from src.modules.auth.forms.signup_form import SignUpForm
     form = SignUpForm()

@@ -11,7 +11,7 @@ class App(Flask):
             # instance_relative_config=True,
         )
 
-        # assigning the base templates & static folder
+        # assigning the base "templates" & "static" folder
         self.template_folder = './base/templates/'
         self.static_folder = './base/static/'
 
@@ -56,7 +56,7 @@ class App(Flask):
 
 
     def register_cors(self):
-        # adding CORS origins (all) for client ajax calling
+        """Adding CORS origins (all) for client ajax calling."""
         from flask_cors import CORS
         cors = CORS(app=self, resources={r"/*": {"origins": "*"}})
 
@@ -73,7 +73,7 @@ class App(Flask):
 
 
     def register_login_manager(self):
-        # adding login manager
+        """Adding login manager for the application."""
         from flask_login import LoginManager
 
         login_manager = LoginManager()
@@ -92,17 +92,16 @@ class App(Flask):
         Loading the configured environment variables.
         """
         from dotenv import load_dotenv
-        load_dotenv()  # take environment variables from .env.
+        load_dotenv()  # take environment variables from .env file.
         print('/n', os.environ)
 
         # USING DEFAULT CONFIG
         from .config import DefaultEnvironment
         self.config.from_object(DefaultEnvironment)
 
-        # LOAD DEVELOPER SPECIFIED ENV
+        # LOAD/OVERRIDE DEVELOPER SPECIFIED ENV
         environment_configuration = os.environ.get('CONFIG_FILE')
         assert environment_configuration is not None, "Please provide the CONFIG_FILE env"
         self.config.from_object(environment_configuration)
 
-        # 
-        print('\n', self.config, '\n\n\n')
+        print('\n', self.config, '\n\n')
