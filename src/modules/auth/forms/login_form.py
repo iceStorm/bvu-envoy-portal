@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms.fields.html5 import EmailField
 from wtforms.fields import StringField, PasswordField, BooleanField
-from wtforms.validators import InputRequired, Length, EqualTo, Regexp, ValidationError
+from wtforms.validators import InputRequired, Length, EqualTo, Regexp, ValidationError, DataRequired
 
 import re
 from src.modules.user.user_model import User
@@ -22,21 +22,21 @@ class LoginForm(FlaskForm):
         label='Email',
         description={
             'icon': {
-                'origin': 'icons/outline/finger-print-outline.svg',
+                'origin': 'icons/outline/mail-outline.svg',
             },
         },
         render_kw={
             'autocomplete': 'email',
         },
         validators=[
-            InputRequired(),
+            DataRequired(),
             EmailValidator,
             IsEmailExists,
         ]
     )
 
     password = PasswordField(
-        label='Password',
+        label='Mật khẩu',
         render_kw={'autocomplete': 'current-password'},
         description={
             'icon': {
@@ -63,6 +63,7 @@ class LoginForm(FlaskForm):
         # checking if the provided password is not True (with the one in the database)
         # the user instance below is always exists because the form's email validation did check.
         user = AuthService.get_user_from_email(self.email.data)
+        print(user)
 
         if not user.check_password(self.password.data):
             self.password.errors.append('The password you just provided was wrong')

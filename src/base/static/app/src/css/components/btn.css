@@ -1,7 +1,8 @@
 @layer components {
   .btn {
-    @apply focus:outline-none;
-    transition: all .35s;
+    /* @apply focus:outline-none; */
+    @apply rounded;
+    transition: transform .35s;
     position: relative;
     overflow: hidden;
 
@@ -17,6 +18,20 @@
         left: 0;
         right: 0;
         box-shadow: 0 7px 38px 0 rgb(0 0 0 / 31%);
+      }
+    }
+
+    &.btn-highlight {
+      &::before {
+        content: "";
+        position: absolute;
+        /* top: 50%; */
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 30%;
+        transform: skew(45deg, 0);
+        @apply bg-secondary;
       }
     }
   }

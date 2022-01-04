@@ -1,15 +1,16 @@
 #header {
-  transition: all .45s;
+  transition: background-color .45s;
+  box-shadow: 0 3px 24px 0 rgba(0, 0, 0, 0.1);
 
   #btn-header {
     opacity: 0;
     visibility: hidden;
     transform: translatey(100px);
+    display: none;
   }
 
   &[scrolled] {
     background-color: #fff;
-    box-shadow: 0 3px 24px 0 rgba(0, 0, 0, 0.1);
 
     .btn {
       border: 1.5px solid #eee;

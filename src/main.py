@@ -11,7 +11,7 @@ from .App import App
 
 # CONFIG LOGGER
 import logging as logger
-logger.basicConfig(format='%(asctime)s - %(message)s', level=logger.INFO)
+logger.basicConfig(format='%(asctime)s - %(message)s', level=logger.INFO,)
 
 
 # INIT DATABASE

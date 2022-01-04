@@ -19,15 +19,14 @@ class User(UserMixin, db.Model):
 
     # BASE USER FIELDS ----------------------------------------------------------------------------------------
     id = Column(Integer, primary_key=True)
-    email = Column(String(USER_EMAIL_LENGTH), index=True)
-    phone_number = Column(String(USER_PHONE_LENGTH), nullable=False, index=True)
-    full_name = Column(String(USER_FIRST_NAME_LENGTH + USER_LAST_NAME_LENGTH), index=True)
-    first_name = Column(String(USER_FIRST_NAME_LENGTH), nullable=False, index=True)
-    last_name = Column(String(USER_LAST_NAME_LENGTH), nullable=False, index=True)
+    email = Column(String(USER_EMAIL_LENGTH), nullable=False, unique=True, index=True)
+    phone_number = Column(String(USER_PHONE_LENGTH), nullable=False, unique=True, index=True)
+    first_name = Column(String(USER_FIRST_NAME_LENGTH), index=True)
+    last_name = Column(String(USER_LAST_NAME_LENGTH), index=True)
     password_hash = Column(String(USER_PASSWORD_LENGTH), nullable=False)
     avatar_url = Column(String(USER_AVATAR_URL_LENGTH))
-    activated = Column(Boolean, nullable=False, default=False)
     username = Column(String(USER_USERNAME_LENGTH), index=True, unique=True)
+    activated = Column(Boolean, nullable=False, default=False)
     created_time = Column(DateTime, nullable=False, default=datetime.now())
 
     # roleId:3 == Envoy
@@ -35,9 +34,12 @@ class User(UserMixin, db.Model):
     role = relationship('Role', backref='users')
 
     # ADDITIONAL ENVOY FIELDS ---------------------------------------------------------------------------------
+    address = Column(String(ENVOY_ADDRESS_LENGTH), unique=True, index=True)
     citizen_id = Column(String(ENVOY_CITIZEN_ID_LENGTH), unique=True, index=True)
-    tax_id = Column(String(ENVOY_TAX_ID_LENGTH), unique=True, index=True)
-    card_number = Column(String(ENVOY_CARD_NUMBER_LENGTH), unique=True, index=True)
+    credit_card_number = Column(String(ENVOY_CARD_NUMBER_LENGTH), unique=True, index=True)
+    organization_tax_id = Column(String(ENVOY_TAX_ID_LENGTH), unique=True, index=True)
+    organization_name = Column(String(ENVOY_ORGANIZATION_NAME_LENGTH), unique=True, index=True)
+    organization_representer_person_name = Column(String(ENVOY_ORGANIZATION_REPRESENTER_NAME_LENGTH), unique=True, index=True)
 
     envoy_type_id = Column(Integer, ForeignKey('EnvoyType.id'))
     envoy_type = relationship('EnvoyType', backref='users')
@@ -84,7 +86,7 @@ class User(UserMixin, db.Model):
         Checking if the raw_password matches the password of this User instance.
         """
         # return check_password_hash(self.password_hash, raw_password)
-        bcrypt.check_password_hash(self.password_hash, raw_password)
+        return bcrypt.check_password_hash(self.password_hash, raw_password)
 
 
 
@@ -103,4 +105,4 @@ class EnvoyType(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(USER_ENVOY_NAME_LENGTH), nullable=False, unique=True, index=True)
+    name = Column(String(ENVOY_TYPE_NAME_LENGTH), nullable=False, unique=True, index=True)

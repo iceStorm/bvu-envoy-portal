@@ -84,7 +84,7 @@ class App(Flask):
         def load_user(id):
             # register user_loader
             from .modules.user.user_model import User, db
-            return db.session.query(User).get()
+            return db.session.query(User).get(id)
 
 
     def load_environment_variables(self):

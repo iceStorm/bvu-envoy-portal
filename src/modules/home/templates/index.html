@@ -3,8 +3,41 @@
 {% block title %}Trang chủ{% endblock title %}
 
 {% block content %}
+    <div id="lobby" class="lobby h-screen bg-cover pt-28"
+    style="background: url({{ url_for('.static', filename='lobby-bg.jpeg') }});
+    background-size: cover; background-position: right center;">
+    <div class="container flex flex-col justify-between min-h-full">
+        <h1 class="font-medium text-white text-base xl:text-3xl">BVU Admission Envoy Portal.</h1>
 
-    <div>
+        <div class="flex flex-col">
+            <div class="text-3xl xl:text-7xl pb-10">
+                <div class="flex">
+
+                <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="50" data-aos-duration="750">Kết nối.&nbsp;</h1>
+                <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="250" data-aos-duration="750">Chia sẻ.</h1>
+                </div>
+                <h1 class="font-bold text-white pb-1" data-aos="fade-up" data-aos-delay="350" data-aos-duration="750">Vươn tới tương lai.</h1>
+            </div>
+
+            <div class="plate rounded bg-white flex flex-col justify-between items-start md:flex-row gap-10 md:gap-20 p-8 -mb-4 shadow-xl">
+                <div class="">
+                    <h3 class="font-bold text-xl pb-5">Cổng thông tin kết nối Đại sứ tuyển sinh BVU.</h3>
+                    <h5>Trở thành đại sứ tuyển sinh của BVU ngay hôm nay để kết nối người quen của bạn với
+                        môi trường học tập hiện đại bậc nhất thành phố biển Vũng Tàu - 
+                        Nhận hoa hồng trên mỗi người bạn giới thiệu thành công nhập học tại BVU.</h5>
+                </div>
+                <a href="{{ url_for('auth.register') }}" id="btn-register"
+                    class="btn inline-block bg-primary-dark text-white
+                    py-5 px-14 shadow-lg rounded text-center min-w-fit
+                    font-medium text-base md:lg:text-2xl">
+                    Đăng ký làm đại sứ
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="container py-20">
         <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo explicabo culpa consequatur voluptas ea accusantium, rem veniam perferendis quam enim? Repudiandae dolorum modi vero quo voluptatibus nam est dolor illo.</div>
         <div>Quos dolor mollitia sunt nostrum nobis provident, laborum totam qui ea ducimus quas tempore optio voluptatem iusto at aspernatur aut nesciunt sequi eligendi corrupti et voluptate? Nesciunt incidunt optio ut.</div>
         <div>Officia, quisquam autem obcaecati nostrum consectetur facilis quis nemo, aliquid expedita fugit odit magnam temporibus impedit sunt dignissimos et laborum aut cupiditate. Deleniti, magni fugit doloribus blanditiis alias excepturi sapiente.</div>
@@ -37,4 +70,21 @@
         <div>Assumenda ad rerum ratione nihil id delectus autem qui eligendi. Cum, facilis maxime. Modi provident officia error a quaerat architecto repudiandae quam molestias velit alias. Aliquam, dicta! Repudiandae, cumque ipsa!</div>
     </div>
 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            //headerHeight = document.getElementById('header').clientHeight;
+            //document.getElementById('lobby').style.paddingTop = `${headerHeight + 30}px`;
+
+            window.onscroll = function() {
+                registerButtonDistanceToTop = document.getElementById('btn-register').offsetTop;
+                console.log(registerButtonDistanceToTop);
+                if (window.scrollY >= registerButtonDistanceToTop) {
+                    document.getElementById('header').setAttribute('scrolled', '');
+                } else {
+                    document.getElementById('header').removeAttribute('scrolled');
+                }
+            };
+        });
+    </script>
 {% endblock %}

@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from wtforms.fields.core import IntegerField
 from wtforms.fields.html5 import EmailField
 from wtforms.fields import StringField, PasswordField
 from wtforms.validators import InputRequired, Length, EqualTo, Regexp, ValidationError, DataRequired
@@ -7,14 +8,31 @@ from src.base.helpers.validators import *
 
 
 def IsEmailExists(form, field):
-    from src.modules.user.user_model import User
-    if User.query.get(field.data) is not None:
+    from src.modules.user.user_model import User, db
+    if db.session.query(User).filter(User.email == field.data).first() is not None:
         raise ValidationError(message='The email is already registered')
 
 
 class SignUpForm(FlaskForm):
-    first_name = StringField(
-        label='Họ và tên đệm',
+    organization_name = StringField(
+        label='Tên Tổ chức/Công ty/Trường học',
+        render_kw={'autocomplete': 'organization'},
+        description={
+            'icon': {
+                'origin': 'icons/outline/text-outline.svg',
+            },
+        },
+        filters=[
+            lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
+        ],
+        validators=[
+            DataRequired(message='Please fill out this field'),
+            Length(min=2, max=50, message='The length must between 2 and 50 letters'),
+        ]
+    )
+
+    organization_representer_person_name = StringField(
+        label='Tên người đại diện',
         render_kw={'autocomplete': 'name'},
         description={
             'icon': {
@@ -30,20 +48,30 @@ class SignUpForm(FlaskForm):
         ]
     )
 
-    last_name = StringField(
-        label='Tên',
-        render_kw={'autocomplete': 'name'},
+    organization_tax_id = IntegerField(
+        label='Mã số thuế',
+        render_kw={'autocomplete': 'new-password'},
         description={
             'icon': {
-                'origin': 'icons/outline/text-outline.svg',
+                'origin': 'icons/outline/lock-closed-outline.svg',
+                'alternate': 'icons/outline/lock-open-outline.svg',
             },
         },
-        filters=[
-            lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
-        ],
         validators=[
             DataRequired(message='Please fill out this field'),
-            Length(min=2, max=50, message='The length must between 2 and 50 letters'),
+        ]
+    )
+
+    address = StringField(
+        label='Địa chỉ',
+        render_kw={'autocomplete': 'address-line1'},
+        description={
+            'icon': {
+                'origin': 'icons/outline/locate-outline.svg',
+            },
+        },
+        validators=[
+            InputRequired(),
         ]
     )
 
@@ -64,7 +92,7 @@ class SignUpForm(FlaskForm):
 
     phone = StringField(
         label='Số điện thoại',
-        render_kw={'autocomplete': 'email'},
+        render_kw={'autocomplete': 'tel'},
         description={
             'icon': {
                 'origin': 'icons/outline/keypad-outline.svg',
@@ -72,48 +100,5 @@ class SignUpForm(FlaskForm):
         },
         validators=[
             InputRequired(),
-        ]
-    )
-
-    address = StringField(
-        label='Địa chỉ',
-        render_kw={'autocomplete': 'address'},
-        description={
-            'icon': {
-                'origin': 'icons/outline/locate-outline.svg',
-            },
-        },
-        validators=[
-            InputRequired(),
-        ]
-    )
-
-    password = PasswordField(
-        label='Mật khẩu',
-        render_kw={'autocomplete': 'new-password'},
-        description={
-            'icon': {
-                'origin': 'icons/outline/lock-closed-outline.svg',
-                'alternate': 'icons/outline/lock-open-outline.svg',
-            },
-        },
-        validators=[
-            InputRequired(message='Please fill out this field'),
-            PasswordValidator,
-        ]
-    )
-
-    re_password = PasswordField(
-        label='Nhập lại mật khẩu',
-        render_kw={'autocomplete': 'new-password'},
-        description={
-            'icon': {
-                'origin': 'icons/outline/lock-closed-outline.svg',
-                'alternate': 'icons/outline/lock-open-outline.svg',
-            },
-        },
-        validators=[
-            InputRequired(message='Please fill out this field'),
-            EqualTo(fieldname='password', message='Password fields does not match'),
         ]
     )

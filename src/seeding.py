@@ -25,15 +25,15 @@ def seed_roles(db: SQLAlchemy):
     app_roles = [
       Role(
         name='Quản trị viên',
-        code='Administrator',
+        code='admin',
       ),
       Role(
         name='Người quản lý',
-        code='Manager',
+        code='manager',
       ),
       Role(
         name='Đại sứ',
-        code='Envoy',
+        code='envoy',
       ),
     ]
 

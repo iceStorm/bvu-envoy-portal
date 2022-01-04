@@ -1,9 +1,9 @@
-{% extends "user.html" %}
+{% extends "landing.html" %}
 {% block title %}Đăng ký{% endblock title %}
 
 
 {% block content %}
-    <div class="lg:pl-20">
+    <div class="container py-20 pt-32">
 
         <div class="inline-flex flex-col">
             <h1 class="text-xl lg:text-3xl font-bold leading-tight">Đăng ký trở thành Đại sứ BVU<span class="hidden md:inline-block font-black text-5xl text-primary">.</span>
@@ -38,7 +38,7 @@
         <!-- NORMAL SIGNUP -->
         <form action="" method="post"
             id="signup-form" data-envoy-id=1
-            class="signup-option rounded-md ajax max-w-lg">
+            class="signup-option rounded-md ajax max-w-full">
     
             {{ form.csrf_token }}
     
@@ -67,7 +67,7 @@
                 </div>
     
                 <!-- .form-field-errors-container -->
-                <div class="form-field-errors-container">
+                <div class="form-field-errors-container pt-2">
                     {% if field.errors %}
                         <script>
                             // adding the following error style classes to the input's class attribute
@@ -86,14 +86,14 @@
                    class="
                    flex justify-between items-center
                    relative overflow-hidden cursor-pointer
-                   mx-auto mt-5 w-full py-4 bg-primary
+                   mx-auto mt-5 w-full py-4 bg-primary btn btn-highlight
                    text-white font-medium
                    transition-all duration-300
                    focus:outline-none
                    focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
                    hover:bg-primary-dark">
     
-                <span class="flex-auto">Tạo tài khoản</span>
+                <span class="flex-auto text-lg">Tạo tài khoản</span>
             </button>
         </form>
 
@@ -108,49 +108,43 @@
     <style>
         #signup-form {
             display: grid;
-            gap: 20px;
+            column-gap: 20px;
             grid-template-areas:
-            "lastName"
-            "firstName"
-            "email"
-            "phone"
+            "organizationName"
+            "organizationRepresenterPersonName"
+            "organizationTaxId"
             "address"
-            "password"
-            "rePassword";
+            "email"
+            "phone";
         }
         @media (min-width: 640px) {
             #signup-form {
                 grid-template-areas:
-                "lastName firstName"
-                "email phone"
-                "address address"
-                "password rePassword";
+                "organizationName organizationName organizationRepresenterPersonName organizationTaxId"
+                "address address email phone";
             }
             #signup-form button {
-                grid-column: 2;
+                grid-column: 1 / span 2;
             }
         }
 
         #signup-form .form-field:nth-of-type(1) {
-            grid-area: lastName;
+            grid-area: organizationName;
         }
         #signup-form .form-field:nth-of-type(2) {
-            grid-area: firstName;
+            grid-area: organizationRepresenterPersonName;
         }
         #signup-form .form-field:nth-of-type(3) {
-            grid-area: email;
+            grid-area: organizationTaxId;
         }
         #signup-form .form-field:nth-of-type(4) {
-            grid-area: phone;
-        }
-        #signup-form .form-field:nth-of-type(5) {
             grid-area: address;
         }
-        #signup-form .form-field:nth-of-type(6) {
-            grid-area: password;
+        #signup-form .form-field:nth-of-type(5) {
+            grid-area: email;
         }
-        #signup-form .form-field:nth-of-type(7) {
-            grid-area: rePassword;
+        #signup-form .form-field:nth-of-type(6) {
+            grid-area: phone;
         }
         .form-field-label.required::after {
             content: "(*)";
