@@ -1,19 +1,23 @@
+from datetime import datetime
+import bcrypt
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
-from sqlalchemy.sql.schema import ForeignKey, Column
-from sqlalchemy.sql.sqltypes import String, Integer, BOOLEAN
+from flask_bcrypt import Bcrypt
+from sqlalchemy import String, Integer, Boolean, DateTime, Column, ForeignKey
 
-from werkzeug.security import generate_password_hash, check_password_hash
+# from werkzeug.security import generate_password_hash, check_password_hash
 
 from .user_constants import *
-from src.main import db
+from ..envoy.envoy_constants import *
 
+from src.main import db
+bcrypt = Bcrypt()
 
 class User(UserMixin, db.Model):
-    __tablename__ = 'Users'
+    __tablename__ = 'User'
     __table_args__ = {'extend_existing': True}
 
-    # base user fields
+    # BASE USER FIELDS ----------------------------------------------------------------------------------------
     id = Column(Integer, primary_key=True)
     email = Column(String(USER_EMAIL_LENGTH), index=True)
     phone_number = Column(String(USER_PHONE_LENGTH), nullable=False, index=True)
@@ -22,15 +26,21 @@ class User(UserMixin, db.Model):
     last_name = Column(String(USER_LAST_NAME_LENGTH), nullable=False, index=True)
     password_hash = Column(String(USER_PASSWORD_LENGTH), nullable=False)
     avatar_url = Column(String(USER_AVATAR_URL_LENGTH))
-    activated = Column(BOOLEAN, nullable=False, default=False)
+    activated = Column(Boolean, nullable=False, default=False)
+    username = Column(String(USER_USERNAME_LENGTH), index=True, unique=True)
+    created_time = Column(DateTime, nullable=False, default=datetime.now())
 
     # roleId:3 == Envoy
-    role_id = Column(Integer, db.ForeignKey('Roles.id'), nullable=False, default=3)
+    role_id = Column(Integer, ForeignKey('Role.id'), nullable=False, default=3)
+    role = relationship('Role', backref='users')
 
-    # 1 manager - many envoys
-    manager_id = Column(Integer, db.ForeignKey('Users.id'))
-    manager = relationship("User", backref='envoys', remote_side=[id])
+    # ADDITIONAL ENVOY FIELDS ---------------------------------------------------------------------------------
+    citizen_id = Column(String(ENVOY_CITIZEN_ID_LENGTH), unique=True, index=True)
+    tax_id = Column(String(ENVOY_TAX_ID_LENGTH), unique=True, index=True)
+    card_number = Column(String(ENVOY_CARD_NUMBER_LENGTH), unique=True, index=True)
 
+    envoy_type_id = Column(Integer, ForeignKey('EnvoyType.id'))
+    envoy_type = relationship('EnvoyType', backref='users')
 
 
     def __init__(self, email: str, first_name: str, last_name: str, phone_number: str, raw_password=None, avatar_url=None, activated=False):
@@ -48,15 +58,8 @@ class User(UserMixin, db.Model):
 
         # if raw_password provided through the constructor
         if raw_password:
-            password_hash = User.gen_password_hash(raw_password)
-            print(f'hashing the password {raw_password}:', password_hash)
-            self.password_hash = password_hash
-
-
-    @staticmethod
-    def gen_password_hash(raw_password):
-        return generate_password_hash(raw_password)
-
+            self.password_hash = User.gen_password_hash(raw_password)
+            print(f'hashing the password {raw_password}:', self.password_hash)
 
     def get_id(self):
         """
@@ -68,25 +71,36 @@ class User(UserMixin, db.Model):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
-
     def __repr__(self):
         return f"<User: full name: {self.full_name}, email: {self.email}>"
 
+    @staticmethod
+    def gen_password_hash(raw_password):
+        # return generate_password_hash(raw_password)
+        return bcrypt.generate_password_hash(raw_password)
 
     def check_password(self, raw_password: str):
         """
         Checking if the raw_password matches the password of this User instance.
         """
-        return check_password_hash(self.password_hash, raw_password)
+        # return check_password_hash(self.password_hash, raw_password)
+        bcrypt.check_password_hash(self.password_hash, raw_password)
 
 
 
 class Role(db.Model):
-    __tablename__ = 'Roles'
+    __tablename__ = 'Role'
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
     name = Column(String(USER_ROLE_LENGTH), nullable=False, unique=True, index=True)
     code = Column(String(USER_ROLE_LENGTH), nullable=False, unique=True, index=True)
 
-    users = relationship('User', backref='role')
+
+
+class EnvoyType(db.Model):
+    __tablename__ = 'EnvoyType'
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(USER_ENVOY_NAME_LENGTH), nullable=False, unique=True, index=True)

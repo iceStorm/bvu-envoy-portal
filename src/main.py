@@ -9,6 +9,11 @@ from pathlib import Path
 from .App import App
 
 
+# CONFIG LOGGER
+import logging as logger
+logger.basicConfig(format='%(asctime)s - %(message)s', level=logger.INFO)
+
+
 # INIT DATABASE
 print("\n[DEFINING DATABASE INSTANCE...]")
 from flask_sqlalchemy import SQLAlchemy
@@ -64,6 +69,7 @@ def init_db(app: App):
 
     # IMPORTING MODELS IS NEEDED FOR FLASK-MIGRATE TO DETECT CHANGES
     from .modules.admission.admission_model import Admission
+    # from .modules.user.user_model import User
 
     # START SEEDING INITIAL DATA
     with app.app_context():

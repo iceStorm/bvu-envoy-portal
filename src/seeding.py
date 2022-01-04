@@ -6,6 +6,7 @@ def start_seeding(db: SQLAlchemy):
   seed_root_user(db)
 
   seed_admission_types(db)
+  seed_envoy_types(db)
 
 
 
@@ -83,6 +84,26 @@ def seed_admission_types(db: SQLAlchemy):
       AdmissionType(name="Liên thông"),
       AdmissionType(name="Thạc sĩ"),
       AdmissionType(name="TIến sĩ"),
+    ]
+
+    db.session.add_all(app_admission_types)
+    db.session.commit()
+
+
+def seed_envoy_types(db: SQLAlchemy):
+  """
+  Seeding EnvoyType for the app if there is no one.
+  """
+  from .modules.user.user_model import EnvoyType
+
+  if (len(db.session.query(EnvoyType).all()) == 0):
+    print('\nNO ENVOY TYPE DETECTED, START SEDDING...')
+
+    app_admission_types = [
+      EnvoyType(name="Sinh viên"),
+      EnvoyType(name="Giảng viên"),
+      EnvoyType(name="Trường học"),
+      EnvoyType(name="Công ty/Tổ chức"),
     ]
 
     db.session.add_all(app_admission_types)
