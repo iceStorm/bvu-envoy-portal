@@ -155,6 +155,9 @@ class SignUpForm(FlaskForm):
                 'origin': 'icons/outline/locate-outline.svg',
             },
         },
+        filters=[
+            lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
+        ],
         validators=[
             InputRequired(),
         ]
@@ -193,7 +196,7 @@ class SignUpForm(FlaskForm):
             self.organization_representer_person_name.errors.append('This representer name already exists')
             form_passed = False
 
-        if User.is_organization_taxid_already_exists(self.organization_name.data):
+        if User.is_organization_taxid_already_exists(self.organization_tax_id.data):
             self.organization_tax_id.errors.append('This tax id already exists')
             form_passed = False
         
