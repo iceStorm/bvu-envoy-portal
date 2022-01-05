@@ -68,12 +68,13 @@ def register():
     if request.method == 'GET':
         # redirecting logged-in user to the index page
         if current_user.is_authenticated:
-            flash('Please logout first, then signup!', category='warning')
+            flash('Please logout first, then signup!', category=FlashCategory.warning())
             return redirect('/')
         return render_template('signup.html', form=form)
 
     # checking if the form is not valid yet
     if not form.validate_on_submit():
+        flash('Please ensure all fields have no errors!', category=FlashCategory.warning(2000))
         return render_template('signup.html', form=form)
 
     # all validation passed, let's continue handle the signup process
@@ -81,7 +82,7 @@ def register():
     AuthService.register(form)
 
     # showing a flash message -> redirecting to the home page
-    flash(message='Successfully registered!', category=FlashCategory.Success)
+    flash(message=f'Vui lòng kiểm tra email tại {form.email.data} để kích hoạt tài khoản!', category=FlashCategory.success(10000))
 
     # showing the login page and auto filling data
     return redirect(url_for('auth.login', email=form.email.data))

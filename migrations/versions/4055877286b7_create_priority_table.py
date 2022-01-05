@@ -1,8 +1,8 @@
 """create Priority table
 
-Revision ID: 26afc1d5beac
+Revision ID: 4055877286b7
 Revises: 
-Create Date: 2022-01-04 19:21:10.842676
+Create Date: 2022-01-05 15:01:13.458088
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '26afc1d5beac'
+revision = '4055877286b7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -54,8 +54,8 @@ def upgrade():
     op.create_index(op.f('ix_Admission_start_time'), 'Admission', ['start_time'], unique=False)
     op.create_table('User',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('email', sa.String(length=50), nullable=True),
-    sa.Column('phone_number', sa.String(length=10), nullable=False),
+    sa.Column('email', sa.String(length=50), nullable=False),
+    sa.Column('phone_number', sa.String(length=11), nullable=False),
     sa.Column('first_name', sa.String(length=30), nullable=True),
     sa.Column('last_name', sa.String(length=20), nullable=True),
     sa.Column('password_hash', sa.String(length=255), nullable=False),
@@ -65,9 +65,9 @@ def upgrade():
     sa.Column('created_time', sa.DateTime(), nullable=False),
     sa.Column('role_id', sa.Integer(), nullable=False),
     sa.Column('address', sa.String(length=255), nullable=True),
-    sa.Column('citizen_id', sa.String(length=20), nullable=True),
+    sa.Column('citizen_id', sa.String(length=12), nullable=True),
     sa.Column('credit_card_number', sa.String(length=20), nullable=True),
-    sa.Column('organization_tax_id', sa.String(length=20), nullable=True),
+    sa.Column('organization_tax_id', sa.String(length=14), nullable=True),
     sa.Column('organization_name', sa.String(length=255), nullable=True),
     sa.Column('organization_representer_person_name', sa.String(length=50), nullable=True),
     sa.Column('envoy_type_id', sa.Integer(), nullable=True),
@@ -84,7 +84,7 @@ def upgrade():
     op.create_index(op.f('ix_User_organization_name'), 'User', ['organization_name'], unique=True)
     op.create_index(op.f('ix_User_organization_representer_person_name'), 'User', ['organization_representer_person_name'], unique=True)
     op.create_index(op.f('ix_User_organization_tax_id'), 'User', ['organization_tax_id'], unique=True)
-    op.create_index(op.f('ix_User_phone_number'), 'User', ['phone_number'], unique=False)
+    op.create_index(op.f('ix_User_phone_number'), 'User', ['phone_number'], unique=True)
     op.create_index(op.f('ix_User_username'), 'User', ['username'], unique=True)
     op.create_table('UserAdmission',
     sa.Column('user_id', sa.Integer(), nullable=False),

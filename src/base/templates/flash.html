@@ -3,15 +3,13 @@
 {% with flash_msgs = get_flashed_messages(with_categories=True) %}
     {% if flash_msgs %}
         {% for cat, msg in flash_msgs -%}
+            {% set category = cat.split(':')[0] %}
+            {% set duration = cat.split(':')[1] %}
+
             <script>
-                if (document.readyState == 'complete') {
-                    showToast('{{ msg }}', '{{ cat }}');
-                }
-                else {
-                    document.addEventListener('DOMContentLoaded', () => {
-                        showToast('{{ msg }}', '{{ cat }}');
-                    });
-                }
+                document.addEventListener('DOMContentLoaded', function() {
+                    showToast('{{ msg }}', '{{ category }}', '{{ duration }}');
+                });
             </script>
         {% endfor -%}
     {% endif %}

@@ -8,7 +8,8 @@ require('esbuild')
     ],
     bundle: true,
     outfile: 'dist/js/base.js',
-    minify: true,
+    // minify: true,
+    format: 'esm',
     plugins: [
       cssModulesPlugin(),
     ],

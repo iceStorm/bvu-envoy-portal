@@ -20,17 +20,15 @@
             {{ form.csrf_token }}
 
             <!-- RENDER ENVOY TYPE INPUTS OUTSIDE TO HANDLE CHECKING/SHOWING RESPECTIVELY LOGIN OPTIONS -->
-            {% for subfield in form['envoy_type'] %}
-                {{ subfield(class='pretty-input absolute opacity-0 hidden') }}
-            {% endfor %}
+
             <div class="envoy-types-container flex flex-col pt-5 pb-10">
                 <h1 class="py-3 font-semibold">Bạn là ai?</h1>
                 {% for subfield in form['envoy_type'] %}
                     <div class="pb-1">
                         <div class="pretty p-icon p-round p-smooth">
+                            {{ subfield }}
                             <div class="state p-success">
                                 <i class="icon mdi mdi-check"></i>
-                                <!-- radio label -->
                                 {{ subfield.label(class='select-none font-light cursor-pointer inline-block hover:text-primary') }}
                             </div>
                         </div>
@@ -40,7 +38,7 @@
 
             
             <!-- FORM FIELDS / ENVOY TYPE IS ORGANIZATION/HIGHSCHOOL.. -->
-            <div class="signup-option form-fields" data-envoy-id="1">
+            <div class="signup-option form-fields" data-envoy-type=0>
                 {% for field in form if (field.name != 'csrf_token' and field.name != 'envoy_type') %}
                 <div class="form-field py-2">
         
@@ -48,9 +46,9 @@
                     <div class="form-field-label pb-0.5 text-gray-700 {% if field.flags.required %}required{% endif %}">
                         <div class="flex justify-between items-center">
                             {{ field.label(class="text-sm font-medium") }}
-                            {% if field.description is mapping and field.description['tooltip'] != None %}
+                            {% if field.description is mapping and field.description['tooltip'] != None and field.description['tooltip'] != '' %}
                                 <img src="{{ url_for('static', filename='icons/outline/help-circle-outline.svg') }}" alt=""
-                                class="w-4 text-gray-300 cursor-pointer" data-tippy-content="{{ field.description['tooltip'] }}" a="{{ field.description }}">
+                                class="w-4 text-gray-300 cursor-pointer" data-tippy-content="{{ field.description['tooltip'] }}">
                             {% endif %}
                         </div>
                     </div>
@@ -111,7 +109,7 @@
 
 
             <!-- MICROSOFT SIGNUP -->
-            <a href="{{ url_for('auth.login') }}" data-envoy-id=2
+            <a href="{{ url_for('auth.login') }}" data-envoy-type=1
                 class="signup-option w-fit items-center rounded gap-2 inline-flex p-3 text-gray-700 border border-gray-300 bg-gray-100 hover:bg-gray-200">
                 <img src="{{ url_for('static', filename='icons/microsoft.svg') }}" alt="">
                 <span class="font-semibold">Đăng ký bằng tài khoản email Microsoft được cấp</span>
@@ -134,7 +132,7 @@
             "phone"
             "submitBtn";
         }
-        @media (min-width: 640px) {
+        @media (min-width: 768px) {
             #signup-form .form-fields {
                 grid-template-areas:
                 "organizationName organizationName organizationRepresenterPersonName organizationTaxId"
@@ -186,23 +184,30 @@
             padding-left: 5px;
             color: red;
         }
-
-
-        .signup-option {
-            display: none !important;
-        }
-        input[id="envoy_type-0"]:checked ~ .signup-option[data-envoy-id="1"] {
-            display: grid !important;
-        }
-        input[id="envoy_type-1"]:checked ~ .signup-option[data-envoy-id="2"] {
-            display: inline-flex !important;
-        }
-
-        .pretty-input:nth-of-type(1):checked ~ .envoy-types-container .pretty .state.p-success .icon {
-            color: #000;
-            stroke: #000;
-            opacity: 1;
-        }
     </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // handle input change
+            $("input[name='envoy_type']").change(function(e) {
+                const envoyType = $(this).attr('id').split('-')[1];
+                toggleSignupOption(envoyType);
+            });
+
+            // handle on page load
+            $(`.signup-option`).hide();
+            try {
+                const envoyType = $("input[name='envoy_type']:checked").attr('id').split('-')[1];
+                toggleSignupOption(envoyType);
+            } catch (e) {
+                // no checked envoy type
+            }
+        });
+
+        function toggleSignupOption(envoyType) {
+            $(`.signup-option`).hide();
+            $(`.signup-option[data-envoy-type=${envoyType}]`).show();
+        }
+    </script>
 
 {% endblock %}

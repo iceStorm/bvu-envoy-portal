@@ -39,8 +39,6 @@
 
 
         <main id="main" class="flex flex-col flex-auto">
-            {# the "flash.html" have to placed inside the #main, because only the #main (& #nav) would be appended from ajax calls. #}
-            {% include "flash.html" %}
             {% block content %} {% endblock %}
         </main>
 
@@ -61,10 +59,14 @@
     </script>
 
 
+
     <!--  base  -->
     <link rel="stylesheet" href="{{ url_for('static', filename='app/dist/css/app.css') }}">
-    <script src="{{ url_for('static', filename='app/dist/js/base.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='app/dist/js/base.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='app/dist/js/base.js') }}"></script>
 
+
+    {# the "flash.html" have to placed inside the #main, because only the #main (& #nav) would be appended from ajax calls. #}
+    {% include "flash.html" %}
 </body>
 </html>

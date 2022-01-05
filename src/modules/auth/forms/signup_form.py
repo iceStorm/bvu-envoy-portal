@@ -1,9 +1,11 @@
 from flask_wtf import FlaskForm, RecaptchaField
+
 from wtforms.fields.html5 import EmailField
 from wtforms.fields import StringField, PasswordField, IntegerField, RadioField
-from wtforms.validators import InputRequired, Length, EqualTo, Regexp, ValidationError, DataRequired
+from wtforms.validators import InputRequired, Length, EqualTo, Regexp, ValidationError, DataRequired, Required
 
-
+from src.modules.user.user_constants import *
+from src.modules.envoy.envoy_constants import *
 from src.base.helpers.validators import *
 
 
@@ -21,13 +23,13 @@ class SignUpForm(FlaskForm):
             (1, 'Cá nhân thuộc tập đoàn NHG (Sinh viên, giảng viên, nhân viên)'),
         ],
         validators=[
-            DataRequired(),
+            InputRequired(),
         ],
     )
 
     organization_name = StringField(
         label='Tên Tổ chức/Công ty/Trường học',
-        render_kw={'autocomplete': 'organization'},
+        render_kw={'autocomplete': 'organization', 'maxlength': ENVOY_ORGANIZATION_NAME_LENGTH,},
         description={
             'icon': {
                 'origin': 'icons/outline/business-outline.svg',
@@ -45,7 +47,7 @@ class SignUpForm(FlaskForm):
 
     organization_representer_person_name = StringField(
         label='Tên người đại diện',
-        render_kw={'autocomplete': 'name'},
+        render_kw={'autocomplete': 'name', 'maxlength': ENVOY_ORGANIZATION_REPRESENTER_NAME_LENGTH,},
         description={
             'icon': {
                 'origin': 'icons/outline/person-outline.svg',
@@ -63,14 +65,14 @@ class SignUpForm(FlaskForm):
 
     organization_tax_id = StringField(
         label='Mã số thuế',
-        render_kw={'autocomplete': 'new-password'},
+        render_kw={'autocomplete': 'new-password', 'maxlength': ENVOY_TAX_ID_LENGTH,},
         description={
             'icon': {
                 'origin': 'icons/outline/document-text-outline.svg',
             },
             'tooltip': """Mã số thuế gồm 10 hoặc 13 chữ số.
                 <a href="https://luatminhkhue.vn/quy-dinh-ve-ma-so-thue-va-y-nghia-cac-con-so-theo-quy-dinh-cua-luat.aspx"
-                    class="link text-primary"
+                    class="link text-primary underline"
                     target="_blank">
                     Tham khảo tại đây.
                 </a>""",
@@ -84,9 +86,9 @@ class SignUpForm(FlaskForm):
         ],
     )
 
-    citizen_id = IntegerField(
+    citizen_id = StringField(
         label='Số CCCD/CMND của người đại diện',
-        render_kw={'autocomplete': 'new-password'},
+        render_kw={'autocomplete': 'new-password', 'maxlength': ENVOY_CITIZEN_ID_LENGTH,},
         description={
             'icon': {
                 'origin': 'icons/outline/id-card-outline.svg',
@@ -98,20 +100,21 @@ class SignUpForm(FlaskForm):
             lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
         ],
         validators=[
-            DataRequired(message='Please fill out this field'),
+            InputRequired(message='Please fill out this field'),
+            CitizenIdValidator,
         ]
     )
 
     email = EmailField(
         label='Email',
-        render_kw={'autocomplete': 'email'},
+        render_kw={'autocomplete': 'email', 'maxlength': USER_EMAIL_LENGTH,},
         description={
             'icon': {
                 'origin': 'icons/outline/mail-outline.svg',
             },
             'tooltip': """Kiểm tra định dạng email của bạn
                 <a href="https://regex101.com/r/tYNbwr/1"
-                    class="link text-primary" target="_blank">
+                    class="link text-primary underline" target="_blank">
                     tại đây.
                 </a>""",
         },
@@ -126,7 +129,7 @@ class SignUpForm(FlaskForm):
 
     phone = StringField(
         label='Số điện thoại',
-        render_kw={'autocomplete': 'tel'},
+        render_kw={'autocomplete': 'tel', 'maxlength': USER_PHONE_LENGTH,},
         description={
             'icon': {
                 'origin': 'icons/outline/keypad-outline.svg',
@@ -144,7 +147,7 @@ class SignUpForm(FlaskForm):
 
     address = StringField(
         label='Địa chỉ',
-        render_kw={'autocomplete': 'address-line1'},
+        render_kw={'autocomplete': 'address-line1', 'maxlength': ENVOY_ADDRESS_LENGTH,},
         description={
             'icon': {
                 'origin': 'icons/outline/locate-outline.svg',
@@ -171,16 +174,25 @@ class SignUpForm(FlaskForm):
             form_passed = False
 
         if User.is_phone_already_exists(self.phone.data):
-            self.email.errors.append('This phone number already exists')
+            self.phone.errors.append('This phone number already exists')
             form_passed = False
 
         if User.is_organization_name_already_exists(self.organization_name.data):
             self.organization_name.errors.append('This name already exists')
             form_passed = False
         
+        if User.is_organization_representer_name_already_exists(self.organization_representer_person_name.data):
+            self.organization_representer_person_name.errors.append('This representer name already exists')
+            form_passed = False
+
         if User.is_organization_taxid_already_exists(self.organization_name.data):
             self.organization_tax_id.errors.append('This tax id already exists')
             form_passed = False
+        
+        if User.is_citizen_id_already_exists(self.citizen_id.data):
+            self.citizen_id.errors.append('This citizen id id already exists')
+            form_passed = False
+
 
         # awalys return True
         return form_passed

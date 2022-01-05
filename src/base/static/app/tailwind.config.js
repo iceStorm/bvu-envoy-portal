@@ -33,6 +33,9 @@ module.exports = {
         gray: colors.neutral,
         footer: '#313131',
       },
+      borderWidth: {
+        1.5: '1.5px',
+      },
       height: {
         'fit-content': 'fit-content',
       },

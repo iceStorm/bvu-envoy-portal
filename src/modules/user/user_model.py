@@ -101,6 +101,28 @@ class User(UserMixin, db.Model):
         Checking if any phone in DB matchs :phone.
         """
         return db.session.query(User).filter(User.phone_number == phone).first() is not None
+    
+    @staticmethod
+    def is_citizen_id_already_exists(citizen_id: str) -> bool:
+        """
+        Checking if any citizen_id in DB matchs :citizen_id.
+        """
+        return db.session.query(User).filter(User.citizen_id == citizen_id).first() is not None
+
+    @staticmethod
+    def is_organization_name_already_exists(name: str) -> bool:
+        """
+        Checking if any organization_name in DB matchs :name.
+        """
+        return db.session.query(User).filter(User.organization_name == name).first() is not None
+
+    @staticmethod
+    def is_organization_representer_name_already_exists(name: str) -> bool:
+        """
+        Checking if any organization_representer_person_name in DB matchs :name.
+        """
+        return db.session.query(User).filter(User.organization_representer_person_name == name).first() is not None
+
 
     @staticmethod
     def is_organization_taxid_already_exists(tax_id: str) -> bool:

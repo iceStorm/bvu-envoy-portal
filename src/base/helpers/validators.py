@@ -33,7 +33,21 @@ def PhoneNumberValidator(form, field):
     else:
         password_regex_pattern = '[0-9]'
         if not re.match(password_regex_pattern, field.data):
-            raise ValidationError(message='The phone number can only contains numbers')
+            raise ValidationError(message='The phone number format is invalid')
+
+
+def CitizenIdValidator(form, field):
+    """
+    Base citizen id validator for the application.
+    @param form:
+    @param field:
+    """
+    if len(field.data) != 10 and len(field.data) != 12:
+        raise ValidationError(message='The citizen id can only between 10 or 12 characters')
+    else:
+        citizen_id_regex_pattern = '(\d{10}|\d{12})'
+        if not re.match(citizen_id_regex_pattern, field.data):
+            raise ValidationError(message='The citizen id format is invalid')
 
 
 def TaxIdValidator(form, field):
@@ -42,9 +56,9 @@ def TaxIdValidator(form, field):
     @param form:
     @param field:
     """
-    if len(field.data) < 10 or len(field.data) > 14:
+    if len(field.data) != 10 and len(field.data) != 14:
         raise ValidationError(message='The tax id can only between 10 or 14 characters')
     else:
-        password_regex_pattern = '[0-9]'
-        if not re.match(password_regex_pattern, field.data):
-            raise ValidationError(message='The phone number can only contains numbers')
+        tax_id_regex_pattern = '[0-9]'
+        if not re.match(tax_id_regex_pattern, field.data):
+            raise ValidationError(message='The tax id format is invalid')
