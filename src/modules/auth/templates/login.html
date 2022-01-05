@@ -38,7 +38,13 @@
                               data-original-icon="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
                               data-alternate-icon="{{ url_for('static', filename=field.description.icon.get('alternate', '')) }}">
                       </div>
-                      {{ field(class="text-field",) }}
+                      
+                      <!-- field -->
+                      {% if field.description is mapping and field.description.icon != None %}
+                        {{ field(class="text-field has-icon") }}
+                      {% else %}
+                        {{ field(class="text-field") }}
+                      {% endif %}
                   </div>
   
                   <!-- .form-field-errors-container -->
@@ -49,7 +55,7 @@
                               document.getElementById('{{ field.id }}').classList.add('bg-red-100', 'border-red-500');
                           </script>
                           {% for error in field.errors %}
-                              <p class="form-field-error text-xs text-red-500">{{ error }}.</p>
+                              <p class="form-field-error text-xs text-red-500">{{ error }}</p>
                           {% endfor %}
                       {% endif %}
                   </div>

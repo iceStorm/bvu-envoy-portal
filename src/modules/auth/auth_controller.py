@@ -114,7 +114,7 @@ def verify_registration():
     form = RegisterVerificationForm()
 
     if session.get('registration_email') is None or session.get('registration_code') is None:
-        flash(message='Something went wrong, please try later', category=FlashCategory.warning())
+        flash(message='Seemslike you have already registered, please try later', category=FlashCategory.warning(10000))
         return redirect('/')
 
     if request.method == 'GET':
@@ -143,11 +143,15 @@ def verify_registration():
         # ??? check trùng thông tin trước khi thêm vào DB
 
         if AuthService.register(new_user=new_user):
-            flash(message='Đăng ký tài khoản Đại sứ BVU thành công', category=FlashCategory.success())
-            return render_template('registration-success.html', email=new_user.email)
+            flash(message='Đăng ký tài khoản Đại sứ BVU thành công', category=FlashCategory.success(10000))
+            response = make_response(render_template('registration-success.html', email=new_user.email))
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma'] = 'no-cache'
+            session.clear()
+            return response
 
         # DB insert error
-        flash(message='Something went wrong, please try later', category=FlashCategory.warning())
+        flash(message='Something went wrong with your info, please try to register again', category=FlashCategory.warning())
         return render_template('verify-registration.html', form=form, email=session['registration_email'])
 
     except Exception as e:

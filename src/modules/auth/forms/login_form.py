@@ -21,7 +21,7 @@ def IsAccountActivated(form, field):
     Checking if the email that client entered is activated.
     """
     if not AuthService.is_user_activated(field.data):
-        raise ValidationError(message='The account with this email is not activated. Please check your mailbox and follow our instructions')
+        raise ValidationError(message='The account with this email is not activated. Please wait for admin confirmation.')
 
 
 class LoginForm(FlaskForm):
