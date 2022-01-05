@@ -23,6 +23,10 @@ class DefaultEnvironment(object):
   SECRET_KEY = os.environ["SECRET_KEY"]
   RBAC_USE_WHITE = True
 
+  # recaptcha
+  RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]
+  RECAPTCHA_PRIVATE_KEY = os.environ["RECAPTCHA_PRIVATE_KEY"]
+
   # mail
   MAIL_SERVER = 'smtp.gmail.com'
   MAIL_PORT = 465

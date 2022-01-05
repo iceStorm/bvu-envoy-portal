@@ -37,9 +37,9 @@ function showToast(text, type, duration=5000) {
 /*
  * Setting ajax navigating for a tags that don't have the '' class.
  */
-// setATagNavigate();
+//setATagNavigate();
 function setATagNavigate() {
-    $('a:not(.not-ajax)').each(function(index, elem) {
+    $('.ajax)').each(function(index, elem) {
         $(this).unbind('click').click((e) => {
             e.preventDefault();
 
@@ -54,7 +54,6 @@ function ajaxNavigate(e) {
     const href = e.target.href;
     navigateTo(href);
 }
-
 
 
 /**
@@ -80,6 +79,7 @@ function navigateTo(path) {
         })
         .catch(err => {
             console.log(err);
+            showToast(err, 'error');
         });
 }
 
@@ -90,6 +90,7 @@ function navigateTo(path) {
 function replaceContent(axiosResponse) {
     const html = axiosResponse.data;
     const path = axiosResponse.request.responseURL;
+    console.log('to:' + path);
 
     // expression: $.parseHTML(data, context = document, keepScripts = false)
     const ajaxContent = $('<div>').append($.parseHTML(html, document, true));
@@ -116,7 +117,7 @@ function replaceContent(axiosResponse) {
 /**
  * Setting ajax submit for forms that has the 'ajax' class.
  */
-setSubmit();
+// setSubmit();
 function setSubmit() {
     $('form.ajax').each(function(index, elem) {
         $(this).submit((e) => {

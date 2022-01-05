@@ -45,7 +45,7 @@ class User(UserMixin, db.Model):
     envoy_type = relationship('EnvoyType', backref='users')
 
 
-    def __init__(self, email: str, first_name: str, last_name: str, phone_number: str, raw_password=None, avatar_url=None, activated=False):
+    def __init__(self, email: str, phone_number: str, first_name: str=None, last_name: str=None, raw_password=None, avatar_url=None, activated=False):
         """
         Creating a new User instance.
         raw_password: this field will be encrypted automatically.
@@ -87,6 +87,35 @@ class User(UserMixin, db.Model):
         """
         # return check_password_hash(self.password_hash, raw_password)
         return bcrypt.check_password_hash(self.password_hash, raw_password)
+
+    @staticmethod
+    def is_email_already_exists(email: str) -> bool:
+        """
+        Checking if any email in DB matchs :email.
+        """
+        return db.session.query(User).filter(User.email == email).first() is not None
+
+    @staticmethod
+    def is_phone_already_exists(phone: str) -> bool:
+        """
+        Checking if any phone in DB matchs :phone.
+        """
+        return db.session.query(User).filter(User.phone_number == phone).first() is not None
+
+    @staticmethod
+    def is_organization_taxid_already_exists(tax_id: str) -> bool:
+        """
+        Checking if any organization_tax_id in DB matchs :tax_id.
+        """
+        return db.session.query(User).filter(User.organization_tax_id == tax_id).first() is not None
+
+    @staticmethod
+    def is_organization_email_already_exists(tax_id: str) -> bool:
+        """
+        Checking if any organization_tax_id in DB matchs :tax_id.
+        """
+        return db.session.query(User).filter(User.organization_tax_id == tax_id).first() is not None
+
 
 
 

@@ -6,6 +6,7 @@ from werkzeug.utils import redirect
 
 from src.main import limiter
 from src.base.constants.base_constanst import FlashCategory
+from src.modules.auth.auth_service import AuthService
 
 # defining controller
 auth = Blueprint('auth', __name__, template_folder='templates', static_folder='static', static_url_path='auth/static')
@@ -28,23 +29,28 @@ def login():
             form.email.data = request.args.get('email')
         return render_template('login.html', form=form)
 
+    # POST REQUEST
     # checking if the form is not valid yet
     if not form.validate_on_submit():
         return render_template('login.html', form=form)
 
+    # FORM IS VALID, LET'S GET THE USER OBJECT FROM DB
     from src.modules.user.user_model import User
     from src.main import db
-    user = db.session.query(User).filter_by(email=form.email.data).first()
-    # user = User.query.get(form.email.data)
- 
-    # let's log the user in
-    login_user(user, remember=form.remember)
+    user = AuthService.get_user_from_email(form.email.data)
+    
+    if user is not None:
+        # let's log the user in
+        login_user(user, remember=form.remember)
+        next_url = request.args.get('next')
+        return redirect(next_url if next_url else '/')
+    
+    flash(message='The user no longer exists', category=FlashCategory.Error)
+    return render_template('login.html', form=form)
 
-    next_url = request.args.get('next')
-    return redirect(next_url if next_url else '/')
 
-
-@auth.route('/logout', methods=['GET', 'POST'])
+@auth.route('/logout', methods=['POST'])
+@limiter.limit('5/minute')
 @login_required
 def logout():
     logout_user()
@@ -71,7 +77,7 @@ def register():
         return render_template('signup.html', form=form)
 
     # all validation passed, let's continue handle the signup process
-    from src.modules.auth.auth_service import AuthService
+    # envoy_type:4 == công ty/tổ chức/trường học
     AuthService.register(form)
 
     # showing a flash message -> redirecting to the home page

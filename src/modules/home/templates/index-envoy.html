@@ -5,7 +5,8 @@
 {% block content %}
 
     <div class="flex flex-col justify-between items-center relative gap-y-3.5">
-        <a href="/signup" class="
+        <form method="post" action="{{ url_for('auth.logout') }}">
+            <button type="submit"  class="
             shadow-xl text-white font-bold btn
             bg-primary-dark
             rounded-full px-9 py-3
@@ -13,8 +14,9 @@
             focus:ring-2
             focus:ring-offset-2
             focus:ring-indigo-500">
-            Đăng xuất
-        </a>
+            Đăng xuất (Envoy)
+            </button>
+        </form>
     </div>
 
 {% endblock %}

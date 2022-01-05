@@ -1,4 +1,4 @@
-import os
+import os, uuid
 
 from flask import current_app
 from werkzeug.datastructures import FileStorage
@@ -28,19 +28,25 @@ class AuthService:
 
     @staticmethod
     def register(form: SignUpForm):
-        email = form.email.data
-        fullName = form.full_name.data
-        password = form.password.data
-
         # creating a new user based-on the Form's data
         # the user's password auto encrypted via the User's constructor
-        new_user = User(email=email, full_name=fullName, raw_password=password)
+        new_user = User(
+            email=form.email.data,
+            phone_number=form.phone.data,
+            raw_password=uuid.uuid4().hex,
+        )
 
         # role 3 == envoy
-        new_user.user_roles.role_id = 3
+        new_user.role_id = 3
+        new_user.address=form.address.data,
+        new_user.citizen_id=form.citizen_id.data,
+        new_user.organization_tax_id=form.organization_tax_id.data,
+        new_user.organization_name=form.organization_name.data,
+        new_user.organization_representer_person_name=form.organization_representer_person_name.data,
 
         db.session.add(new_user)
         db.session.commit()
+        AuthService.send_register_confirm_email(new_user)
 
 
     @staticmethod
@@ -75,10 +81,10 @@ class AuthService:
             the_avatar_name = secure_filename(filename=form_image_data.filename)
 
             # saving the avatar image
-            print('current_src.instance_path:', current_src.instance_path)
+            print('current_app.instance_path:', current_app.instance_path)
             the_path = os.path.abspath(
                 os.path.join(
-                    current_src.instance_path,
+                    current_app.instance_path,
                     'main/base/static/users/avatars',
                     the_avatar_name,
                 )
@@ -89,3 +95,12 @@ class AuthService:
 
         # returning the saved image path
         return the_path
+
+
+    @staticmethod
+    def send_register_confirm_email(user: User):
+        from flask_mail import Message
+        from src.main import mail
+        msg = Message('Hello from the other side!', sender = current_app.config['MAIL_USERNAME'], recipients = [user.email])
+        msg.body = "Hey Paul, sending you this email from my Flask app, lmk if it works"
+        mail.send(msg)

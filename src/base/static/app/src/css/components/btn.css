@@ -8,7 +8,7 @@
 
     &:hover {
       @apply bg-opacity-75;
-      transform: translatey(-2px);
+      /* transform: translatey(-2px); */
 
       &::after {
         content: "";
@@ -29,8 +29,9 @@
         top: 0;
         left: 0;
         height: 100%;
-        width: 30%;
+        width: 20%;
         transform: skew(45deg, 0);
+        /* clip-path: polygon(0 0, 75% 0, 100% 50%, 75% 100%, 0 100%, 0% 50%); */
         @apply bg-secondary;
       }
     }

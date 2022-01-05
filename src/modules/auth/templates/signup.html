@@ -13,201 +13,196 @@
             </h1>
         </div>
 
-        <div class="flex flex-col pt-5 pb-10">
-            <h1 class="py-3 font-semibold">Bạn là ai?</h1>
-            <div class="flex flex-col gap-3 font-light">
-                <div class="pretty p-icon p-round">
-                    <input type="radio" name="envoy-type" data-envoy-id=1 autocomplete="off"/>
-                    <div class="state p-success">
-                        <i class="icon mdi mdi-check"></i>
-                        <label>Công ty/Tổ chức/Trường học</label>
-                    </div>
-                </div>
-
-                <div class="pretty p-icon p-round">
-                    <input type="radio" name="envoy-type" data-envoy-id=2 autocomplete="off"/>
-                    <div class="state p-success">
-                        <i class="icon mdi mdi-check"></i>
-                        <label>Cá nhân thuộc tập đoàn NHG (Sinh viên, giảng viên, nhân viên)</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
 
         <!-- NORMAL SIGNUP -->
-        <form action="" method="post"
-            id="signup-form" data-envoy-id=1
-            class="signup-option rounded-md ajax max-w-full">
-    
+        <form action="" method="post" id="signup-form" data-envoy-id=1
+            class="rounded-md max-w-full flex flex-col">
             {{ form.csrf_token }}
-    
-            {% for field in form if field.name != 'csrf_token' %}
-            <div class="form-field py-2">
-    
-                <!-- .form-field-label -->
-                <div class="form-field-label pb-0.5 text-gray-700 {% if field.flags.required %}required{% endif %}">{{ field.label(class="text-sm font-medium") }}</div>
-    
-                <!-- .form-field-container -->
-                <div class="form-field-container relative" data-name="{{ field.name }}">
-                    <!-- prefix -->
-                    <div class="form-field-prefix absolute rounded-l
-                                flex justify-center items-center
-                                text-gray-400 h-8 w-8 top-1/2 left-2 -translate-y-1/2"
-                        style="padding: 0.39rem">
-                        <!-- icon -->
-                        <img src="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
-                            style="filter: invert(0.5); user-select: none;"
-                            data-original-icon="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
-                            data-alternate-icon="{{ url_for('static', filename=field.description.icon.get('alternate', '')) }}">
-                    </div>
-    
-                    <!-- the field -->
-                    {{ field(class="text-field") }}
-                </div>
-    
-                <!-- .form-field-errors-container -->
-                <div class="form-field-errors-container pt-2">
-                    {% if field.errors %}
-                        <script>
-                            // adding the following error style classes to the input's class attribute
-                            document.getElementById('{{ field.id }}').classList.add('bg-red-100', 'border-red-500');
-                        </script>
-                        {% for error in field.errors %}
-                            <p class="form-field-error text-xs text-red-500">{{ error }}.</p>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-    
-            </div> <!-- form-field -->
-            {% endfor %}
-    
-            <button type="submit"
-                   class="
-                   flex justify-between items-center
-                   relative overflow-hidden cursor-pointer
-                   mx-auto mt-5 w-full py-4 bg-primary btn btn-highlight
-                   text-white font-medium
-                   transition-all duration-300
-                   focus:outline-none
-                   focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
-                   hover:bg-primary-dark">
-    
-                <span class="flex-auto text-lg">Tạo tài khoản</span>
-            </button>
-        </form>
 
-        <!-- MICROSOFT SIGNUP -->
-        <a href="{{ url_for('auth.login') }}" data-envoy-id=2
-            class="signup-option items-center gap-2 inline-flex p-3 text-gray-700 border border-gray-300 bg-gray-100 hover:bg-gray-200">
-            <img src="{{ url_for('static', filename='icons/microsoft.svg') }}" alt="">
-            <span class="font-semibold">Đăng ký bằng tài khoản email Microsoft được cấp</span>
-        </a>
+            <!-- RENDER ENVOY TYPE INPUTS OUTSIDE TO HANDLE CHECKING/SHOWING RESPECTIVELY LOGIN OPTIONS -->
+            {% for subfield in form['envoy_type'] %}
+                {{ subfield(class='pretty-input absolute opacity-0 hidden') }}
+            {% endfor %}
+            <div class="envoy-types-container flex flex-col pt-5 pb-10">
+                <h1 class="py-3 font-semibold">Bạn là ai?</h1>
+                {% for subfield in form['envoy_type'] %}
+                    <div class="pb-1">
+                        <div class="pretty p-icon p-round p-smooth">
+                            <div class="state p-success">
+                                <i class="icon mdi mdi-check"></i>
+                                <!-- radio label -->
+                                {{ subfield.label(class='select-none font-light cursor-pointer inline-block hover:text-primary') }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            
+            <!-- FORM FIELDS / ENVOY TYPE IS ORGANIZATION/HIGHSCHOOL.. -->
+            <div class="signup-option form-fields" data-envoy-id="1">
+                {% for field in form if (field.name != 'csrf_token' and field.name != 'envoy_type') %}
+                <div class="form-field py-2">
+        
+                    <!-- .form-field-label -->
+                    <div class="form-field-label pb-0.5 text-gray-700 {% if field.flags.required %}required{% endif %}">
+                        <div class="flex justify-between items-center">
+                            {{ field.label(class="text-sm font-medium") }}
+                            {% if field.description is mapping and field.description['tooltip'] != None %}
+                                <img src="{{ url_for('static', filename='icons/outline/help-circle-outline.svg') }}" alt=""
+                                class="w-4 text-gray-300 cursor-pointer" data-tippy-content="{{ field.description['tooltip'] }}" a="{{ field.description }}">
+                            {% endif %}
+                        </div>
+                    </div>
+        
+                    <!-- .form-field-container -->
+                    <div class="form-field-container relative" data-name="{{ field.name }}">
+
+                        {% if field.description is mapping and field.description.icon != None  %}
+                            <!-- prefix -->
+                            <div class="form-field-prefix absolute rounded-l
+                                        flex justify-center items-center
+                                        text-gray-400 h-8 w-8 top-1/2 left-2 -translate-y-1/2"
+                                style="padding: 0.39rem">
+                                <!-- icon -->
+                                <img src="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
+                                    style="filter: invert(0.5); user-select: none;"
+                                    data-original-icon="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
+                                    data-alternate-icon="{{ url_for('static', filename=field.description.icon.get('alternate', '')) }}">
+                            </div>
+                        {% endif %}
+
+        
+                        <!-- the field -->
+                        {{ field(class="text-field") }}
+                    </div>
+        
+                    <!-- .form-field-errors-container -->
+                    <div class="form-field-errors-container pt-2">
+                        {% if field.errors %}
+                            <script>
+                                // adding the following error style classes to the input's class attribute
+                                document.getElementById('{{ field.id }}').classList.add('bg-red-100', 'border-red-500');
+                            </script>
+                            {% for error in field.errors %}
+                                <p class="form-field-error text-xs text-red-500">{{ error }}.</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+        
+                </div> <!-- form-field -->
+                {% endfor %}
+
+
+                <button type="submit"
+                    class="
+                    flex justify-between items-center
+                    relative overflow-hidden cursor-pointer
+                    mx-auto mt-5 mb-4 w-full py-2.5 bg-primary btn btn-highlight
+                    text-white font-medium
+                    transition-all duration-300
+                    focus:outline-none
+                    focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
+                    hover:bg-primary-dark">
+        
+                    <span class="flex-auto text-lg">Tạo tài khoản</span>
+                </button>
+            </div>
+
+
+            <!-- MICROSOFT SIGNUP -->
+            <a href="{{ url_for('auth.login') }}" data-envoy-id=2
+                class="signup-option w-fit items-center rounded gap-2 inline-flex p-3 text-gray-700 border border-gray-300 bg-gray-100 hover:bg-gray-200">
+                <img src="{{ url_for('static', filename='icons/microsoft.svg') }}" alt="">
+                <span class="font-semibold">Đăng ký bằng tài khoản email Microsoft được cấp</span>
+            </a>
+        </form>
     </div>
 
     <style>
-        #signup-form {
+        #signup-form .form-fields {
             display: grid;
             column-gap: 20px;
+            align-items: start;
             grid-template-areas:
             "organizationName"
             "organizationRepresenterPersonName"
             "organizationTaxId"
+            "citizenId"
             "address"
             "email"
-            "phone";
+            "phone"
+            "submitBtn";
         }
         @media (min-width: 640px) {
-            #signup-form {
+            #signup-form .form-fields {
                 grid-template-areas:
                 "organizationName organizationName organizationRepresenterPersonName organizationTaxId"
-                "address address email phone";
+                "citizenId citizenId email phone"
+                "address address address address"
+                "submitBtn submitBtn submitBtn submitBtn";
             }
-            #signup-form button {
+            #signup-form .form-fields button {
                 grid-column: 1 / span 2;
             }
         }
 
-        #signup-form .form-field:nth-of-type(1) {
+        #signup-form .form-fields .form-field:nth-of-type(1) {
             grid-area: organizationName;
         }
-        #signup-form .form-field:nth-of-type(2) {
+        #signup-form .form-fields .form-field:nth-of-type(2) {
             grid-area: organizationRepresenterPersonName;
         }
-        #signup-form .form-field:nth-of-type(3) {
+        #signup-form .form-fields .form-field:nth-of-type(3) {
             grid-area: organizationTaxId;
         }
-        #signup-form .form-field:nth-of-type(4) {
-            grid-area: address;
+        #signup-form .form-fields .form-field:nth-of-type(4) {
+            grid-area: citizenId;
         }
-        #signup-form .form-field:nth-of-type(5) {
+        #signup-form .form-fields .form-field:nth-of-type(5) {
             grid-area: email;
         }
-        #signup-form .form-field:nth-of-type(6) {
+        #signup-form .form-fields .form-field:nth-of-type(6) {
             grid-area: phone;
         }
-        .form-field-label.required::after {
-            content: "(*)";
+        #signup-form .form-fields .form-field:nth-of-type(7) {
+            grid-area: address;
+        }
+        #signup-form .form-fields button {
+            grid-area: submitBtn;
+        }
+
+        .form-field-label.required label {
+            display: inline-block;
+            position: relative;
+        }
+        .form-field-label.required label + img {
+            display: inline-block;
+            position: relative;
+        }
+        .form-field-label.required label::after {
+            content: "*";
+            font-size: 1em;
             padding-left: 5px;
             color: red;
         }
+
+
+        .signup-option {
+            display: none !important;
+        }
+        input[id="envoy_type-0"]:checked ~ .signup-option[data-envoy-id="1"] {
+            display: grid !important;
+        }
+        input[id="envoy_type-1"]:checked ~ .signup-option[data-envoy-id="2"] {
+            display: inline-flex !important;
+        }
+
+        .pretty-input:nth-of-type(1):checked ~ .envoy-types-container .pretty .state.p-success .icon {
+            color: #000;
+            stroke: #000;
+            opacity: 1;
+        }
     </style>
-
-    <script>
-        // onload
-        document.addEventListener("DOMContentLoaded", function() {
-            $('input[name="envoy-type"]').each(function(index, e) {
-                if ($(e).attr('checked') == true) {
-                    $(`.signup-option[data-envoy-id="${$(e).attr('data-envoy-id')}"]`).show();
-                } else {
-                    $(`.signup-option[data-envoy-id="${$(e).attr('data-envoy-id')}"]`).hide();
-                }
-            });
-        });
-
-        // onchange
-        $('input[name="envoy-type"]').change(function(e) {
-            $(`.signup-option`).hide();
-            $(`.signup-option[data-envoy-id="${e.target.getAttribute('data-envoy-id')}"]`).show();
-        });
-    </script>
-
-    <script>
-        passwordFieldsQuery = '#signup-form .form-field .form-field-container[data-name*="password"] .form-field-prefix';
-        passwordFields = $(passwordFieldsQuery);
-        $(passwordFields).addClass('cursor-pointer');
-
-
-        // binding the click event foreach password-like field
-        $(passwordFields).each(function(index, elem) {
-            $(this).click(function(e) {
-                const theInput = $(this).next();
-
-                const theImage = $(this).find('> img');
-                const imageDefaultIcon = $(theImage).attr('data-original-icon');
-                const imageAlternateIcon = $(theImage).attr('data-alternate-icon');
-    
-                if ($(theInput).attr('type') == 'text') {
-                    $(theInput).attr('type', 'password');
-                    $(theImage).attr('src', imageDefaultIcon);
-                } else {
-                    $(theInput).attr('type', 'text');
-                    $(theImage).attr('src', imageAlternateIcon);
-                }
-            });
-        });
-
-
-        // adding password matching validation to the re_password field
-        document.getElementById('re_password').addEventListener('input', function(e) {
-            const passwordValue = $('#password').val();
-
-            if (e.target.value != passwordValue) {
-                e.target.setCustomValidity('This field must match with the Password field');
-            } else {
-                e.target.setCustomValidity('');
-            }
-        });
-    </script>
 
 {% endblock %}

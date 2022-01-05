@@ -27,6 +27,11 @@ from flask_limiter.util import get_remote_address
 limiter = Limiter(key_func=get_remote_address)
 
 
+# INIT MAIL
+from flask_mail import Mail
+mail = Mail()
+
+
 def add_sys_paths():
     print('\n[ADDING PATHS TO THE PYTHON ENVIRONMENT...]')
 
@@ -95,6 +100,7 @@ def create_app():
 
     init_db(app=app)
     init_protections(app=app)
+    mail.init_app(app)
 
     print('\n\n[NEW APP RETURNED...]')
     return app

@@ -1,5 +1,8 @@
 /* eslint-disable */
 'use strict';
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/light.css';
 
 
 module.exports = class App { 
@@ -40,7 +43,11 @@ module.exports = class App {
     }
 
     initTippy() {
-        tippy('[data-tippy-content]');
+        tippy('[data-tippy-content]', {
+            interactive: true,
+            allowHTML: true,
+            theme: 'light',
+        },);
     }
 
     initAxios() {
