@@ -1,5 +1,3 @@
-import json
-
 from flask import Blueprint, jsonify, request, render_template, flash, current_app, url_for, make_response
 from flask_login import login_required, current_user, logout_user, login_user
 from werkzeug.utils import redirect
@@ -74,7 +72,7 @@ def register():
 
     # checking if the form is not valid yet
     if not form.validate_on_submit():
-        flash('Please ensure all fields have no errors!', category=FlashCategory.warning(2000))
+        flash('Please ensure all fields have no errors!', category=FlashCategory.warning(7500))
         return render_template('signup.html', form=form)
 
     # all validation passed, let's continue handle the signup process
@@ -82,7 +80,7 @@ def register():
     AuthService.register(form)
 
     # showing a flash message -> redirecting to the home page
-    flash(message=f'Vui lòng kiểm tra email tại {form.email.data} để kích hoạt tài khoản!', category=FlashCategory.success(10000))
+    flash(message=f'Vui lòng kiểm tra tin nhắn được gửi tới email {form.email.data} để kích hoạt tài khoản!', category=FlashCategory.success(20000))
 
     # showing the login page and auto filling data
     return redirect(url_for('auth.login', email=form.email.data))

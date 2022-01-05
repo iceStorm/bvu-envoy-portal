@@ -16,6 +16,13 @@ def IsEmailExists(form, field):
     if not AuthService.is_user_already_exists(field.data):
         raise ValidationError(message='The email is not registered')
 
+def IsAccountActivated(form, field):
+    """
+    Checking if the email that client entered is activated.
+    """
+    if not AuthService.is_user_activated(field.data):
+        raise ValidationError(message='The account with this email is not activated. Please check your mailbox and follow our instructions')
+
 
 class LoginForm(FlaskForm):
     email = EmailField(
@@ -32,6 +39,7 @@ class LoginForm(FlaskForm):
             DataRequired(),
             EmailValidator,
             IsEmailExists,
+            IsAccountActivated,
         ]
     )
 

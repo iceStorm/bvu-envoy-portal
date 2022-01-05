@@ -23,7 +23,7 @@ class User(UserMixin, db.Model):
     phone_number = Column(String(USER_PHONE_LENGTH), nullable=False, unique=True, index=True)
     first_name = Column(String(USER_FIRST_NAME_LENGTH), index=True)
     last_name = Column(String(USER_LAST_NAME_LENGTH), index=True)
-    password_hash = Column(String(USER_PASSWORD_LENGTH), nullable=False)
+    password_hash = Column(String(USER_PASSWORD_LENGTH))
     avatar_url = Column(String(USER_AVATAR_URL_LENGTH))
     username = Column(String(USER_USERNAME_LENGTH), index=True, unique=True)
     activated = Column(Boolean, nullable=False, default=False)
@@ -86,7 +86,7 @@ class User(UserMixin, db.Model):
         Checking if the raw_password matches the password of this User instance.
         """
         # return check_password_hash(self.password_hash, raw_password)
-        return bcrypt.check_password_hash(self.password_hash, raw_password)
+        return bcrypt.check_password_hash(self.password_hash, raw_password) if self.password_hash is not None else None
 
     @staticmethod
     def is_email_already_exists(email: str) -> bool:

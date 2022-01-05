@@ -25,6 +25,11 @@ class AuthService:
         print(f'Checking user exists on the system: {email}');
         return db.session.query(User).filter_by(email = email).first() is not None
 
+    @staticmethod
+    def is_user_activated(email):
+        print(f'Checking user account activated on the system: {email}');
+        return db.session.query(User).filter(User.email == email, User.activated == True).first() is not None
+
 
     @staticmethod
     def register(form: SignUpForm):
@@ -33,7 +38,7 @@ class AuthService:
         new_user = User(
             email=form.email.data,
             phone_number=form.phone.data,
-            raw_password=uuid.uuid4().hex,
+            # raw_password=uuid.uuid4().hex,
         )
 
         # role 3 == envoy
