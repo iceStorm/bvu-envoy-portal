@@ -22,6 +22,7 @@ class DefaultEnvironment(object):
   CSRF_ENABLED = True
   SECRET_KEY = os.environ["SECRET_KEY"]
   RBAC_USE_WHITE = True
+  RATELIMIT_STRATEGY = 'fixed-window-elastic-expiry'
 
   # recaptcha
   RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]

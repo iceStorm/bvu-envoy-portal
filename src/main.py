@@ -90,6 +90,15 @@ def init_protections(app: App):
     # rbac.init_app(app)
 
 
+def hooks(app: App):
+    """
+    Defining hook operations.
+    """
+    @app.before_request
+    def app_before_request():
+        pass
+        
+
 def create_app():
     """
     Initializing the App and plug-in extensions.
@@ -101,6 +110,8 @@ def create_app():
     init_db(app=app)
     init_protections(app=app)
     mail.init_app(app)
+
+    hooks(app=app)
 
     print('\n\n[NEW APP RETURNED...]')
     return app

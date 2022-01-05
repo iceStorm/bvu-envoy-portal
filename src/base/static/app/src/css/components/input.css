@@ -1,9 +1,13 @@
 @layer components {
   .text-field {
     @apply bg-transparent transition duration-300
-      w-full py-3 px-2 pl-11
+      w-full py-3 px-2
       rounded
       border-2 border-gray-200 hover:bg-gray-100
       focus:outline-none focus:border-2 focus:border-blue-400 focus:bg-white;
+
+      &.has-icon {
+        @apply pl-11;
+      }
   }
 }

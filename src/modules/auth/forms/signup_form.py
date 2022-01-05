@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm, RecaptchaField
 
 from wtforms.fields.html5 import EmailField
 from wtforms.fields import StringField, PasswordField, IntegerField, RadioField
-from wtforms.validators import InputRequired, Length, EqualTo, Regexp, ValidationError, DataRequired, Required
+from wtforms.validators import InputRequired, Length, EqualTo, Regexp, ValidationError, DataRequired, Required, Optional
 
 from src.modules.user.user_constants import *
 from src.modules.envoy.envoy_constants import *
@@ -40,8 +40,9 @@ class SignUpForm(FlaskForm):
             lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
         ],
         validators=[
-            DataRequired(message='Please fill out this field'),
-            Length(min=2, max=50, message='The length must between 2 and 50 letters'),
+            InputRequired(message='Please fill out this field'),
+            Length(min=10, max=ENVOY_ORGANIZATION_NAME_LENGTH, 
+            message=f'The length must between 10 and {ENVOY_ORGANIZATION_NAME_LENGTH} letters'),
         ]
     )
 
@@ -58,8 +59,9 @@ class SignUpForm(FlaskForm):
             lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
         ],
         validators=[
-            DataRequired(message='Please fill out this field'),
-            Length(min=2, max=50, message='The length must between 2 and 50 letters'),
+            InputRequired(message='Please fill out this field'),
+            Length(min=10, max=ENVOY_ORGANIZATION_REPRESENTER_NAME_LENGTH,
+            message=f'The length must between 10 and {ENVOY_ORGANIZATION_REPRESENTER_NAME_LENGTH} letters'),
         ]
     )
 
@@ -81,7 +83,7 @@ class SignUpForm(FlaskForm):
             lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
         ],
         validators=[
-            DataRequired(message='Please fill out this field'),
+            InputRequired(message='Please fill out this field'),
             TaxIdValidator,
         ],
     )
@@ -122,7 +124,7 @@ class SignUpForm(FlaskForm):
             lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
         ],
         validators=[
-            DataRequired(),
+            InputRequired(),
             EmailValidator,
         ]
     )
@@ -140,7 +142,7 @@ class SignUpForm(FlaskForm):
             lambda string: str(string).strip() if string else '',   # discarding all redundant spaces
         ],
         validators=[
-            DataRequired(),
+            InputRequired(),
             PhoneNumberValidator,
         ]
     )
@@ -154,11 +156,17 @@ class SignUpForm(FlaskForm):
             },
         },
         validators=[
-            DataRequired(),
+            InputRequired(),
         ]
     )
 
-    # recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField(
+        # label='Chọn vào ô sau',
+        validators=[
+            # InputRequired(message='Please tick the captcha'),
+        ],
+    )
+
 
     def validate(self):
         # first, validate the above requirements by: passing this instance to the FlaskForm.validate()

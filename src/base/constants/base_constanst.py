@@ -21,5 +21,5 @@ class FlashCategory:
     return FlashCategory.get_category_and_duration(category=FlashCategory.Warning, duration=duration)
 
   @staticmethod
-  def info(duration: int = 5000) -> str:
-    return FlashCategory.get_category_and_duration(category=FlashCategory.Info, duration=duration)
+  def error(duration: int = 5000) -> str:
+    return FlashCategory.get_category_and_duration(category=FlashCategory.Error, duration=duration)

@@ -28,6 +28,7 @@ class User(UserMixin, db.Model):
     username = Column(String(USER_USERNAME_LENGTH), index=True, unique=True)
     activated = Column(Boolean, nullable=False, default=False)
     created_time = Column(DateTime, nullable=False, default=datetime.now())
+    verification_code = Column(String(USER_VERIFICATION_CODE_LENGTH)) # use for confirming through email...
 
     # roleId:3 == Envoy
     role_id = Column(Integer, ForeignKey('Role.id'), nullable=False, default=3)

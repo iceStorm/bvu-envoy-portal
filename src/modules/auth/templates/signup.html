@@ -3,7 +3,7 @@
 
 
 {% block content %}
-    <div class="container py-20 pt-32">
+    <div class="container py-20 pt-24">
 
         <div class="inline-flex flex-col">
             <h1 class="text-xl lg:text-3xl font-bold leading-tight">Đăng ký trở thành Đại sứ BVU<span class="hidden md:inline-block font-black text-5xl text-primary">.</span>
@@ -39,7 +39,7 @@
             
             <!-- FORM FIELDS / ENVOY TYPE IS ORGANIZATION/HIGHSCHOOL.. -->
             <div class="signup-option form-fields" data-envoy-type=0>
-                {% for field in form if (field.name != 'csrf_token' and field.name != 'envoy_type') %}
+                {% for field in form if (field.name != 'csrf_token' and field.name != 'envoy_type' and field.name != 'verification_code') %}
                 <div class="form-field py-2">
         
                     <!-- .form-field-label -->
@@ -72,7 +72,11 @@
 
         
                         <!-- the field -->
-                        {{ field(class="text-field") }}
+                        {% if field.description is mapping and field.description.icon != None %}
+                            {{ field(class="text-field has-icon") }}
+                        {% else %}
+                            {{ field(class="text-field") }}
+                        {% endif %}
                     </div>
         
                     <!-- .form-field-errors-container -->
@@ -83,7 +87,7 @@
                                 document.getElementById('{{ field.id }}').classList.add('bg-red-100', 'border-red-500');
                             </script>
                             {% for error in field.errors %}
-                                <p class="form-field-error text-xs text-red-500">{{ error }}.</p>
+                                <p class="form-field-error text-xs text-red-500">{{ error }}</p>
                             {% endfor %}
                         {% endif %}
                     </div>
@@ -94,16 +98,17 @@
 
                 <button type="submit"
                     class="
-                    flex justify-between items-center
+                    flex justify-center items-center gap-3
                     relative overflow-hidden cursor-pointer
-                    mx-auto mt-5 mb-4 w-full py-2.5 bg-primary btn btn-highlight
+                    mx-auto my-4 w-full py-5 bg-primary btn btn-highlight
                     text-white font-medium
                     transition-all duration-300
                     focus:outline-none
                     focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
                     hover:bg-primary-dark">
         
-                    <span class="flex-auto text-lg">Tạo tài khoản</span>
+                    <span class="flex text-lg">Tiếp tục</span>
+                    <img src="{{ url_for('static', filename='icons/outline/arrow-forward-outline.svg') }}" alt="" class="w-5 invert">
                 </button>
             </div>
 
@@ -135,13 +140,13 @@
         @media (min-width: 768px) {
             #signup-form .form-fields {
                 grid-template-areas:
-                "organizationName organizationName organizationRepresenterPersonName organizationTaxId"
-                "citizenId citizenId email phone"
-                "address address address address"
-                "submitBtn submitBtn submitBtn submitBtn";
+                "organizationName organizationRepresenterPersonName organizationTaxId"
+                "citizenId email phone"
+                "address address address"
+                ". . submitBtn";
             }
             #signup-form .form-fields button {
-                grid-column: 1 / span 2;
+                grid-column: 2 / span 1;
             }
         }
 

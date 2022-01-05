@@ -1,0 +1,22 @@
+{% extends "landing.html" %}
+{% block title %}Xác thực Đăng ký{% endblock title %}
+
+
+{% block content %}
+    <div class="container py-20 pt-24">
+
+      <div class="inline-flex flex-col">
+        <h1 class="text-xl lg:text-3xl font-bold leading-tight">
+          Hoàn tất đăng ký tài khoản Đại sứ BVU<span class="hidden md:inline-block font-black text-5xl text-primary">.</span>
+        </h1>
+        <h3 class="pt-6">
+          Tài khoản của bạn đã được đăng ký thành công, tuy nhiên vẫn chưa thể đăng nhập vào hệ thống.<br/>
+          Quản trị viên sẽ liên hệ với bạn thông qua thông tin email/số điện thoại bạn đã đăng ký (<span class="text-primary font-medium">{{ email }}</span>).<br/>
+          <p class="text-primary font-semibold pt-4">Vui lòng giữ liên lạc.</p>
+        </h3>
+
+        <a href="/" class="btn btn-highlight bg-primary text-white px-10 py-3 mt-10 w-fit">Về Trang chủ</a>
+      </div>
+      
+    </div>
+{% endblock %}

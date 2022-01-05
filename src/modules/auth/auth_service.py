@@ -1,11 +1,12 @@
 import os, uuid
+import bcrypt
 
-from flask import current_app
+from flask import current_app, session
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from src.main import db
+from src.main import db, logger
 from src.modules.user.user_model import User
 from src.modules.auth.forms.signup_form import SignUpForm
 
@@ -32,26 +33,15 @@ class AuthService:
 
 
     @staticmethod
-    def register(form: SignUpForm):
-        # creating a new user based-on the Form's data
-        # the user's password auto encrypted via the User's constructor
-        new_user = User(
-            email=form.email.data,
-            phone_number=form.phone.data,
-            # raw_password=uuid.uuid4().hex,
-        )
-
-        # role 3 == envoy
-        new_user.role_id = 3
-        new_user.address=form.address.data,
-        new_user.citizen_id=form.citizen_id.data,
-        new_user.organization_tax_id=form.organization_tax_id.data,
-        new_user.organization_name=form.organization_name.data,
-        new_user.organization_representer_person_name=form.organization_representer_person_name.data,
-
-        db.session.add(new_user)
-        db.session.commit()
-        AuthService.send_register_confirm_email(new_user)
+    def register(new_user: User):
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            return new_user
+        except Exception as e:
+            logger.error(e)
+            db.session.rollback()
+            return None
 
 
     @staticmethod
@@ -103,9 +93,24 @@ class AuthService:
 
 
     @staticmethod
-    def send_register_confirm_email(user: User):
+    def send_register_confirm_email(receiver_email: str, receiver_name: str, code: str):
         from flask_mail import Message
         from src.main import mail
-        msg = Message('Hello from the other side!', sender = current_app.config['MAIL_USERNAME'], recipients = [user.email])
-        msg.body = "Hey Paul, sending you this email from my Flask app, lmk if it works"
+        msg = Message(f'Xác minh đăng ký tài khoản Đại sứ BVU', sender = current_app.config['MAIL_USERNAME'], recipients = [receiver_email])
+        msg.html = f"""
+        Xin chào {receiver_name},<br /><br />
+        Đây là tin nhắn tự động được gửi từ hệ thống Cổng thông tin Đại sứ BVU.<br/>
+        Vui lòng sao chép mã sau đây để hoàn tất quá trình đăng ký:
+        <h1>{code}</h1>
+        """
         mail.send(msg)
+
+    @staticmethod
+    def gen_registration_code() -> str:
+        """
+        Generating envoy registration code to send to email.
+        """
+        # getting 6 letters code
+        code = ''.join(uuid.uuid1().hex.split('-'))[:6]
+        session['registration_code'] = code
+        return code

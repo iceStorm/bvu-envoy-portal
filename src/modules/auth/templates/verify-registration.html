@@ -1,0 +1,97 @@
+{% extends "landing.html" %}
+{% block title %}Xác thực Đăng ký{% endblock title %}
+
+
+{% block content %}
+    <div class="container py-20 pt-24">
+
+      <div class="inline-flex flex-col">
+        <h1 class="text-xl lg:text-3xl font-bold leading-tight">
+          Xác minh đăng ký tài khoản Đại sứ BVU<span class="hidden md:inline-block font-black text-5xl text-primary">.</span>
+        </h1>
+        <h3 class="pt-6">
+          Một email kèm <span class="font-medium text-primary">mã bí mật 6 kí tự</span> được gửi tới email <span class="font-medium text-primary">{{ email }}</span>,
+          <br/>vui lòng kiểm tra và điền vào ô dưới đây để hoàn tất quá trình đăng ký tài khoản.
+        </h3>
+      </div>
+
+      <form action="" method="post" class="w-fit pt-6">
+        {{ form.csrf_token }}
+        
+        <!-- FORM FIELDS / ENVOY TYPE IS ORGANIZATION/HIGHSCHOOL.. -->
+        <div class="form-fields">
+          {% for field in form if (field.name != 'csrf_token') %}
+          <div class="form-field py-2">
+  
+              <!-- .form-field-label -->
+              <div class="form-field-label pb-0.5 text-gray-700 {% if field.flags.required %}required{% endif %}">
+                  <div class="flex justify-between items-center">
+                      {{ field.label(class="text-sm font-medium") }}
+                      {% if field.description is mapping and field.description['tooltip'] != None and field.description['tooltip'] != '' %}
+                          <img src="{{ url_for('static', filename='icons/outline/help-circle-outline.svg') }}" alt=""
+                          class="w-4 text-gray-300 cursor-pointer" data-tippy-content="{{ field.description['tooltip'] }}">
+                      {% endif %}
+                  </div>
+              </div>
+  
+              <!-- .form-field-container -->
+              <div class="form-field-container relative" data-name="{{ field.name }}">
+
+                  {% if field.description is mapping and field.description.icon != None  %}
+                      <!-- prefix -->
+                      <div class="form-field-prefix absolute rounded-l
+                                  flex justify-center items-center
+                                  text-gray-400 h-8 w-8 top-1/2 left-2 -translate-y-1/2"
+                          style="padding: 0.39rem">
+                          <!-- icon -->
+                          <img src="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
+                              style="filter: invert(0.5); user-select: none;"
+                              data-original-icon="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
+                              data-alternate-icon="{{ url_for('static', filename=field.description.icon.get('alternate', '')) }}">
+                      </div>
+                  {% endif %}
+
+  
+                  <!-- the field -->
+                    {% if field.description is mapping and field.description.icon != None %}
+                      {{ field(class="text-field has-icon") }}
+                    {% else %}
+                      {{ field(class="text-field") }}
+                    {% endif %}
+              </div>
+  
+              <!-- .form-field-errors-container -->
+              <div class="form-field-errors-container pt-2">
+                  {% if field.errors %}
+                      <script>
+                          // adding the following error style classes to the input's class attribute
+                          document.getElementById('{{ field.id }}').classList.add('bg-red-100', 'border-red-500');
+                      </script>
+                      {% for error in field.errors %}
+                          <p class="form-field-error text-xs text-red-500">{{ error }}</p>
+                      {% endfor %}
+                  {% endif %}
+              </div>
+  
+          </div> <!-- form-field -->
+          {% endfor %}
+
+          <button type="submit"
+              class="
+              flex justify-center items-center gap-3
+              relative overflow-hidden cursor-pointer
+              mx-auto my-4 w-full py-2.5 bg-primary btn btn-highlight
+              text-white font-medium
+              transition-all duration-300
+              focus:outline-none
+              focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
+              hover:bg-primary-dark">
+  
+              <span class="flex text-lg">Xác minh</span>
+              <img src="{{ url_for('static', filename='icons/outline/arrow-forward-outline.svg') }}" alt="" class="w-5 invert">
+          </button>
+      </form>
+    </div>
+
+    </div>
+{% endblock %}

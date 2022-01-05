@@ -1,10 +1,12 @@
-from flask import Blueprint, jsonify, request, render_template, flash, current_app, url_for, make_response
+import uuid
+from flask import Blueprint, jsonify, request, render_template, flash, current_app, url_for, make_response, session
 from flask_login import login_required, current_user, logout_user, login_user
 from werkzeug.utils import redirect
 
-from src.main import limiter
+from src.main import limiter, logger
 from src.base.constants.base_constanst import FlashCategory
 from src.modules.auth.auth_service import AuthService
+from src.modules.user.user_model import User
 
 # defining controller
 auth = Blueprint('auth', __name__, template_folder='templates', static_folder='static', static_url_path='auth/static')
@@ -20,7 +22,7 @@ def login():
     if request.method == 'GET':
         # redirecting logged-in user to the index page
         if current_user.is_authenticated:
-            flash('You\'re already logged in!', category='warning')
+            flash('You\'re already logged in!', category=FlashCategory.Warning)
             return redirect('/')
 
         if request.args.get('email'):
@@ -56,7 +58,7 @@ def logout():
 
 
 @auth.route('/register', methods=['GET', 'POST'])
-@limiter.limit('1/second')
+@limiter.limit('1/second; 15/minute; 20/day')
 def register():
     # grabbing the form
     from src.modules.auth.forms.signup_form import SignUpForm
@@ -70,20 +72,89 @@ def register():
             return redirect('/')
         return render_template('signup.html', form=form)
 
+    # post requests
     # checking if the form is not valid yet
     if not form.validate_on_submit():
         flash('Please ensure all fields have no errors!', category=FlashCategory.warning(7500))
         return render_template('signup.html', form=form)
 
-    # all validation passed, let's continue handle the signup process
-    # envoy_type:4 == công ty/tổ chức/trường học
-    AuthService.register(form)
+    try:
+        # all validation passed, let's continue handle the signup process
+        AuthService.send_register_confirm_email(
+            receiver_email=form.email.data,
+            receiver_name=form.organization_name.data,
+            code=AuthService.gen_registration_code(),
+        )
 
-    # showing a flash message -> redirecting to the home page
-    flash(message=f'Vui lòng kiểm tra tin nhắn được gửi tới email {form.email.data} để kích hoạt tài khoản!', category=FlashCategory.success(20000))
+        # showing a flash message -> redirecting to the home page
+        flash(message=f'Vui lòng kiểm tra tin nhắn được gửi tới email {form.email.data} để hoàn tất quá trình đăng ký!', category=FlashCategory.success(20000))
 
-    # showing the login page and auto filling data
-    return redirect(url_for('auth.login', email=form.email.data))
+        # push the form data to session, so we dont have to store these info in the DB --> prevent registrastion spamming
+        session['registration_organization_name'] = form.organization_name.data
+        session['registration_organization_representer_person_name'] = form.organization_representer_person_name.data
+        session['registration_organization_tax_id'] = form.organization_tax_id.data
+        session['registration_citizen_id'] = form.citizen_id.data
+        session['registration_email'] = form.email.data
+        session['registration_phone'] = form.phone.data
+        session['registration_address'] = form.address.data
+
+        # show the verification page
+        return redirect('/verify')
+    except Exception as e:
+        logger.error(e)
+        flash(message=f'Có lỗi xảy ra trong quá trình xử lý, vui lòng thử lại sau', category=FlashCategory.error(20000))
+        return render_template('signup.html', form=form)
+
+
+@auth.route('verify', methods=['GET', 'POST'])
+@limiter.limit('1/second; 15/minute; 20/day')
+def verify_registration():
+    # grabbing the form
+    from src.modules.auth.forms.verification_form import RegisterVerificationForm
+    form = RegisterVerificationForm()
+
+    if session.get('registration_email') is None or session.get('registration_code') is None:
+        flash(message='Something went wrong, please try later', category=FlashCategory.warning())
+        return redirect('/')
+
+    if request.method == 'GET':
+        return render_template('verify-registration.html', form=form, email=session['registration_email'])
+
+    if not form.validate_on_submit():
+        flash(message='Please fill out the code', category=FlashCategory.warning())
+        return render_template('verify-registration.html', form=form, email=session['registration_email'])
+
+    # form validated --> check if the provided code is correct
+    if form.verification_code.data != session.get('registration_code'):
+        flash(message='The code you provided was incorrect', category=FlashCategory.warning())
+        return render_template('verify-registration.html', form=form, email=session['registration_email'])
+
+    # form validated -> add the envoy info to DB
+    try:
+        new_user = User(email=session['registration_email'], phone_number=session['registration_phone'])
+        new_user.role_id = 3 # envoy
+        new_user.envoy_type_id = 4 # organization
+        new_user.address = session['registration_address']
+        new_user.citizen_id = session['registration_citizen_id']
+        new_user.organization_name  = session['registration_organization_name']
+        new_user.organization_representer_person_name = session['registration_organization_representer_person_name']
+        new_user.organization_tax_id = session['registration_organization_tax_id']
+
+        # ??? check trùng thông tin trước khi thêm vào DB
+
+        if AuthService.register(new_user=new_user):
+            flash(message='Đăng ký tài khoản Đại sứ BVU thành công', category=FlashCategory.success())
+            return render_template('registration-success.html', email=new_user.email)
+
+        # DB insert error
+        flash(message='Something went wrong, please try later', category=FlashCategory.warning())
+        return render_template('verify-registration.html', form=form, email=session['registration_email'])
+
+    except Exception as e:
+        logger.error(e)
+        flash(message='Something went wrong, please try later', category=FlashCategory.warning())
+        return render_template('verify-registration.html', form=form, email=session['registration_email'])
+
 
 
 @auth.route('/reset-password', methods=['POST'])
@@ -147,22 +218,4 @@ def profile():
     flash('Updated !', category=FlashCategory.Success)
     return redirect(location='profile')
 
-
-@auth.route('/check-email', methods=['POST'])
-def check_email_exists():
-    email = request.form.get('email', None)
-
-    if email:
-        from src.modules.auth.auth_service import AuthService
-
-        if AuthService.is_user_already_exists(email):
-            return {'exists': True}, 200
-        else:
-            response = jsonify({'message': 'The email is not registered.'})
-            response.status_code = 404
-            return response
-
-    else:
-        print('the email field is not exists')
-        return {'error': 'form data missing.'}, 400
 
