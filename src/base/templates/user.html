@@ -17,22 +17,25 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <title>{% block title %} {% endblock %} - {{ config.APP_NAME }}</title>
 </head>
-<body>
-    <div id="root">
-        {# include "components/user/header/index.html" #}
+<body class="overflow-hidden">
+    <div id="root" class="root user flex">
+        {{  SidebarComponent() | safe }}
 
+        <div id="" class="flex-1 flex flex-col overflow-auto h-screen">
+            {{  HeaderComponent() | safe }}
 
-        <main id="main" class="relative flex flex-col flex-auto bg-white p-7">
-            {# the "flash.html" have to placed inside the #main, because only the #main (& #nav) would be appended from ajax calls. #}
-            {% include "flash.html" %}
-            {% block content %} {% endblock %}
-        </main>
+            <main id="main" class="flex flex-1 flex-col bg-gray-100 p-10">
+                {# the "flash.html" have to placed inside the #main, because only the #main (& #nav) would be appended from ajax calls. #}
+                {% include "flash.html" %}
+                {% block content %} {% endblock %}
+            </main>
+        </div>
     </div>
-
 
 
     <!--  base  -->
     <link rel="stylesheet" href="{{ url_for('static', filename='app/dist/css/app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='app/dist/js/base.css') }}">
     <script src="{{ url_for('static', filename='app/dist/js/base.js') }}"></script>
 
 </body>

@@ -1,25 +1,19 @@
 from flask import request, render_template
 from flask_login import current_user
 
-from .navbar_viewmodel import NavBarViewModel, NavItem, NavItemIcon
+from .header_viewmodel import NavBarViewModel, NavItem, NavItemIcon
 
 # import this model to handle the DB (Flask-SQLAlchemy)
 from src.modules.user.user_model import User
-
+from src.main import logger
 
 def get_view_model() -> NavBarViewModel:
     """
     Resetting the nav items active state, load the current_user
     """
-    print('\ncurrent_user inside NavBar component:', current_user.get_id())
-
-    full_name = ''  # this will be hidden on the navbar if no user is logged in
-    if current_user.is_authenticated:
-        full_name = User.query.get(current_user.get_id()).full_name
+    logger.info('\ncurrent_user inside NavBar component:', current_user.get_id())
 
     return NavBarViewModel(
-        user=current_user,
-        full_name=full_name,
         nav_items=[
             NavItem(href='/', title='Home', icon=NavItemIcon(original='icons/outline/grid-outline.svg')),
             NavItem(href='/projects', title='Projects', icon=NavItemIcon(original='icons/outline/file-tray-stacked-outline.svg')),
@@ -29,7 +23,7 @@ def get_view_model() -> NavBarViewModel:
     )
 
 
-def navbar_component():
+def header_component():
     def component():
         # getting a new view model instance
         vm = get_view_model()
@@ -41,6 +35,6 @@ def navbar_component():
         # setting the current active page
         vm.set_active_nav_item(path=req_path)
         
-        return render_template("components/header/index.html", vm=vm)
+        return render_template("components/user/header.html", vm=vm)
 
-    return dict(NavbarComponent=component)
+    return dict(HeaderComponent=component)

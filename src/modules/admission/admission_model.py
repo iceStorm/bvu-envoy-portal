@@ -36,7 +36,7 @@ class Admission(db.Model):
   type = db.relationship("AdmissionType", backref="admissions")
 
   @staticmethod
-  def get_available_items_to_new_registration(self):
+  def get_available_items_to_new_registration():
     """
     Getting list of all available Admissions to clients to register.
     """

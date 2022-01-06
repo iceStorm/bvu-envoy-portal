@@ -50,6 +50,7 @@ module.exports = {
         footer: 'repeat(auto-fit, minmax(200px, 1fr))',
         'single-post-lg': '1.618fr 1fr',
         'single-post-sm': '1fr',
+        'user-template': '0.3fr 0.7fr',
       },
     },
     screens: {

@@ -29,7 +29,7 @@ class LoginForm(FlaskForm):
         label='Email',
         description={
             'icon': {
-                'origin': 'icons/outline/mail-outline.svg',
+                'origin': 'icons/fluent/outline/mail.svg',
             },
         },
         render_kw={
@@ -48,8 +48,8 @@ class LoginForm(FlaskForm):
         render_kw={'autocomplete': 'current-password'},
         description={
             'icon': {
-                'origin': 'icons/outline/lock-closed-outline.svg',
-                'alternate': 'icons/outline/lock-open-outline.svg',
+                'origin': 'icons/fluent/outline/lock-closed.svg',
+                'alternate': 'icons/fluent/outline/lock-open.svg',
             },
         },
         validators=[

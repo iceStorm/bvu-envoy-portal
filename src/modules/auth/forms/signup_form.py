@@ -32,7 +32,7 @@ class SignUpForm(FlaskForm):
         render_kw={'autocomplete': 'organization', 'maxlength': ENVOY_ORGANIZATION_NAME_LENGTH,},
         description={
             'icon': {
-                'origin': 'icons/outline/business-outline.svg',
+                'origin': 'icons/fluent/outline/building.svg',
             },
             'tooltip': 'Ví dụ: Trường THPT chuyên Lê Quý Đôn',
         },
@@ -51,7 +51,7 @@ class SignUpForm(FlaskForm):
         render_kw={'autocomplete': 'name', 'maxlength': ENVOY_ORGANIZATION_REPRESENTER_NAME_LENGTH,},
         description={
             'icon': {
-                'origin': 'icons/outline/person-outline.svg',
+                'origin': 'icons/fluent/outline/person.svg',
             },
             'tooltip': 'Tên người đại diện cho tổ chức',
         },
@@ -70,7 +70,7 @@ class SignUpForm(FlaskForm):
         render_kw={'autocomplete': 'new-password', 'maxlength': ENVOY_TAX_ID_LENGTH,},
         description={
             'icon': {
-                'origin': 'icons/outline/document-text-outline.svg',
+                'origin': 'icons/fluent/outline/hash.svg',
             },
             'tooltip': """Mã số thuế gồm 10 hoặc 13 chữ số.
                 <a href="https://luatminhkhue.vn/quy-dinh-ve-ma-so-thue-va-y-nghia-cac-con-so-theo-quy-dinh-cua-luat.aspx"
@@ -93,8 +93,7 @@ class SignUpForm(FlaskForm):
         render_kw={'autocomplete': 'new-password', 'maxlength': ENVOY_CITIZEN_ID_LENGTH,},
         description={
             'icon': {
-                'origin': 'icons/outline/id-card-outline.svg',
-                'alternate': 'icons/outline/id-card-outline.svg',
+                'origin': 'icons/fluent/outline/person-card.svg',
             },
             'tooltip': 'Số Chứng minh nhân dân (9 chữ số) hoặc Số Căn cước công dân (12 chữ số).',
         },
@@ -112,7 +111,7 @@ class SignUpForm(FlaskForm):
         render_kw={'autocomplete': 'email', 'maxlength': USER_EMAIL_LENGTH,},
         description={
             'icon': {
-                'origin': 'icons/outline/mail-outline.svg',
+                'origin': 'icons/fluent/outline/mail.svg',
             },
             'tooltip': """Kiểm tra định dạng email của bạn
                 <a href="https://regex101.com/r/tYNbwr/1"
@@ -134,7 +133,7 @@ class SignUpForm(FlaskForm):
         render_kw={'autocomplete': 'tel', 'maxlength': USER_PHONE_LENGTH,},
         description={
             'icon': {
-                'origin': 'icons/outline/keypad-outline.svg',
+                'origin': 'icons/fluent/outline/number.svg',
             },
             'tooltip': 'Số điện thoại gồm 10 hoặc 11 chữ số.',
         },
@@ -152,7 +151,7 @@ class SignUpForm(FlaskForm):
         render_kw={'autocomplete': 'address-line1', 'maxlength': ENVOY_ADDRESS_LENGTH,},
         description={
             'icon': {
-                'origin': 'icons/outline/locate-outline.svg',
+                'origin': 'icons/fluent/outline/location.svg',
             },
         },
         filters=[

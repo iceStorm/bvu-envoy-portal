@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 def start_seeding(db: SQLAlchemy):
   seed_roles(db)
   seed_root_user(db)
+  seed_manager_users(db)
 
   seed_admission_types(db)
   seed_envoy_types(db)
@@ -68,6 +69,56 @@ def seed_root_user(db: SQLAlchemy):
     root_user.role_id = 1
     db.session.add(root_user)
     db.session.commit()
+
+
+def seed_manager_users(db: SQLAlchemy):
+  """
+  Seeding manager user for the app if there is no manager role user in the DB.
+  """
+  from .modules.user.user_model import User
+
+  # check if there is any Root role user
+  manager_user =  db.session.query(User)\
+    .filter(User.role_id == 2)\
+    .first()
+
+  # start sedding if there is no Root role user
+  if manager_user is None:
+    print('\nNO MANAGER USER DETECTED, START SEDDING...')
+
+    manager_user_1 = User(
+      first_name='Nguyễn',
+      last_name='Anh Nhân',
+      activated=True,
+      email='nhanna@student.bvu.edu.vn',
+      phone_number='0033326585',
+      raw_password='123456',
+    )
+    manager_user_1.role_id = 2
+
+    manager_user_2 = User(
+      first_name='Lê',
+      last_name='Anh Tú',
+      activated=True,
+      email='tula@student.bvu.edu.vn',
+      phone_number='0033326586',
+      raw_password='123456',
+    )
+    manager_user_2.role_id = 2
+
+    manager_user_3 = User(
+      first_name='Hà',
+      last_name='Anh Tuấn',
+      activated=True,
+      email='tuanha@student.bvu.edu.vn',
+      phone_number='0033326587',
+      raw_password='123456',
+    )
+    manager_user_3.role_id = 2
+
+    db.session.add_all([manager_user_1, manager_user_2, manager_user_3])
+    db.session.commit()
+
 
 
 def seed_admission_types(db: SQLAlchemy):

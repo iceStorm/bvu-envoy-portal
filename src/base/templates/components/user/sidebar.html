@@ -1,0 +1,68 @@
+<aside id="sidebar" class="sidebar h-screen overflow-auto border-r border-gray-200 py-5 pt-4" style="width: 300px;">
+  
+  <!-- logo -->
+  <div class="logo flex flex-row gap-5 items-center rounded-md bg-blue-50 p-3 mx-7">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="" class="w-8">
+    <div class="flex flex-col">
+      <span class="font-extrabold text-primary">BVU Envoy Portal</span>
+      <span class="font-light text-xs">Cổng thông tin Đại sứ BVU.</span>
+    </div>
+  </div>
+
+  <div class="user-area flex flex-col items-center">
+
+    <!-- user meta -->
+    <!-- <div class="flex flex-col items-center">
+      <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="w-32 rounded-full shadow-lg">
+      <p class="-mt-6 mb-3 rounded-full bg-white shadow-md py-1 px-5 font-light">{{ current_user.role.name }}</p>
+      <p class="font-semibold">{{ current_user.full_name }}</p>
+      <p class="font-light">{{ current_user.email }}</p>
+    </div> -->
+
+    <!-- user profile buttons -->
+    <!-- <div class="flex justify-between items-center mt-6 w-full rounded border border-gray-300 text-primary divide-x divide-gray-200 overflow-hidden">
+      <form action="{{ url_for('auth.logout') }}" method="post"
+        class="flex items-center gap-2 p-1.5 pr-3 justify-center bg-white hover:bg-opacity-50">
+        <img src="{{ url_for('static', filename='icons/outline/log-out-outline.svg') }}" class="w-6 rotate-180">
+        <button type="submit" class="w-full">
+          <span class="font-normal">Đăng xuất</span>
+        </button>
+      </form>
+
+      <a href="" class="flex flex-1 items-center gap-2 p-1.5 justify-center bg-blue-50 hover:bg-opacity-50">
+        <img src="{{ url_for('static', filename='icons/fluent/outline/person_note.svg') }}" class="w-6">
+        <span class="font-normal">Profile</span>
+      </a>
+    </div> -->
+  </div>
+
+
+  <!-- sidebar menu -->
+  <ul class="flex flex-col gap-8 mt-10">
+    {% for group in vm.nav_item_groups %}
+      <li class="">
+        <ul>
+          <!-- group label -->
+          <p class="pb-1.5 px-7 text-sm font-medium text-gray-400">{{ group.label }}</p>
+
+          <!-- group items -->
+          {% for item in group.items %}
+            <li>
+              <a href="{{ item.href }}" class="flex justify-between items-center gap-2 w-full px-7 py-2 rounded cursor-pointer hover:text-primary stroke-2 fill-primary hover:bg-blue-50">
+                <span class="flex items-center gap-2">
+                  {{ get_svg_content(item.icon.original, classes='fill-primary stroke-2') | safe }}
+                  <span class="font-medium text-sm text-primary">{{ item.title }}</span>
+                </span>
+
+                {% if item.show_counter_icon %}
+                  <span class="rounded text-xs font-medium bg-gray-200 p-1 px-1.5">{{ item.counter }}</span>
+                {% endif %}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+
+</aside>

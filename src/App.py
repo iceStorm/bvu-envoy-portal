@@ -32,16 +32,19 @@ class App(Flask):
         Registering base app's components via context_processor to get called each time a new request coming.
         """
         # registering view components
-        from .base.components.navbar.navbar_component import navbar_component
-        self.context_processor(navbar_component)
+        from .base.components.header.header_component import header_component
+        from .base.components.sidebar.sidebar_component import sidebar_component
+        self.context_processor(header_component)
+        self.context_processor(sidebar_component)
 
 
     def register_global_functions(self):
         """
         Registering jinja global functions (allow calling from any jinja templates)
         """
-        from .base.helpers.jinja_env_functions import extract_avatar_url
+        from .base.helpers.jinja_env_functions import extract_avatar_url, get_svg_content
         self.jinja_env.globals.update(extract_avatar_url=extract_avatar_url)
+        self.jinja_env.globals.update(get_svg_content=get_svg_content)
 
 
     def register_blueprints(self):
