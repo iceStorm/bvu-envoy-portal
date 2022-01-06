@@ -1,8 +1,22 @@
-<header id="header" class="header py-5 px-10 border-b border-gray-200">
+<header 
+  class="header sticky z-10 top-0 px-10 border-b border-gray-200 bg-white bg-opacity-80 backdrop-blur-md
+  flex justify-between">
   
-  <div class="flex flex-col text-primary">
-    <h1 class="font-extrabold text-xl pb-1">Xin chào, {{ current_user.last_name }} 👋</h1>
-    <p class="font-normal">{{ vm.today }}</p>
+  <div class="flex flex-row text-primary">
+    <h1 class="font-bold font-sans text-base pb-1 m-auto">Xin chào, {{ current_user.last_name }} 👋</h1>
+  </div>
+
+  <p class="font-normal m-auto text-primary">{{ vm.today }}</p>
+
+  
+  <div class="flex justify-end items-stretch">
+    <div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer" data-tippy-content="Mã QR code đến profile này">
+      <img src="{{ url_for('static', filename='icons/fluent/outline/qr_code.svg') }}" class="w-5">
+    </div>
+
+    <div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer" data-tippy-content="Profile {{ current_user.full_name }}">
+      <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="h-8 rounded-full">
+    </div>
   </div>
 
 </header>

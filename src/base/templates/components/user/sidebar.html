@@ -1,13 +1,13 @@
 <aside id="sidebar" class="sidebar h-screen overflow-auto border-r border-gray-200 py-5 pt-4" style="width: 300px;">
   
   <!-- logo -->
-  <div class="logo flex flex-row gap-5 items-center rounded-md bg-blue-50 p-3 mx-7">
+  <a href="/" class="logo flex flex-row gap-5 items-center rounded-md bg-blue-50 p-3 mx-7">
     <img src="{{ url_for('static', filename='logo.png') }}" alt="" class="w-8">
     <div class="flex flex-col">
       <span class="font-extrabold text-primary">BVU Envoy Portal</span>
       <span class="font-light text-xs">Cổng thông tin Đại sứ BVU.</span>
     </div>
-  </div>
+  </a>
 
   <div class="user-area flex flex-col items-center">
 
@@ -43,19 +43,28 @@
       <li class="">
         <ul>
           <!-- group label -->
-          <p class="pb-1.5 px-7 text-sm font-medium text-gray-400">{{ group.label }}</p>
+          <p class="pb-1.5 px-7 text-sm font-semibold text-gray-500">{{ group.label }}</p>
 
           <!-- group items -->
           {% for item in group.items %}
             <li>
-              <a href="{{ item.href }}" class="flex justify-between items-center gap-2 w-full px-7 py-2 rounded cursor-pointer hover:text-primary stroke-2 fill-primary hover:bg-blue-50">
+              <a href="{{ item.href }}"
+                class="flex justify-between items-center gap-2 
+                w-full px-7 py-2 rounded cursor-pointer 
+                {% if item.is_active %}
+                bg-blue-50
+                text-primary
+                font-bold
+                {% endif %}
+                hover:text-primary fill-primary hover:bg-blue-50">
                 <span class="flex items-center gap-2">
                   {{ get_svg_content(item.icon.original, classes='fill-primary stroke-2') | safe }}
-                  <span class="font-medium text-sm text-primary">{{ item.title }}</span>
+                  <span class="text-sm ">{{ item.title }}</span>
                 </span>
 
+                <!-- counter bagde -->
                 {% if item.show_counter_icon %}
-                  <span class="rounded text-xs font-medium bg-gray-200 p-1 px-1.5">{{ item.counter }}</span>
+                  <span class="rounded text-xs font-medium bg-gray-200 p-1 px-2">{{ item.counter }}</span>
                 {% endif %}
               </a>
             </li>

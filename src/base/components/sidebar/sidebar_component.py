@@ -18,21 +18,21 @@ def get_view_model() -> NavBarViewModel:
         nav_item_groups=[
             NavItemGroup('Chung', items=[
                 NavItem(href='/', title='Dashboard', icon=NavItemIcon(original='icons/fluent/outline/apps.svg')),
-                NavItem(href='/', title='Thông báo', icon=NavItemIcon(original='icons/fluent/outline/alert.svg'), counter=5, show_counter_icon=True),
+                NavItem(href='', title='Thông báo', icon=NavItemIcon(original='icons/fluent/outline/alert.svg'), counter=5, show_counter_icon=True),
             ],),
 
             NavItemGroup(label='Tuyển sinh', items=[
-                NavItem(href='/', title='Đang diễn ra', 
+                NavItem(href='', title='Đang diễn ra', 
                     icon=NavItemIcon(original='icons/fluent/outline/arrow_trending.svg'),
                     show_counter_icon=True,
                     counter=len(Admission.get_available_items_to_new_registration()),
                 ),
-                NavItem(href='/', title='Hoàn tất', 
+                NavItem(href='', title='Hoàn tất', 
                     icon=NavItemIcon(original='icons/fluent/outline/people_checkmark.svg'),
                     show_counter_icon=True,
                     counter=len(db.session.query(Admission.finished == True).all()),
                 ),
-                NavItem(href='/', title='Các gói tuyển sinh',
+                NavItem(href='', title='Các gói tuyển sinh',
                     icon=NavItemIcon(original='icons/fluent/outline/hat_graduation.svg'),
                     show_counter_icon=True,
                     counter=len(db.session.query(Admission).all()),
@@ -40,12 +40,12 @@ def get_view_model() -> NavBarViewModel:
             ],),
 
             NavItemGroup(label='Đại sứ', items=[
-                NavItem(href='/', title='Chờ xét duyệt',
+                NavItem(href='', title='Chờ xét duyệt',
                     icon=NavItemIcon(original='icons/fluent/outline/history.svg'),
                     counter=len(db.session.query(User).filter(User.activated == False, User.role_id == 3).all()),
                     show_counter_icon=True,
                 ),
-                NavItem(href='/', title='Các đại sứ',
+                NavItem(href='', title='Các đại sứ',
                     icon=NavItemIcon(original='icons/fluent/outline/people_swap.svg'),
                     show_counter_icon=True,
                     counter=len(db.session.query(User).filter(User.role_id == 3, User.activated == True).all()),
@@ -53,15 +53,15 @@ def get_view_model() -> NavBarViewModel:
             ],),
 
             NavItemGroup(label='Người dùng', items=[
-                NavItem(href='/', title='Danh sách tài khoản',
+                NavItem(href='', title='Danh sách tài khoản',
                     icon=NavItemIcon(original='icons/fluent/outline/people.svg'),
                     counter=len(db.session.query(User).all()),
                 ),
             ],),
             
             NavItemGroup(label='Thiết lập', items=[
-                NavItem(href='/', title='Mẫu email SMTP', icon=NavItemIcon(original='icons/fluent/outline/mail_template.svg')),
-                NavItem(href='/', title='Thông tin trang web', icon=NavItemIcon(original='icons/fluent/outline/info.svg')),
+                NavItem(href='', title='Mẫu email SMTP', icon=NavItemIcon(original='icons/fluent/outline/mail_template.svg')),
+                NavItem(href='', title='Thông tin trang web', icon=NavItemIcon(original='icons/fluent/outline/info.svg')),
             ],),
         ],
     )
