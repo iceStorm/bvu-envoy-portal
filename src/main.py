@@ -32,6 +32,16 @@ from flask_mail import Mail
 mail = Mail()
 
 
+# principals
+from flask_principal import Principal, Permission, RoleNeed, UserNeed, identity_loaded
+principals = Principal()
+# declaring permission Needs
+admin_permission = Permission(RoleNeed('admin'))
+manager_permission = Permission(RoleNeed('manager'), RoleNeed('admin'))
+envoy_permission = Permission(RoleNeed('envoy'), RoleNeed('manager'), RoleNeed('admin'))
+
+
+
 def add_sys_paths():
     print('\n[ADDING PATHS TO THE PYTHON ENVIRONMENT...]')
 
@@ -90,6 +100,23 @@ def init_protections(app: App):
     # rbac.init_app(app)
 
 
+def init_principal_user_provider(app: App):
+    @identity_loaded.connect_via(app)
+    def on_identity_loaded(sender, identity):
+        from flask_login import current_user
+
+        # Set the identity user object
+        identity.user = current_user
+
+        # Add the UserNeed to the identity
+        if hasattr(current_user, 'id'):
+            identity.provides.add(UserNeed(current_user.id))
+
+        # Add the RoleNeed to the identity
+        if hasattr(current_user, 'role'):
+            identity.provides.add(RoleNeed(current_user.role.code))
+
+
 def hooks(app: App):
     """
     Defining hook operations.
@@ -110,6 +137,9 @@ def create_app():
     init_db(app=app)
     init_protections(app=app)
     mail.init_app(app)
+
+    principals.init_app(app)
+    init_principal_user_provider(app)
 
     hooks(app=app)
 

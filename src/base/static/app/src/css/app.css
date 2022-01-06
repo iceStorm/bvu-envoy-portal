@@ -52,3 +52,7 @@ a {
 .hover\:fill-primary:hover {
     fill: #2D5288;
 }
+
+
+/* alpinejs */
+[x-cloak] { display: none !important; }

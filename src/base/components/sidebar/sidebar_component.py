@@ -1,4 +1,5 @@
 from flask import request, render_template
+from flask.helpers import url_for
 from flask_login import current_user
 
 from .sidebar_viewmodel import NavBarViewModel, NavItem, NavItemIcon, NavItemGroup
@@ -32,7 +33,7 @@ def get_view_model() -> NavBarViewModel:
                     show_counter_icon=True,
                     counter=len(db.session.query(Admission.finished == True).all()),
                 ),
-                NavItem(href='', title='Các gói tuyển sinh',
+                NavItem(href=url_for('admission.add'), title='Các gói tuyển sinh',
                     icon=NavItemIcon(original='icons/fluent/outline/hat_graduation.svg'),
                     show_counter_icon=True,
                     counter=len(db.session.query(Admission).all()),

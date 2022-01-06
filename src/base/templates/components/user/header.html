@@ -1,4 +1,15 @@
-<header 
+<script>
+  Alpine.data('headerDropdown', () => ({
+    open: false,
+  
+    toggle() {
+        this.open = ! this.open
+    }
+}))
+</script>
+
+
+<header x-data="headerDropdown"
   class="header sticky z-10 top-0 px-10 border-b border-gray-200 bg-white bg-opacity-80 backdrop-blur-md
   flex justify-between">
   
@@ -6,17 +17,50 @@
     <h1 class="font-bold font-sans text-base pb-1 m-auto">Xin chào, {{ current_user.last_name }} 👋</h1>
   </div>
 
-  <p class="font-normal m-auto text-primary">{{ vm.today }}</p>
+  
+  <div class="search flex items-center my-2">
+    <input type="search" name="search"
+      placeholder="Tìm kiếm"
+      class="py-1 px-2 rounded border border-gray-200 text-sm font-light focus:outline-none"
+      style="min-width: 300px;">
+  </div>
 
   
   <div class="flex justify-end items-stretch">
+    <!--  qr code -->
     <div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer" data-tippy-content="Mã QR code đến profile này">
       <img src="{{ url_for('static', filename='icons/fluent/outline/qr_code.svg') }}" class="w-5">
     </div>
 
-    <div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer" data-tippy-content="Profile {{ current_user.full_name }}">
-      <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="h-8 rounded-full">
-    </div>
-  </div>
+    <!-- profile avatar -->
+    <div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer"
+      @click="open = true">
+      <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="h-8 rounded-full select-none border border-gray-300">
 
+      <div
+        x-show="open" @click.outside="open = false"
+        class="user-modal absolute top-full right-0 shadow-lg bg-white cursor-auto">
+        <!-- user meta -->
+        <div class="px-3 py-3 flex items-center gap-3">
+          <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="w-20 rounded-full border border-gray-300">
+          <div class="flex flex-col">
+            <p class="font-bold">{{ current_user.full_name }}</p>
+            <p class="font-light text-sm pb-1">{{ current_user.email }}</p>
+            <p class="font-medium text-sm">{{ current_user.role.name }}</p>
+          </div>
+        </div>
+
+        <!-- buttons -->
+        <div class="flex w-full divide-x divide-gray-200 bg-gray-100">
+          <a href="{{ url_for('auth.profile') }}" class="text-sm px-3 py-2 font-light hover:bg-gray-300">Xem thông tin Hồ sơ</a>
+          <form method="post" action="{{ url_for('auth.logout') }}" class="flex-1">
+            <button type="submit" class="w-full cursor-pointer px-3 py-2 text-sm font-light hover:bg-gray-300">
+              Đăng xuất
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </header>
