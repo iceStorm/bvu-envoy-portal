@@ -189,7 +189,7 @@ class SignUpForm(FlaskForm):
             form_passed = False
 
         if User.is_organization_name_already_exists(self.organization_name.data):
-            self.organization_name.errors.append('This name already exists')
+            self.organization_name.errors.append('This organization name already exists')
             form_passed = False
         
         if User.is_organization_representer_name_already_exists(self.organization_representer_person_name.data):
@@ -201,7 +201,7 @@ class SignUpForm(FlaskForm):
             form_passed = False
         
         if User.is_citizen_id_already_exists(self.citizen_id.data):
-            self.citizen_id.errors.append('This citizen id id already exists')
+            self.citizen_id.errors.append('This citizen id already exists')
             form_passed = False
 
 

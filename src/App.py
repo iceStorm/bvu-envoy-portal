@@ -69,6 +69,7 @@ class App(Flask):
 
         self.register_error_handler(403, ErrorHandler.forbidden)
         self.register_error_handler(404, ErrorHandler.not_found)
+        self.register_error_handler(429, ErrorHandler.too_many_requests)
         self.register_error_handler(500, ErrorHandler.server_error)
 
 
