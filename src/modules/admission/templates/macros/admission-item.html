@@ -1,0 +1,93 @@
+
+{% macro admission_item(admission) %}
+<div x-data="{ open: false }"
+ class="admission-item bg-white rounded p-3 shadow flex flex-col gap-5 overflow-hidden" style="min-height: 100px;">
+  <!-- title -->
+  <div
+    class="relative flex justify-between items-center pb-3 -m-3 mb-0 p-3 border-b border-gray-100 hover:bg-gray-50">
+    <a href="{{ url_for('admission.detail', id=admission.id) }}" class="ajax font-semibold hover:text-primary">{{ admission.name }}</a>
+
+    <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}"
+      @click.prevent="open = true"
+      class="w-8 p-1 ml-3 rounded-full cursor-pointer hover:bg-gray-300">
+
+    <!-- menu -->
+    <div
+      x-show="open" @click.outside="open = false"
+      class="absolute right-4 top-full py-2 rounded shadow-lg flex flex-col gap-2 bg-white bg-opacity-25 backdrop-blur-md border border-gray-100">
+      <a href="{{ url_for('admission.detail', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
+        <img src="{{ url_for('static', filename='icons/fluent/outline/eye_show.svg') }}" class="w-5">
+        <span class="text-sm">Xem chi tiết</span>
+      </a>
+
+      <a href="{{ url_for('admission.edit', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
+        <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
+        <span class="text-sm">Sửa thông tin</span>
+      </a>
+
+      <a href="{{ url_for('admission.mark_done', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
+        <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
+        <span class="text-sm">Đánh dấu là hoàn tất</span>
+      </a>
+
+      <a href="{{ url_for('admission.delete', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
+        <img src="{{ url_for('static', filename='icons/fluent/outline/delete.svg') }}" class="w-5">
+        <span class="text-sm">Xóa</span>
+      </a>
+    </div>
+  </div>
+  
+  <!-- body -->
+  <div class="flex items-center justify-between text-sm">
+    <!-- type -->
+    <div class="flex gap-2 items-center">
+      <img src="{{ url_for('static', filename='icons/fluent/outline/hat_graduation.svg') }}" class="w-6">
+      <p><span>{{ admission.type.name }}</span></p>
+    </div>
+
+    <!-- finished -->
+    <p class="flex items-center gap-2">
+      {% if admission.finished %}
+        <!-- <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5"> -->
+        {{ get_svg_content('icons/fluent/outline/checkmark.svg', classes="fill-green w-5") | safe }}
+        <span class="text-green-600">Hoàn tất</span>
+      {% else %}
+        <img src="{{ url_for('static', filename='icons/fluent/outline/arrow_trending.svg') }}" class="w-5">
+        <span>Chưa hoàn tất</span>
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- joined -->
+  <div class="flex items-center justify-between text-sm">
+    <!-- envoys -->
+    <div class="flex gap-2 items-center">
+      <img src="{{ url_for('static', filename='icons/fluent/outline/people_team.svg') }}" class="w-6">
+      <p><span>{{ admission.user_admissions | length }} đại sứ</span></p>
+    </div>
+    <!-- students applied -->
+    <div class="flex gap-2 items-center">
+      <img src="{{ url_for('static', filename='icons/fluent/outline/people_team.svg') }}" class="w-6">
+      <p><span>{{ admission.user_admissions | length }} đăng ký</span></p>
+    </div>
+  </div>
+
+  <!-- time -->
+  <div class="w-full flex flex-1 text-center items-end flex-wrap text-sm gap-2">
+    <!-- start time -->
+    <p class="flex-1 border-l-4 px-2 py-2 border-green-400 bg-green-500 bg-opacity-10">
+      <span class="">{{ admission.start_date.strftime("%d/%m/%Y") }}</span>
+    </p>
+    <!-- end time -->
+    <p class="flex-1 border-l-4 px-2 py-2 border-amber-400 bg-amber-500 bg-opacity-10">
+      <span class="">{{ admission.end_date.strftime("%d/%m/%Y") }}</span>
+    </p>
+    <!-- remaining days -->
+    <p class="flex-1 flex items-center gap-1 border-l-4 px-2 py-2 border-purple-400 bg-purple-500 bg-opacity-10">
+      <img src="{{ url_for('static', filename='icons/fluent/outline/arrow_down.svg') }}" class="w-4">
+      <span class="">{{ (admission.end_date - admission.start_date).days }} ngày</span>
+    </p>
+  </div>
+
+</div>
+{% endmacro %}

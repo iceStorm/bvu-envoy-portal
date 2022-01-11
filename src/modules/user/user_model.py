@@ -10,6 +10,7 @@ from sqlalchemy import String, Integer, Boolean, DateTime, Column, ForeignKey
 from .user_constants import *
 from ..envoy.envoy_constants import *
 
+from src.modules.admission.admission_model import UserAdmission
 from src.main import db
 bcrypt = Bcrypt()
 
@@ -76,6 +77,15 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"<User: full name: {self.full_name}, email: {self.email}>"
+
+    @property
+    def students(self):
+        joined_admissions = db.session.query(UserAdmission).filter(
+            UserAdmission.user_id == self.id,
+            UserAdmission.student_id != None,
+        ).all()
+
+        return joined_admissions
 
     @staticmethod
     def gen_password_hash(raw_password):

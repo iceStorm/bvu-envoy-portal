@@ -1,0 +1,79 @@
+{% extends 'user.html' %}
+{% from 'macros/admission-item.html' import admission_item %}
+
+{% block title %}
+  Cấu hình Đợt tuyển sinh
+{% endblock title %}
+
+
+{% block header_actions %}
+<!-- add admission button -->
+<a 
+  href="{{ url_for('admission.add') }}"
+  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Thêm đợt tuyển sinh">
+  <img src="{{ url_for('static', filename='icons/fluent/outline/add_circle.svg') }}" class="w-6">
+</a>
+{% endblock %}
+
+
+{% block content %}
+
+  <div class="flex flex-col h-full gap-10 -mt-2">
+    <div class="flex items-center justify-between gap-10">
+      <!-- header buttons; filter -->
+      <!-- <div class="flex flex-col justify-between gap-5">
+        <a href="{{ url_for('admission.add') }}" class="btn w-fit flex items-center gap-2 bg-primary text-white py-2.5 px-3 rounded shadow">
+          <img src="{{ url_for('static', filename='icons/fluent/outline/people_team_add.svg') }}" class="w-6 invert">
+          <span>Thêm gói tuyển sinh</span>
+        </a>
+      </div> -->
+
+      <!-- filter form -->
+      <form action="" method="get" class="flex items-stretch gap-2">
+        {% for field in filter_form if field.name != 'csrf_token' %}
+          {{ form_field(field, False, '') }}
+        {% endfor %}
+
+        <!-- buttons -->
+        <div class="pt-3 flex gap-2 ml-3">
+          <button type="submit" href="{{ url_for('admission.add') }}"
+            class="btn w-fit m-auto flex items-center gap-2 bg-primary text-white py-2.5 px-5 rounded shadow">
+            <img src="{{ url_for('static', filename='icons/fluent/outline/filter.svg') }}" class="w-6 invert">
+            <span>Lọc</span>
+          </button>
+
+          <!-- <button type="reset" href="{{ url_for('admission.add') }}"
+            class="btn w-fit m-auto flex items-center gap-2 bg-primary bg-opacity-90 text-white py-2.5 px-5 rounded shadow">
+            <img src="{{ url_for('static', filename='icons/fluent/outline/arrow_sync.svg') }}" class="w-6 invert">
+            <span>Đặt lại</span>
+          </button> -->
+        </div>
+      </form>
+    </div>
+
+    <div class="flex flex-col flex-auto gap-5">
+      <!-- admissions grid -->
+      <div class="grid grid-cols-3 gap-10">
+        {% for admission in admissions.items %}
+          {{ admission_item(admission) }}
+        {% else %}
+          <div class="flex items-center">
+            <span>Chưa có thông tin.&nbsp;</span>
+            <a href="{{ url_for('admission.add') }}" class="link underline">Thêm mới.</a>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- paginator -->
+      {% if admissions.total > 0 %}
+        <div class="flex items-center mt-6">
+          {{ paginator(admissions) }}
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  
+
+{% endblock content %}

@@ -18,8 +18,7 @@ class AuthService:
 
     @staticmethod
     def send_reset_password_email(email: str) -> None:
-        raise Exception("The email is not exists on the system")
-
+        raise Exception(NotImplementedError)
 
     @staticmethod
     def is_user_already_exists(email):

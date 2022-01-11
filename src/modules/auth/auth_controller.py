@@ -22,7 +22,7 @@ def login():
     if request.method == 'GET':
         # redirecting logged-in user to the index page
         if current_user.is_authenticated:
-            flash('You\'re already logged in!', category=FlashCategory.Warning)
+            flash('You\'re already logged in!', category=FlashCategory.warning(5000))
             return redirect('/')
 
         if request.args.get('email'):

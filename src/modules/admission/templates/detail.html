@@ -1,0 +1,23 @@
+{% extends 'user.html' %}
+{% block title %}
+  Chi tiết gói tuyển sinh
+{% endblock title %}
+
+{% block header_actions %}
+<!-- edit -->
+<div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Sửa thông tin">
+  <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
+</div>
+
+<!-- delete -->
+<a href="{{ url_for('admission.delete', id=admission.id) }}"
+  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Xóa">
+  <img src="{{ url_for('static', filename='icons/fluent/outline/delete.svg') }}" class="w-5">
+</a>
+{% endblock %}
+
+
+
+{% block content %}
+  {{ admission.name }}  
+{% endblock content %}

@@ -1,11 +1,28 @@
 from .admission_model import Admission
 from src.main import db, logger
+from .forms.admission_form import AdmissionForm
 
 class AdmissionService:
   @staticmethod
-  def add(model: Admission) -> bool:
+  def add(model: Admission):
     try:
       db.session.add(model)
+      db.session.commit()
+      return model
+    except Exception as e:
+      logger.exception(e)
+      db.session.rollback()
+      return None
+
+
+  @staticmethod
+  def update(old_model: Admission, form: AdmissionForm):
+    try:
+      old_model.name = form.name.data
+      # old_model.slug = form.slug.data
+      old_model.start_date = form.start_date.data
+      old_model.end_date = form.end_date.data
+      old_model.type_id = form.type.data
       db.session.commit()
       return True
     except Exception as e:
@@ -13,19 +30,9 @@ class AdmissionService:
       db.session.rollback()
       return False
 
-  @staticmethod
-  def update(old_model: Admission, desired_model: Admission) -> bool:
-    # try:
-    #   db.session.commit()
-    #   return True
-    # except Exception as e:
-    #   logger.exception(e)
-    #   db.session.rollback()
-    #   return False
-    raise Exception(NotImplementedError())
 
   @staticmethod
-  def update(model: Admission) -> bool:
+  def delete(model: Admission) -> bool:
     try:
       db.session.delete(model)
       db.session.commit()

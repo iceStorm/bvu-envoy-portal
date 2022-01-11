@@ -7,7 +7,7 @@
     overflow: hidden;
 
     &:hover {
-      @apply bg-opacity-75;
+      @apply bg-opacity-50;
       /* transform: translatey(-2px); */
 
       &::after {

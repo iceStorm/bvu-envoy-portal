@@ -37,9 +37,9 @@ function showToast(text, type, duration=5000) {
 /*
  * Setting ajax navigating for a tags that don't have the '' class.
  */
-//setATagNavigate();
+// setATagNavigate();
 function setATagNavigate() {
-    $('.ajax)').each(function(index, elem) {
+    $('a[class*=ajax]').each(function(index, elem) {
         $(this).unbind('click').click((e) => {
             e.preventDefault();
 
@@ -48,12 +48,12 @@ function setATagNavigate() {
         });
     });
 }
-function ajaxNavigate(e) {
-    e.preventDefault();
+// function ajaxNavigate(e) {
+//     e.preventDefault();
 
-    const href = e.target.href;
-    navigateTo(href);
-}
+//     const href = e.target.href;
+//     navigateTo(href);
+// }
 
 
 /**

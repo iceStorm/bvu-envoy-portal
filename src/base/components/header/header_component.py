@@ -11,7 +11,7 @@ def get_view_model() -> NavBarViewModel:
     """
     Resetting the nav items active state, load the current_user
     """
-    logger.info('\ncurrent_user inside NavBar component:', current_user.get_id())
+    logger.info(f'\ncurrent_user inside NavBar component: {current_user.get_id()}')
 
     return NavBarViewModel(
         nav_items=[

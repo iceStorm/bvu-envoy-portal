@@ -62,3 +62,15 @@ def TaxIdValidator(form, field):
         tax_id_regex_pattern = '[0-9]'
         if not re.match(tax_id_regex_pattern, field.data):
             raise ValidationError(message='The tax id format is invalid')
+
+
+def UrlSlugValidator(form, field):
+    """
+    Base tax id validator for the application.
+    @param form:
+    @param field:
+    """
+    slug_regex_pattern = '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+    print('field:', field.data.strip())
+    if field.data.strip() != '' and not re.match(slug_regex_pattern, field.data):
+        raise ValidationError(message='The slug format is invalid')

@@ -1,9 +1,86 @@
 {% extends 'user.html' %}
 {% block title %}
-  Thêm Đợt tuyển sinh
+  {% if form._editing %}
+    Chỉnh sửa thông tin đợt tuyển sinh
+  {% else %}
+    Thêm Đợt tuyển sinh
+  {% endif %}
 {% endblock title %}
 
 
+{% block begin_body %}
+<script>
+  Alpine.data('form', () => ({
+    submit() {
+      const form = document.getElementById('admission-add-form');
+      if (form.reportValidity()) {
+        form.submit();
+      }
+    },
+  }));
+</script>
+{% endblock begin_body %}
+
+
+{% block header_actions %}
+<button type="submit" @click="submit()" x-data="form"
+  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Lưu">
+  <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
+</button>
+{% endblock %}
+
+
 {% block content %}
-  thêm.
+<form action="" method="post" class="" id="admission-add-form">
+  {{ form.csrf_token }}
+
+  <!-- <div class="flex justify-between items-center mb-8">
+    <h1 class="font-bold text-2xl">Thêm thông tin gói tuyển sinh.</h1>
+    <button type="submit" class="bg-primary text-white font-semibold btn p-5 py-3 shadow flex items-center gap-3">
+      <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-6 invert">
+      <span>Thêm</span>
+    </button>
+  </div> -->
+
+  <div class="form-fields">
+    {% for field in form if field.name != 'csrf_token' %}
+      {{ form_field(field) }}
+    {% endfor %}
+  </div>
+</form>
+{{ ckeditor.load(pkg_type="full") }}
+
+<style>
+  .form-fields {
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width: 768px) {
+    .form-fields {
+      grid-template-areas:
+      "first second"
+      "third fourth"
+      "fifth fifth"
+    }
+  }
+
+  .form-fields .form-field:nth-of-type(1) {
+    grid-area: first;
+  }
+  .form-fields .form-field:nth-of-type(2) {
+    grid-area: second;
+  }
+  .form-fields .form-field:nth-of-type(3) {
+    grid-area: third;
+  }
+  .form-fields .form-field:nth-of-type(4) {
+    grid-area: fourth;
+  }
+  .form-fields .form-field:nth-of-type(5) {
+    grid-area: fifth;
+  }
+  .form-fields .form-field:nth-of-type(6) {
+    grid-area: sixth;
+  }
+</style>
 {% endblock content %}

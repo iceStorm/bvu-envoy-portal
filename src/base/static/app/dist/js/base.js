@@ -152,7 +152,7 @@ function showToast(text, type, duration = 5e3) {
   });
 }
 function setATagNavigate() {
-  $(".ajax)").each(function(index, elem) {
+  $("a[class*=ajax]").each(function(index, elem) {
     $(this).unbind("click").click((e) => {
       e.preventDefault();
       const href = $(this).attr("href");

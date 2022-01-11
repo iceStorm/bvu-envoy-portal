@@ -13,7 +13,7 @@ def get_view_model() -> NavBarViewModel:
     """
     Resetting the nav items active state, load the current_user
     """
-    logger.info('\ncurrent_user inside NavBar component:', current_user.get_id())
+    print('\ncurrent_user inside NavBar component:', current_user.id)
 
     return NavBarViewModel(
         nav_item_groups=[
@@ -23,17 +23,12 @@ def get_view_model() -> NavBarViewModel:
             ],),
 
             NavItemGroup(label='Tuyển sinh', items=[
-                NavItem(href='', title='Đang diễn ra', 
+                NavItem(href=url_for('admission.active'), title='Đang diễn ra', 
                     icon=NavItemIcon(original='icons/fluent/outline/arrow_trending.svg'),
                     show_counter_icon=True,
                     counter=len(Admission.get_available_items_to_new_registration()),
                 ),
-                NavItem(href='', title='Hoàn tất', 
-                    icon=NavItemIcon(original='icons/fluent/outline/people_checkmark.svg'),
-                    show_counter_icon=True,
-                    counter=len(db.session.query(Admission.finished == True).all()),
-                ),
-                NavItem(href=url_for('admission.add'), title='Các gói tuyển sinh',
+                NavItem(href=url_for('admission.list'), title='Các gói tuyển sinh',
                     icon=NavItemIcon(original='icons/fluent/outline/hat_graduation.svg'),
                     show_counter_icon=True,
                     counter=len(db.session.query(Admission).all()),
@@ -54,7 +49,7 @@ def get_view_model() -> NavBarViewModel:
             ],),
 
             NavItemGroup(label='Người dùng', items=[
-                NavItem(href='', title='Danh sách tài khoản',
+                NavItem(href=url_for('user.list'), title='Danh sách tài khoản',
                     icon=NavItemIcon(original='icons/fluent/outline/people.svg'),
                     counter=len(db.session.query(User).all()),
                 ),

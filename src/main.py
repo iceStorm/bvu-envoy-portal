@@ -32,6 +32,11 @@ from flask_mail import Mail
 mail = Mail()
 
 
+# CK EDITOR
+from flask_ckeditor import CKEditor
+ckeditor = CKEditor()
+
+
 # principals
 from flask_principal import Principal, Permission, RoleNeed, UserNeed, identity_loaded
 principals = Principal()
@@ -124,6 +129,29 @@ def hooks(app: App):
     @app.before_request
     def app_before_request():
         pass
+
+    # add logging mail sender
+    import logging
+    from logging.handlers import SMTPHandler
+    if not app.debug:
+        if app.config['MAIL_SERVER']:
+            auth = None
+            if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
+                auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+
+            secure = None
+            if app.config['MAIL_USE_TLS']:
+                secure = ()
+
+            mail_handler = SMTPHandler(
+                mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
+                fromaddr=app.config['MAIL_SERVER'],
+                toaddrs=app.config['MAIL_SERVER'], subject='BVU Envoy Failure',
+                credentials=auth, secure=secure
+            )
+            
+            mail_handler.setLevel(logging.ERROR)
+            app.logger.addHandler(mail_handler)
         
 
 def create_app():
@@ -141,6 +169,7 @@ def create_app():
     principals.init_app(app)
     init_principal_user_provider(app)
 
+    ckeditor.init_app(app)
     hooks(app=app)
 
     print('\n\n[NEW APP RETURNED...]')

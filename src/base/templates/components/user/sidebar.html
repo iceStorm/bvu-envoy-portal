@@ -28,9 +28,9 @@
                 text-primary
                 font-bold
                 {% endif %}
-                hover:text-primary fill-primary hover:bg-blue-50">
+                hover:text-primary hover:fill-primary hover:bg-blue-50">
                 <span class="flex items-center gap-2">
-                  {{ get_svg_content(item.icon.original, classes='fill-primary stroke-2') | safe }}
+                  {{ get_svg_content(item.icon.original, classes='stroke-2' if not item.is_active else 'fill-primary') | safe }}
                   <span class="text-sm ">{{ item.title }}</span>
                 </span>
 

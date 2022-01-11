@@ -1,0 +1,97 @@
+{% macro form_field(field, show_tooltip=True, classes='') %}
+<div class="form-field py-2 {{ classes }}">
+
+  <!-- .form-field-label -->
+  <div class="form-field-label pb-0.5 text-gray-700 {% if field.flags.required %}required{% endif %}">
+      <div class="flex justify-between items-center">
+          {{ field.label(class="text-sm font-medium") }}
+
+          {% if show_tooltip %}
+            {% if field.description is mapping and field.description['tooltip'] != null %}
+                <img src="{{ url_for('static', filename='icons/outline/help-circle-outline.svg') }}" alt=""
+                class="w-4 text-gray-300 cursor-pointer" data-tippy-content="{{ field.description['tooltip'] }}">
+            {% endif %}
+          {% endif %}
+      </div>
+  </div>
+
+
+  <!-- .form-field-container (the input field..) -->
+  <div class="form-field-container relative" data-name="{{ field.name }}">
+
+    {% if field.description is mapping and field.description.icon != null  %}
+    <!-- prefix icon -->
+        <div class="form-field-prefix absolute rounded-l flex justify-center items-center
+                    text-gray-400 h-10 w-10 top-1/2 left-1 -translate-y-1/2"
+            style="padding: 0.39rem">
+            <!-- icon -->
+            <img src="{{ url_for('static', filename=field.description.icon['origin']) }}"
+                style="filter: invert(0.5); user-select: none;"
+                data-original-icon="{{ url_for('static', filename=field.description.icon.get('origin', '')) }}"
+                data-alternate-icon="{{ url_for('static', filename=field.description.icon.get('alternate', '')) }}">
+        </div>
+    {% endif %}
+
+    <!-- the field -->
+    {% if field.description is mapping %}
+        {% if field.description.icon != null and field.description.suffix != null%}
+            <!-- has both -->
+            {{ field(class="text-field bg-white has-icon has-suffix-icon") }}
+        {% elif field.description.suffix != null %}
+            <!-- has suffix -->
+            {{ field(class="text-field bg-white has-suffix-icon") }}
+        {% elif field.description.icon != null %}
+            <!-- has prefix -->
+            {{ field(class="text-field bg-white has-icon") }}
+        {% endif %}
+    {% else %}
+        <!-- no icon -->
+        {{ field(class="text-field bg-white") }}
+    {% endif %}
+
+
+    {% if field.description is mapping and field.description['suffix'] != null %}
+    <!-- suffix icon -->
+        <div class="form-field-suffix absolute rounded-l flex justify-center items-center text-gray-400 h-10 w-10 top-1/2 right-1 -translate-y-1/2"
+            style="padding: 0.39rem">
+            <!-- icon -->
+            <img src="{{ url_for('static', filename=field.description.suffix.origin) }}"
+                style="filter: invert(0.5); user-select: none;"
+                data-original-icon="{{ url_for('static', filename=field.description.suffix.get('origin', '')) }}"
+                data-alternate-icon="{{ url_for('static', filename=field.description.suffix.get('alternate', '')) }}">
+        </div>
+    {% endif %}
+  </div>
+
+
+  <!-- .form-field-errors-container -->
+  <div class="form-field-errors-container pt-2">
+      {% if field.errors %}
+          <script>
+              // adding the following error style classes to the input's class attribute
+              document.getElementById('{{ field.id }}').classList.add('bg-red-100', 'border-red-500');
+          </script>
+          {% for error in field.errors %}
+              <p class="form-field-error text-xs text-red-500">{{ error }}</p>
+          {% endfor %}
+      {% endif %}
+  </div>
+</div>
+
+<style>
+    .form-field-label.required label {
+        display: inline-block;
+        position: relative;
+    }
+    .form-field-label.required label + img {
+        display: inline-block;
+        position: relative;
+    }
+    .form-field-label.required label::after {
+        content: "*";
+        font-size: 1em;
+        padding-left: 5px;
+        color: red;
+    }
+</style>
+{% endmacro %}

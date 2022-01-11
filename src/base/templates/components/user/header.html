@@ -18,12 +18,15 @@
   </div>
 
   
-  <div class="search flex items-center my-2">
+  <!-- <div class="search flex items-center my-3">
     <input type="search" name="search"
       placeholder="Tìm kiếm"
       class="py-1 px-2 rounded border border-gray-200 text-sm font-light focus:outline-none"
       style="min-width: 300px;">
-  </div>
+  </div> -->
+
+
+  {% block header_actions %} {% endblock %}
 
   
   <div class="flex justify-end items-stretch">
@@ -37,9 +40,13 @@
       @click="open = true">
       <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="h-8 rounded-full select-none border border-gray-300">
 
-      <div
-        x-show="open" @click.outside="open = false"
-        class="user-modal absolute top-full right-0 shadow-lg bg-white cursor-auto">
+      <!-- dropdown -->
+      <!-- x-transition.duration.500ms
+      x-transition.scale
+      x-transition.scale.origin.top.center -->
+      <div x-show="open"
+        @click.outside="open = false"
+        class="user-modal absolute top-full right-0 shadow-lg bg-white cursor-auto border-t border-gray-200">
         <!-- user meta -->
         <div class="px-3 py-3 flex items-center gap-3">
           <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="w-20 rounded-full border border-gray-300">
@@ -52,9 +59,9 @@
 
         <!-- buttons -->
         <div class="flex w-full divide-x divide-gray-200 bg-gray-100">
-          <a href="{{ url_for('auth.profile') }}" class="text-sm px-3 py-2 font-light hover:bg-gray-300">Xem thông tin Hồ sơ</a>
-          <form method="post" action="{{ url_for('auth.logout') }}" class="flex-1">
-            <button type="submit" class="w-full cursor-pointer px-3 py-2 text-sm font-light hover:bg-gray-300">
+          <a href="{{ url_for('auth.profile') }}" class="flex-1 text-sm px-3 py-2 font-light hover:bg-gray-200 text-center">Xem thông tin Hồ sơ</a>
+          <form method="post" action="{{ url_for('auth.logout') }}" class="">
+            <button type="submit" class="w-full cursor-pointer px-6 py-2 text-sm font-light hover:bg-gray-200">
               Đăng xuất
             </button>
           </form>

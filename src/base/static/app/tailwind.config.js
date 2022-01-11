@@ -15,6 +15,8 @@ module.exports = {
   ],
   safelist: [
     'bg-primary-dark',
+    'fill-green',
+    'max-w-xs',
   ],
   theme: {
     container: {

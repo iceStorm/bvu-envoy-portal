@@ -14,7 +14,7 @@ def extract_avatar_url(full_avatar_url: str):
 
 
 def get_svg_content(url: str, classes=''):
-    logger.info(f'\nGetting svg content: {url}...')
+    # logger.info(f'\nGetting svg content: {url}...')
     try:
         path = Path(__file__).parent / f'../static/{url}'
         svg = path.resolve().open().read()
@@ -26,7 +26,7 @@ def get_svg_content(url: str, classes=''):
         svg = ''.join(svg.split('fill="none"'))
         svg = ''.join(svg.split('fill="#212121"'))
 
-        print(svg)
+        # print(svg)
         return svg
     except Exception as ect:
         print(f'Error to extract url [{url}]:', ect)
