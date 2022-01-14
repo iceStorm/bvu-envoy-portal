@@ -4,10 +4,24 @@
 {% endblock title %}
 
 {% block header_actions %}
+<!-- mark done/revoke -->
+{% if not admission.finished %}
+<a href="{{ url_for('admission.mark_done', id=admission.id) }}"
+  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Đánh dấu hoàn tất">
+  <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
+</a>
+{% else %}
+<a href="{{ url_for('admission.revoke_done', id=admission.id) }}"
+  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Bỏ hoàn tất">
+  <img src="{{ url_for('static', filename='icons/outline/refresh-outline.svg') }}" class="w-5">
+</a>
+{% endif %}
+
 <!-- edit -->
-<div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Sửa thông tin">
+<a href="{{ url_for('admission.edit', id=admission.id) }}"
+  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Sửa thông tin">
   <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
-</div>
+</a>
 
 <!-- delete -->
 <a href="{{ url_for('admission.delete', id=admission.id) }}"

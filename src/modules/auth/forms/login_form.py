@@ -21,7 +21,7 @@ def IsAccountActivated(form, field):
     Checking if the email that client entered is activated.
     """
     if not AuthService.is_user_activated(field.data):
-        raise ValidationError(message='The account with this email is not activated. Please wait for admin confirmation.')
+        raise ValidationError(message='The account associated with this email is not activated. Please wait or contact for admin confirmation.')
 
 
 class LoginForm(FlaskForm):
@@ -62,6 +62,7 @@ class LoginForm(FlaskForm):
         label='Remember',
     )
 
+
     # overriding the validate function
     def validate(self):
         # first, validate the above requirements by: passing this instance to the FlaskForm.validate()
@@ -71,7 +72,7 @@ class LoginForm(FlaskForm):
         # checking if the provided password is not True (with the one in the database)
         # the user instance below is always exists because the form's email validation did check.
         user = AuthService.get_user_from_email(self.email.data)
-        print(user)
+        # print(user)
 
         if not user.check_password(self.password.data):
             self.password.errors.append('The password you just provided was wrong')

@@ -53,15 +53,33 @@ class AdmissionFilterForm(FlaskForm):
         },
     )
 
+    status = SelectField(
+        label='Trạng thái',
+        choices=[
+            (-1, 'Tất cả'),
+            (0, 'Đang diễn ra'),
+            (1, 'Đã hoàn tất'),
+        ],
+        validators=[
+        ],
+        description={
+        'icon': {
+            'origin': 'icons/fluent/outline/hat_graduation.svg',
+        },
+        'tooltip': 'Số điện thoại gồm 10 hoặc 11 chữ số.',
+        },
+    )
+
     max_per_page = SelectField(
         label='Hiển thị',
         coerce=int,
         validators=[
         ],
         choices=[
+            (3, '3'),
             (6, '6'),
+            (9, '9'),
             (12, '12'),
-            (18, '18'),
         ],
         description={
         'icon': {
@@ -70,6 +88,7 @@ class AdmissionFilterForm(FlaskForm):
         'tooltip': 'Số điện thoại gồm 10 hoặc 11 chữ số.',
         },
     )
+
 
 
     def validate(self):

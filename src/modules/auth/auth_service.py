@@ -16,6 +16,9 @@ class AuthService:
     def get_user_from_email(email: str):
         return db.session.query(User).filter_by(email = email).first()
 
+    def get_user_from_username(username: str):
+        return db.session.query(User).filter_by(username = username).first()
+
     @staticmethod
     def send_reset_password_email(email: str) -> None:
         raise Exception(NotImplementedError)
@@ -111,5 +114,4 @@ class AuthService:
         """
         # getting 6 letters code
         code = ''.join(uuid.uuid1().hex.split('-'))[:6]
-        session['registration_code'] = code
         return code

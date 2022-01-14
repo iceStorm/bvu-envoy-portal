@@ -1,6 +1,7 @@
 from datetime import datetime
 import bcrypt
 from sqlalchemy.orm import relationship
+from flask import request
 from flask_login import UserMixin
 from flask_bcrypt import Bcrypt
 from sqlalchemy import String, Integer, Boolean, DateTime, Column, ForeignKey
@@ -84,8 +85,12 @@ class User(UserMixin, db.Model):
             UserAdmission.user_id == self.id,
             UserAdmission.student_id != None,
         ).all()
-
         return joined_admissions
+
+    @property
+    def profile_url(self):
+        from urllib.parse import urlparse
+        return f"https://{urlparse(request.base_url).hostname}/{self.username}"
 
     @staticmethod
     def gen_password_hash(raw_password):

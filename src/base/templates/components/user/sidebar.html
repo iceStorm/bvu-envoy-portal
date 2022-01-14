@@ -22,11 +22,12 @@
             <li>
               <a href="{{ item.href }}"
                 class="flex justify-between items-center gap-2 
-                w-full px-7 py-2 rounded cursor-pointer 
+                w-full px-7 py-2 cursor-pointer 
                 {% if item.is_active %}
-                bg-blue-50
-                text-primary
-                font-bold
+                  bg-blue-50
+                  text-primary
+                  font-bold
+                  border-l-4 border-primary
                 {% endif %}
                 hover:text-primary hover:fill-primary hover:bg-blue-50">
                 <span class="flex items-center gap-2">

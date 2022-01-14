@@ -13,7 +13,7 @@
 
     <!-- menu -->
     <div
-      x-show="open" @click.outside="open = false"
+      x-show="open" x-transition.origin.top.right @click.outside="open = false"
       class="absolute right-4 top-full py-2 rounded shadow-lg flex flex-col gap-2 bg-white bg-opacity-25 backdrop-blur-md border border-gray-100">
       <a href="{{ url_for('admission.detail', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
         <img src="{{ url_for('static', filename='icons/fluent/outline/eye_show.svg') }}" class="w-5">
@@ -83,7 +83,7 @@
       <span class="">{{ admission.end_date.strftime("%d/%m/%Y") }}</span>
     </p>
     <!-- remaining days -->
-    <p class="flex-1 flex items-center gap-1 border-l-4 px-2 py-2 border-purple-400 bg-purple-500 bg-opacity-10">
+    <p class="flex-1 flex items-center justify-center gap-1 border-l-4 px-2 py-2 border-purple-400 bg-purple-500 bg-opacity-10">
       <img src="{{ url_for('static', filename='icons/fluent/outline/arrow_down.svg') }}" class="w-4">
       <span class="">{{ (admission.end_date - admission.start_date).days }} ngày</span>
     </p>

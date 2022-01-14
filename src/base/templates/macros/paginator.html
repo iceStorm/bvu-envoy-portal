@@ -1,3 +1,43 @@
-{% macro paginator(pagination) %}
-  hi
+{% macro paginator(pagination, route) %}
+
+  <!-- prev item -->
+  {% if pagination.has_prev %}
+    <a href="{{ pagination.prev().page }}" data-tippy-content="Trang trước"
+      class="pagination-item px-3 py-2 border border-gray-300 rounded-l hover:bg-gray-100 bg-white">
+      <img src="{{ url_for('static', filename='icons/outline/chevron-back-outline.svg') }}" class="w-4">
+    </a>
+  {% endif %}
+
+
+  <!-- items -->
+  {% for page in pagination.iter_pages(left_edge=3, left_current = 3, right_current=3, right_edge=3) %}
+    {% if page %}
+      <!-- current active page -->
+      {% if page == pagination.page %}
+        <a class="pagination-item active px-4 py-1 border border-primary bg-primary bg-opacity-10">
+          {{ page }}
+        </a>
+
+      <!-- other indicies -->
+      {% else %}
+        <a href="{{ url_for(route, page=page) }}" class="pagination-item px-4 py-1 border border-l-0 border-gray-300 hover:bg-gray-100 bg-white">
+          {{ page }}
+        </a>
+      {% endif %}
+    {% else %} {# skipped pages #}
+      <a class="pagination-item px-4 py-1 border border-l-0 border-gray-300 hover:bg-gray-100 bg-white">
+        ...
+      </a>
+    {% endif %}
+  {% endfor %}
+
+
+  <!-- next item -->
+  {% if pagination.has_next %}
+    <a href="{{ pagination.next().page }}" data-tippy-content="Trang sau"
+      class="pagination-item px-3 py-2 border border-l-0 border-gray-300 rounded-r hover:bg-gray-100 bg-white">
+      <img src="{{ url_for('static', filename='icons/outline/chevron-forward-outline.svg') }}" class="w-4">
+    </a>
+  {% endif %}
+
 {% endmacro %}

@@ -20,29 +20,32 @@
 </head>
 
 <script>
-    Alpine.data('qrcodeModal', () => ({
+    Alpine.data('rootData', () => ({
         qrOpen: false,
-        toggle() {
-            this.qrOpen = ! this.qrOpen;
-        }
+        avatarOpen: false,
+        filterOpen: false,
     }));
 </script>
 
-<body class="overflow-hidden"x-data="qrcodeModal" >
-    <div x-show="qrOpen" class="qrcode-modal fixed z-50
-        w-screen h-screen overflow-auto flex justify-center items-center p-20
-        bg-black bg-opacity-50 backdrop-blur-md">
-        <div x-show="qrOpen" x-transition.duration.500ms class="qrcode-modal-content bg-white flex flex-col gap-5"
+<body class="overflow-hidden" x-data="rootData" >
+
+    <!-- QR CODE MODAL -->
+    <div x-show="qrOpen" class="qrcode-modal overflow-auto fixed z-50 flex justify-center items-center">
+        <!-- overlay -->
+        <div x-transition.opacity class="qrcode-modal-overlay bg-black bg-opacity-50 backdrop-blur-md fixed w-screen h-screen"></div>
+        <!-- content -->
+        <div class="qrcode-modal-content bg-white flex flex-col gap-5" @click.outside="qrOpen = false"
             style="min-height: 300px; min-width: 800px;">
+            <!-- header -->
             <div class="qrcode-modal-header p-7 py-4 flex items-center justify-between">
                 <h1 class="text-xl font-bold">Chia sẻ mã QR.</h1>
                 <button @click="qrOpen = false">
                     <img src="{{ url_for('static', filename='icons/outline/close-outline.svg') }}" class="w-8">
                 </button>
             </div>
-
+            <!-- body -->
             <div class="qrcode-modal-body flex-auto px-7 pb-7 flex gap-10">
-                <div class="border border-gray-200 p-3 shadow-xl" style="flex-basis: 200px;" id="qrcode-canvas">
+                <div class="border border-gray-200 p-3" style="flex-basis: 200px;" id="qrcode-canvas">
                 </div>
                 <script type="text/javascript">
                     const qrCode = new QRCodeStyling({
@@ -152,11 +155,11 @@
                     </div>
                     
                     <div class="flex flex-col justify-end">
-                        <span class="pb-1">Username đại sứ:</span>
-                        <div class="relative outline-2 border border-gray-400 border-opacity-20 shadow-xl overflow-hidden pr-10">
-                            <input type="text" readonly value="{{ current_user.email }}"
+                        <span class="pb-1">Profile đại sứ:</span>
+                        <div class="relative outline-2 border-opacity-50 shadow-2xl border border-gray-300 overflow-hidden pr-10">
+                            <input type="text" readonly value="{{ current_user.profile_url }}"
                                 class="py-2 px-4 w-full font-semibold text-primary focus:outline-none">
-                            <button class="p-2 px-4 h-full absolute right-0 top-1/2 -translate-y-1/2 hover:bg-gray-200">
+                            <button class="p-2 px-4 h-full absolute right-0 top-1/2 -translate-y-1/2 border-l border-gray-200 bg-gray-100 hover:bg-gray-200">
                                 <img src="{{ url_for('static', filename='icons/outline/copy-outline.svg') }}" class="w-5">
                             </button>
                         </div>
@@ -166,22 +169,13 @@
         </div>
     </div>
 
-
+    <!-- ROOT -->
+    {% block begin_body %}{% endblock begin_body %}
     <div id="root" class="root user flex">
-        {% block begin_body %}{% endblock begin_body %}
         {{  SidebarComponent() | safe }}
 
-        <div id="" class="flex-1 flex flex-col overflow-auto h-screen">
-            <script>
-                Alpine.data('headerDropdown', () => ({
-                    open: false,
-                    toggle() {
-                        this.open = ! this.open;
-                    }
-                }));
-            </script>
-            
-            <header x-data="headerDropdown"
+        <div class="flex-1 flex flex-col overflow-auto h-screen">
+            <header
                 class="header sticky z-10 top-0 px-10
                 border-b border-gray-200 
                 bg-white bg-opacity-80 backdrop-blur-md
@@ -221,15 +215,15 @@
                     </div>
                 
                     <!-- profile avatar -->
-                    <div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer" @click="open = true">
+                    <div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer" @click="avatarOpen = true">
                         <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="h-8 rounded-full select-none border border-gray-300">
                 
                         <!-- dropdown -->
                         <!-- x-transition.duration.500ms
                         x-transition.scale
                         x-transition.scale.origin.top.center -->
-                        <div x-show="open"
-                            @click.outside="open = false"
+                        <div x-show="avatarOpen"
+                            @click.outside="avatarOpen = false"
                             class="user-modal absolute top-full right-0 shadow-lg bg-white cursor-auto border-t border-gray-200">
                             <!-- user meta -->
                             <div class="px-3 py-3 flex items-center gap-3">
@@ -243,7 +237,7 @@
                     
                             <!-- buttons -->
                             <div class="flex w-full divide-x divide-gray-200 bg-gray-100">
-                            <a href="{{ url_for('auth.profile') }}" class="flex-1 text-sm px-3 py-2 font-light hover:bg-gray-200 text-center">Xem thông tin Hồ sơ</a>
+                            <a href="{{ url_for('auth.profile', username=current_user.id) }}" class="flex-1 text-sm px-3 py-2 font-light hover:bg-gray-200 text-center">Xem thông tin Hồ sơ</a>
                             <form method="post" action="{{ url_for('auth.logout') }}" class="">
                                 <button type="submit" class="w-full cursor-pointer px-6 py-2 text-sm font-light hover:bg-gray-200">
                                 Đăng xuất

@@ -18,7 +18,10 @@ from src.modules.admission.admission_model import Admission
 
 def validate_name(form, field):
     print('post_validate_name')
-    if db.session.query(Admission).filter(Admission.name == field.data).first():
+    if form._model:
+        if db.session.query(Admission).filter(Admission.name == field.data, Admission.id != form._model.id).first():
+            raise ValidationError('This name is already exists')
+    elif db.session.query(Admission).filter(Admission.name == field.data).first():
         raise ValidationError('This name is already exists')
 
 def validate_slug(form, field):
@@ -35,6 +38,7 @@ def validate_slug(form, field):
 
 class AdmissionForm(FlaskForm):
     _editing = False
+    _model: Admission = None
 
     name = StringField(
         label='Tên đợt tuyển sinh',

@@ -8,39 +8,33 @@
 {% endblock title %}
 
 
+
 {% block begin_body %}
-<script>
-  Alpine.data('form', () => ({
-    submit() {
-      const form = document.getElementById('admission-add-form');
-      if (form.reportValidity()) {
-        form.submit();
-      }
-    },
-  }));
-</script>
-{% endblock begin_body %}
+  <script>
+    Alpine.data('form', () => ({
+      submit() {
+        const form = document.getElementById('admission-add-form');
+        if (form.reportValidity()) {
+          form.submit();
+        }
+      },
+    }));
+  </script>
+{% endblock %}
 
 
 {% block header_actions %}
-<button type="submit" @click="submit()" x-data="form"
-  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Lưu">
-  <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
-</button>
+  <button type="submit" @click="submit()" x-data="form"
+    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Lưu">
+    <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
+  </button>
 {% endblock %}
+
 
 
 {% block content %}
 <form action="" method="post" class="" id="admission-add-form">
   {{ form.csrf_token }}
-
-  <!-- <div class="flex justify-between items-center mb-8">
-    <h1 class="font-bold text-2xl">Thêm thông tin gói tuyển sinh.</h1>
-    <button type="submit" class="bg-primary text-white font-semibold btn p-5 py-3 shadow flex items-center gap-3">
-      <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-6 invert">
-      <span>Thêm</span>
-    </button>
-  </div> -->
 
   <div class="form-fields">
     {% for field in form if field.name != 'csrf_token' %}

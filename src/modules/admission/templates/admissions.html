@@ -6,34 +6,41 @@
 {% endblock title %}
 
 
+
 {% block header_actions %}
-<!-- add admission button -->
-<a 
-  href="{{ url_for('admission.add') }}"
-  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Thêm đợt tuyển sinh">
-  <img src="{{ url_for('static', filename='icons/fluent/outline/add_circle.svg') }}" class="w-6">
-</a>
+  
+  <!-- {{ url_for('admission.list', type=filter_form.type, max_per_page=6, start_date=None, end_date=None, page=page) }} -->
+
+  <!-- filter button -->
+  <!-- <button @click="filterOpen = !filterOpen"
+    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Lọc/Tìm kiếm">
+    <img src="{{ url_for('static', filename='icons/fluent/outline/filter.svg') }}" class="w-6">
+  </button> -->
+
+  <!-- add admission button -->
+  <a href="{{ url_for('admission.add') }}"
+    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Thêm đợt tuyển sinh">
+    <img src="{{ url_for('static', filename='icons/fluent/outline/add_circle.svg') }}" class="w-6">
+  </a>
 {% endblock %}
 
 
+
 {% block content %}
-
   <div class="flex flex-col h-full gap-10 -mt-2">
-    <div class="flex items-center justify-between gap-10">
-      <!-- header buttons; filter -->
-      <!-- <div class="flex flex-col justify-between gap-5">
-        <a href="{{ url_for('admission.add') }}" class="btn w-fit flex items-center gap-2 bg-primary text-white py-2.5 px-3 rounded shadow">
-          <img src="{{ url_for('static', filename='icons/fluent/outline/people_team_add.svg') }}" class="w-6 invert">
-          <span>Thêm gói tuyển sinh</span>
-        </a>
-      </div> -->
 
-      <!-- filter form -->
-      <form action="" method="get" class="flex items-stretch gap-2">
-        {% for field in filter_form if field.name != 'csrf_token' %}
-          {{ form_field(field, False, '') }}
-        {% endfor %}
-
+    <!-- filter form -->
+    <div class="flex flex-col gap-5">
+      <form action="" method="get" class="flex justify-between gap-2 w-full">
+        <!-- page field -->
+        <input type="hidden" name="page" id="page">
+  
+        <div class="form-fields flex items-center gap-2">
+          {% for field in filter_form if field.name != 'csrf_token' %}
+            {{ form_field(field, False, '') }}
+          {% endfor %}
+        </div>
+  
         <!-- buttons -->
         <div class="pt-3 flex gap-2 ml-3">
           <button type="submit" href="{{ url_for('admission.add') }}"
@@ -41,16 +48,30 @@
             <img src="{{ url_for('static', filename='icons/fluent/outline/filter.svg') }}" class="w-6 invert">
             <span>Lọc</span>
           </button>
-
-          <!-- <button type="reset" href="{{ url_for('admission.add') }}"
-            class="btn w-fit m-auto flex items-center gap-2 bg-primary bg-opacity-90 text-white py-2.5 px-5 rounded shadow">
-            <img src="{{ url_for('static', filename='icons/fluent/outline/arrow_sync.svg') }}" class="w-6 invert">
+  
+          <a href="{{ url_for('admission.list') }}"
+            class="btn w-fit m-auto flex items-center gap-2 bg-primary text-white py-2.5 px-5 rounded shadow">
+            <img src="{{ url_for('static', filename='icons/outline/refresh-outline.svg') }}" class="w-6 invert">
             <span>Đặt lại</span>
-          </button> -->
+          </a>
         </div>
       </form>
+
+      <!-- paginator -->
+      {% if admissions.total > 0 %}
+       <div class="flex flex-col gap-2">
+        <div class="mr-3 text-sm">
+          Bộ lọc đang hiển thị {{ admissions.items | length }} trên tổng số {{ admissions.total }} kết quả.
+        </div>
+
+        <div class="flex items-center mr-6">
+          {{ paginator(admissions, route='admission.list') }}
+        </div>
+       </div>
+      {% endif %}
     </div>
 
+    <!-- grid items -->
     <div class="flex flex-col flex-auto gap-5">
       <!-- admissions grid -->
       <div class="grid grid-cols-3 gap-10">
@@ -63,17 +84,7 @@
           </div>
         {% endfor %}
       </div>
-
-      <!-- paginator -->
-      {% if admissions.total > 0 %}
-        <div class="flex items-center mt-6">
-          {{ paginator(admissions) }}
-        </div>
-      {% endif %}
     </div>
 
   </div>
-
-  
-
 {% endblock content %}

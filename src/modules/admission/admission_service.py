@@ -41,3 +41,15 @@ class AdmissionService:
       logger.exception(e)
       db.session.rollback()
       return False
+
+
+  @staticmethod
+  def mark_done(model: Admission, revoke=False):
+    try:
+      model.finished = True if not revoke else False
+      db.session.commit()
+      return True
+    except Exception as e:
+      logger.exception(e)
+      db.session.rollback()
+      return False

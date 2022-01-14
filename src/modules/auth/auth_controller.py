@@ -1,4 +1,3 @@
-import uuid
 from flask import Blueprint, jsonify, request, render_template, flash, current_app, url_for, make_response, session
 from flask_login import login_required, current_user, logout_user, login_user
 from werkzeug.utils import redirect
@@ -7,6 +6,7 @@ from src.main import limiter, logger
 from src.base.constants.base_constanst import FlashCategory
 from src.modules.auth.auth_service import AuthService
 from src.modules.user.user_model import User
+from .auth_constants import *
 
 # defining controller
 auth = Blueprint('auth', __name__, template_folder='templates', static_folder='static', static_url_path='auth/static')
@@ -25,8 +25,10 @@ def login():
             flash('You\'re already logged in!', category=FlashCategory.warning(5000))
             return redirect('/')
 
+        # auto fill the email field
         if request.args.get('email'):
             form.email.data = request.args.get('email')
+
         return render_template('login.html', form=form)
 
     # POST REQUEST
@@ -35,10 +37,8 @@ def login():
         return render_template('login.html', form=form)
 
     # FORM IS VALID, LET'S GET THE USER OBJECT FROM DB
-    from src.modules.user.user_model import User
-    from src.main import db
     user = AuthService.get_user_from_email(form.email.data)
-    
+
     if user is not None:
         # let's log the user in
         login_user(user, remember=form.remember)
@@ -95,25 +95,28 @@ def register():
 
     try:
         # all validation passed, let's continue handle the signup process
+        confirmation_code = AuthService.gen_registration_code()
+        # assigning the confirmation code to user's session cookie
+        session[SESSION_REGISTRATION_CONFIMATION_CODE] = confirmation_code
+
+        # send confirmation email
         AuthService.send_register_confirm_email(
             receiver_email=form.email.data,
             receiver_name=form.organization_name.data,
-            code=AuthService.gen_registration_code(),
+            code=confirmation_code,
         )
+
+        # push the form data to session, so we dont have to store these info in the DB --> prevent registrastion spamming ultil the email in confirmed
+        session[SESSION_REGISTRATION_ORGANIZATION_NAME] = form.organization_name.data
+        session[SESSION_REGISTRATION_ORGANIZATION_REPRESENTER_PERSON_NAME] = form.organization_representer_person_name.data
+        session[SESSION_REGISTRATION_ORGANIZATION_TAX_ID] = form.organization_tax_id.data
+        session[SESSION_REGISTRATION_CITIZEN_ID] = form.citizen_id.data
+        session[SESSION_REGISTRATION_EMAIL] = form.email.data
+        session[SESSION_REGISTRATION_PHONE] = form.phone.data
+        session[SESSION_REGISTRATION_ADDRESS] = form.address.data
 
         # showing a flash message -> redirecting to the home page
         flash(message=f'Vui lòng kiểm tra tin nhắn được gửi tới email {form.email.data} để hoàn tất quá trình đăng ký!', category=FlashCategory.success(20000))
-
-        # push the form data to session, so we dont have to store these info in the DB --> prevent registrastion spamming
-        session['registration_organization_name'] = form.organization_name.data
-        session['registration_organization_representer_person_name'] = form.organization_representer_person_name.data
-        session['registration_organization_tax_id'] = form.organization_tax_id.data
-        session['registration_citizen_id'] = form.citizen_id.data
-        session['registration_email'] = form.email.data
-        session['registration_phone'] = form.phone.data
-        session['registration_address'] = form.address.data
-
-        # show the verification page
         return redirect('/verify')
     except Exception as e:
         logger.error(e)
@@ -128,32 +131,33 @@ def verify_registration():
     from src.modules.auth.forms.verification_form import RegisterVerificationForm
     form = RegisterVerificationForm()
 
-    if session.get('registration_email') is None or session.get('registration_code') is None:
-        flash(message='Seemslike you have already registered, please try later', category=FlashCategory.warning(10000))
+    if not session.get(SESSION_REGISTRATION_EMAIL) or not session.get(SESSION_REGISTRATION_CONFIMATION_CODE):
+        flash(message='It seems like you have already registered or your data has been corrupted, please try later', category=FlashCategory.warning(10000))
         return redirect('/')
 
     if request.method == 'GET':
-        return render_template('verify-registration.html', form=form, email=session['registration_email'])
+        return render_template('verify-registration.html', form=form, email=session[SESSION_REGISTRATION_EMAIL])
 
     if not form.validate_on_submit():
         flash(message='Please fill out the code', category=FlashCategory.warning())
-        return render_template('verify-registration.html', form=form, email=session['registration_email'])
+        return render_template('verify-registration.html', form=form, email=session[SESSION_REGISTRATION_EMAIL])
 
     # form validated --> check if the provided code is correct
     if form.verification_code.data != session.get('registration_code'):
         flash(message='The code you provided was incorrect', category=FlashCategory.warning())
-        return render_template('verify-registration.html', form=form, email=session['registration_email'])
+        return render_template('verify-registration.html', form=form, email=session[SESSION_REGISTRATION_EMAIL])
 
     # form validated -> add the envoy info to DB
     try:
-        new_user = User(email=session['registration_email'], phone_number=session['registration_phone'])
+        new_user = User(email=session[SESSION_REGISTRATION_EMAIL], phone_number=session[SESSION_REGISTRATION_PHONE])
         new_user.role_id = 3 # envoy
         new_user.envoy_type_id = 4 # organization
-        new_user.address = session['registration_address']
-        new_user.citizen_id = session['registration_citizen_id']
-        new_user.organization_name  = session['registration_organization_name']
-        new_user.organization_representer_person_name = session['registration_organization_representer_person_name']
-        new_user.organization_tax_id = session['registration_organization_tax_id']
+        new_user.address = session[SESSION_REGISTRATION_ADDRESS]
+        new_user.citizen_id = session[SESSION_REGISTRATION_CITIZEN_ID]
+        new_user.organization_name  = session[SESSION_REGISTRATION_ORGANIZATION_NAME]
+        new_user.organization_representer_person_name = session[SESSION_REGISTRATION_ORGANIZATION_REPRESENTER_PERSON_NAME]
+        new_user.organization_tax_id = session[SESSION_REGISTRATION_ORGANIZATION_TAX_ID]
+        new_user.activated = True # allow to login
 
         # ??? check trùng thông tin trước khi thêm vào DB
 
@@ -171,7 +175,7 @@ def verify_registration():
 
     except Exception as e:
         logger.error(e)
-        flash(message='Something went wrong, please try later', category=FlashCategory.warning())
+        flash(message='Something went wrong (maybe your data has been corrupted), please try later', category=FlashCategory.warning())
         return render_template('verify-registration.html', form=form, email=session['registration_email'])
 
 
@@ -184,57 +188,20 @@ def reset_password():
     return "password reset", 200
 
 
-@auth.route('/profile', methods=['GET', 'POST'])
-@login_required
-def profile():
-    from src.modules.auth.forms.profile_form import UpdateForm
+@auth.route('/<username>', methods=['GET', 'POST'])
+@limiter.limit('1/second; 15/minute; 20/day')
+def profile(username: str):
+    user = AuthService.get_user_from_username(username)
+
+    if not user:
+        flash('The user does not exist', category=FlashCategory.warning())
+        return redirect('/')
+
+    # anonymous viewing
+    if not current_user.is_authenticated or current_user.id != user.id:
+        return render_template('profile.html')
+
+    # self authenticated user
+    from .forms.profile_form import UpdateForm
     form = UpdateForm()
-
-    from src.modules.user.user_model import User
-    current_user_object = User.query.get(current_user.get_id())  # type: User
-
-    # assigning current user's email for every requests --- the email field is not editable (primary key)
-    form.email.data = current_user_object.email
-    print('avatar:', form.avatar)
-
-
-    # checking if is GET request
-    if request.method == 'GET':
-        # re-assigning the full_name to latest value
-        form.full_name.data = current_user_object.full_name
-        return render_template('profile.html', form=form)
-
-    # checking if the form is not valid yet
-    if not form.validate_on_submit():
-        # re-assigning the full_name to reduce confusing
-        form.full_name.data = current_user_object.full_name
-
-        flash('form error !', category='error')
-        return render_template('profile.html', form=form)
-
-
-    # all validations passed, let's update the user's new data
-    # saving the new avatar_url to the DB if a avatar choosen
-    from src.modules.auth.auth_service import AuthService
-    avatar_path = None
-    print('image data:', form.avatar.data)
-    if form.avatar.data:
-        avatar_path = AuthService.save_avatar_image(form.avatar.data)
-        print('saved avatar path:', avatar_path)
-
-    try:
-        # the avatar field now is not a file (via: request.files)
-        if request.form['avatar'] == 'null':
-            avatar_path = 'null'
-    except:
-        print('')
-
-    # updating the user's new data
-    user = User(full_name=form.full_name.data, avatar_url=avatar_path)
-    AuthService.update(current_user.get_id(), user)
-
-
-    flash('Updated !', category=FlashCategory.Success)
-    return redirect(location='profile')
-
-
+    return render_template('update.html', form=form)
