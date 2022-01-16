@@ -38,8 +38,9 @@ ckeditor = CKEditor()
 
 
 # principals
-from flask_principal import Principal, Permission, RoleNeed, UserNeed, identity_loaded
+from flask_principal import Principal, Permission, RoleNeed, UserNeed, identity_loaded, Need, partial, Identity, AnonymousIdentity
 principals = Principal()
+
 # declaring permission Needs
 admin_permission = Permission(RoleNeed('admin'))
 manager_permission = Permission(RoleNeed('manager'), RoleNeed('admin'))
@@ -102,35 +103,46 @@ def init_protections(app: App):
     Initializing application's protection/security extensions.
     """
     limiter.init_app(app)
-    # rbac.init_app(app)
 
 
 def init_principal_user_provider(app: App):
+    @principals.identity_loader
+    def read_identity_from_flask_login():
+        from flask_login import current_user
+
+        if current_user.is_authenticated and current_user.activated:
+            return Identity(current_user.id)
+
+        # user not logged in
+        return AnonymousIdentity()
+
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):
         from flask_login import current_user
 
-        # Set the identity user object
-        identity.user = current_user
+        # ensure the logged-in user is activated
+        if hasattr(current_user, 'activated') and current_user.activated:
+            # Set the identity user object
+            identity.user = current_user
 
-        # Add the UserNeed to the identity
-        if hasattr(current_user, 'id'):
-            identity.provides.add(UserNeed(current_user.id))
+            # Add the UserNeed to the identity
+            if hasattr(current_user, 'id'):
+                identity.provides.add(UserNeed(current_user.id))
 
-        # Add the RoleNeed to the identity
-        if hasattr(current_user, 'role'):
-            identity.provides.add(RoleNeed(current_user.role.code))
+            # Add the RoleNeed to the identity
+            if hasattr(current_user, 'role'):
+                identity.provides.add(RoleNeed(current_user.role.code))
 
 
 def hooks(app: App):
     """
     Defining hook operations.
     """
-    @app.before_request
-    def app_before_request():
-        pass
+    # @app.before_request
+    # def app_before_request():
+    #     pass
 
-    # add logging mail sender
+    # ADD LOGGING MAIL SENDER
     import logging
     from logging.handlers import SMTPHandler
     if not app.debug:

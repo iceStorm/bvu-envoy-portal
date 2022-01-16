@@ -19,7 +19,7 @@ def get_view_model() -> NavBarViewModel:
         nav_item_groups=[
             NavItemGroup('Chung', items=[
                 NavItem(href='/', title='Dashboard', icon=NavItemIcon(original='icons/fluent/outline/apps.svg')),
-                NavItem(href='', title='Thông báo', icon=NavItemIcon(original='icons/fluent/outline/alert.svg'), counter=5, show_counter_icon=True),
+                NavItem(href=url_for('home.notifications'), title='Thông báo', icon=NavItemIcon(original='icons/fluent/outline/alert.svg'), counter=5, show_counter_icon=True),
             ],),
 
             NavItemGroup(label='Tuyển sinh', items=[

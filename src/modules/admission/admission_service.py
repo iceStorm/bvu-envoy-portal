@@ -19,6 +19,7 @@ class AdmissionService:
   def update(old_model: Admission, form: AdmissionForm):
     try:
       old_model.name = form.name.data
+      old_model.description = form.description.data
       # old_model.slug = form.slug.data
       old_model.start_date = form.start_date.data
       old_model.end_date = form.end_date.data

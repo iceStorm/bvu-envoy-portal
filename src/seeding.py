@@ -5,6 +5,7 @@ def start_seeding(db: SQLAlchemy):
   seed_roles(db)
   seed_root_user(db)
   seed_manager_users(db)
+  seed_envoy_users(db)
 
   seed_admission_types(db)
   seed_envoy_types(db)
@@ -58,8 +59,8 @@ def seed_root_user(db: SQLAlchemy):
     print('\nNO ROOT USER DETECTED, START SEDDING...')
 
     root_user = User(
-      first_name='Nguyễn',
-      last_name='Anh Tuấn',
+      first_name='Anh Tuấn',
+      last_name='Nguyễn',
       activated=True,
       email='tuanna@student.bvu.edu.vn',
       phone_number='0333326585',
@@ -77,7 +78,7 @@ def seed_manager_users(db: SQLAlchemy):
   """
   from .modules.user.user_model import User
 
-  # check if there is any Root role user
+  # check if there is any Manager role user
   manager_user =  db.session.query(User)\
     .filter(User.role_id == 2)\
     .first()
@@ -87,8 +88,8 @@ def seed_manager_users(db: SQLAlchemy):
     print('\nNO MANAGER USER DETECTED, START SEDDING...')
 
     manager_user_1 = User(
-      first_name='Nguyễn',
-      last_name='Anh Nhân',
+      first_name='Anh Nhân',
+      last_name='Nguyễn',
       activated=True,
       email='nhanna@student.bvu.edu.vn',
       phone_number='0033326585',
@@ -97,8 +98,8 @@ def seed_manager_users(db: SQLAlchemy):
     manager_user_1.role_id = 2
 
     manager_user_2 = User(
-      first_name='Lê',
-      last_name='Anh Tú',
+      first_name='Anh Tú',
+      last_name='Lê',
       activated=True,
       email='tula@student.bvu.edu.vn',
       phone_number='0033326586',
@@ -107,8 +108,8 @@ def seed_manager_users(db: SQLAlchemy):
     manager_user_2.role_id = 2
 
     manager_user_3 = User(
-      first_name='Hà',
-      last_name='Anh Tuấn',
+      first_name='Anh Tuấn',
+      last_name='Hà',
       activated=True,
       email='tuanha@student.bvu.edu.vn',
       phone_number='0033326587',
@@ -118,6 +119,39 @@ def seed_manager_users(db: SQLAlchemy):
 
     db.session.add_all([manager_user_1, manager_user_2, manager_user_3])
     db.session.commit()
+
+
+def seed_envoy_users(db: SQLAlchemy):
+  """
+  Seeding envoy user for the app if there is no envoy role user in the DB.
+  """
+  from .modules.user.user_model import User
+
+  # check if there is any Envoy role user
+  envoy_user =  db.session.query(User)\
+    .filter(User.role_id == 3)\
+    .all()
+
+  # start sedding if there is no Root role user
+  if len(envoy_user) < 20:
+    print('\nNO ENVOY USER DETECTED, START SEDDING...')
+
+    envoy_users = []
+    for i in range(1111, 1132):
+      temp_envoy = User(
+        email=f'envoy_{i}@email.com',
+        phone_number=f'033332{i}',
+        activated=True,
+        raw_password='123456',
+        role_id=3,
+      )
+      temp_envoy.organization_representer_person_name = f'Envoy Representer {i}'
+      envoy_users.append(temp_envoy)
+
+    db.session.add_all(envoy_users)
+    db.session.commit()
+
+
 
 
 

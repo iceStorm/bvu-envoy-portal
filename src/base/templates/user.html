@@ -30,21 +30,21 @@
 <body class="overflow-hidden" x-data="rootData" >
 
     <!-- QR CODE MODAL -->
-    <div x-show="qrOpen" class="qrcode-modal overflow-auto fixed z-50 flex justify-center items-center">
+    <div x-show="qrOpen" x-transition.origin.top-center class="qrcode-modal overflow-auto fixed z-50 flex justify-center items-center w-screen h-screen top-0 left-0">
         <!-- overlay -->
-        <div x-transition.opacity class="qrcode-modal-overlay bg-black bg-opacity-50 backdrop-blur-md fixed w-screen h-screen"></div>
+        <div class="qrcode-modal-overlay bg-black bg-opacity-50 backdrop-blur-md absolute w-full h-full top-0 left-0"></div>
         <!-- content -->
-        <div class="qrcode-modal-content bg-white flex flex-col gap-5" @click.outside="qrOpen = false"
+        <div class="qrcode-modal-content bg-white flex flex-col relative z-10 m-auto" @click.outside="qrOpen = false"
             style="min-height: 300px; min-width: 800px;">
             <!-- header -->
             <div class="qrcode-modal-header p-7 py-4 flex items-center justify-between">
-                <h1 class="text-xl font-bold">Chia sẻ mã QR.</h1>
+                <h1 class="text-xl font-black">Chia sẻ mã QR.</h1>
                 <button @click="qrOpen = false">
                     <img src="{{ url_for('static', filename='icons/outline/close-outline.svg') }}" class="w-8">
                 </button>
             </div>
             <!-- body -->
-            <div class="qrcode-modal-body flex-auto px-7 pb-7 flex gap-10">
+            <div class="qrcode-modal-body flex-auto px-7 py-7 flex gap-10">
                 <div class="border border-gray-200 p-3" style="flex-basis: 200px;" id="qrcode-canvas">
                 </div>
                 <script type="text/javascript">

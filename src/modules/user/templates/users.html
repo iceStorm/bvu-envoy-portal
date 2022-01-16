@@ -4,6 +4,89 @@
 {% endblock title %} 
 
 
+{% block header_actions %}
+  <input type="search" name="user-search-query" id="user-search-box"
+    placeholder="Tìm kiếm người dùng..." data-tippy-content="Nhập từ khóa muốn tìm kiếm ở bất kì trường nào"
+    class="border border-gray-200 px-3 py-1.5 mr-3 text-sm max-w-md w-full focus:outline-none focus:ring-1 focus:ring-primary">
+
+  <a href="{{ url_for('admission.add') }}"
+    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Nhập từ file excel">
+    <img src="{{ url_for('static', filename='icons/outline/cloud-upload-outline.svg') }}" class="w-8">
+  </a>
+
+  <a href="{{ url_for('admission.add') }}"
+    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Xuất ra file excel">
+    <img src="{{ url_for('static', filename='icons/outline/cloud-download-outline.svg') }}" class="w-8">
+  </a>
+{% endblock %}
+
+
+
 {% block content %}
-  Người dùng.  
+  <div class="flex items-center mb-5">
+    
+  </div>
+
+  <table class="rounded-md border border-collapse border-gray-300 max-h-screen relative">
+    <thead class=" bg-primary text-white font-medium sticky top-0">
+      <tr class="p-5">
+        <td class="pl-3 py-2">#</td>
+        <!-- <td class="text-left pl-3 py-2">Họ</td>
+        <td class="text-left pl-3 py-2">Tên đệm & tên</td> -->
+        <td class="text-left pl-3 py-2">Họ và tên</td>
+        <td class="text-left pl-3 py-2">Email</td>
+        <td class="text-left pl-3 py-2">Đã kích hoạt</td>
+        <td class="text-left pl-3 py-2">Số điện thoại</td>
+        <td class="text-left pl-3 py-2">Kiểu tài khoản</td>
+        <td class="text-left pl-3 py-2">#</td>
+      </tr>
+    </thead>
+
+    <tbody>
+    {% for user in users %}
+      <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-purple-200 border-b border-gray-300 text-sm">
+        <td class="py-2 pl-3 font-bold">{{ loop.index }}</td>
+        <!-- <td class="py-2 pl-3">{{ user.last_name or '' }}</td>
+        <td class="py-2 pl-3">{{ user.first_name or '' }}</td> -->
+        <td class="py-2 pl-3">{{ user.full_name }}</td>
+        <td class="py-2 pl-3">{{ user.email }}</td>
+        <td class="py-2 pl-3">{{ user.activated }}</td>
+        <td class="py-2 pl-3">{{ user.phone_number }}</td>
+        <td class="py-2 pl-3">{{ user.role.name }}</td>
+        <td class="py-2 pl-3 relative" x-data="{ open: false }">
+          <button @click="open = !open">
+            <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}" class="w-6">
+          </button>
+
+          <!-- menu -->
+          <div
+            x-show="open" x-transition.origin.top.right @click.outside="open = false"
+            class="absolute z-10 right-4 top-full w-max py-2 rounded shadow-lg flex flex-col gap-2 bg-white bg-opacity-25 backdrop-blur-md border border-gray-300">
+            <a href="{{ url_for('user.detail', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+              <img src="{{ url_for('static', filename='icons/fluent/outline/eye_show.svg') }}" class="w-5">
+              <span class="text-sm">Xem chi tiết profile</span>
+            </a>
+
+            {% if not user.activated %}
+            <a href="{{ url_for('user.activate', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+              <img src="{{ url_for('static', filename='icons/fluent/outline/lock-open.svg') }}" class="w-5">
+              <span class="text-sm">Kích hoạt</span>
+            </a>
+            {% else %}
+              <a href="{{ url_for('user.deactivate', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                <img src="{{ url_for('static', filename='icons/fluent/outline/lock-closed.svg') }}" class="w-5">
+                <span class="text-sm">Khóa (ngưng kích hoạt)</span>
+              </a>
+            {% endif %}
+
+            <a href="{{ url_for('user.delete', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+              <img src="{{ url_for('static', filename='icons/fluent/outline/delete.svg') }}" class="w-5">
+              <span class="text-sm">Xóa</span>
+            </a>
+          </div> <!-- menu -->
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 {% endblock content %}

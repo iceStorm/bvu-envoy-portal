@@ -48,7 +48,10 @@ class User(UserMixin, db.Model):
     envoy_type = relationship('EnvoyType', backref='users')
 
 
-    def __init__(self, email: str, phone_number: str, first_name: str=None, last_name: str=None, raw_password=None, avatar_url=None, activated=False):
+    def __init__(self, email: str, phone_number: str, 
+        first_name: str=None, last_name: str=None, 
+        raw_password=None, avatar_url=None, 
+        activated=False, role_id=3):
         """
         Creating a new User instance.
         raw_password: this field will be encrypted automatically.
@@ -60,6 +63,7 @@ class User(UserMixin, db.Model):
         self.phone_number = phone_number
         self.activated = activated
         self.avatar_url = avatar_url
+        self.role_id = 3 # default user is envoy to restrict permissions
 
         # if raw_password provided through the constructor
         if raw_password:
@@ -74,7 +78,9 @@ class User(UserMixin, db.Model):
 
     @property
     def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.last_name} {self.first_name}" \
+            if (self.role_id == 1 or self.role_id == 2) \
+                else (self.organization_representer_person_name or '-')
 
     def __repr__(self):
         return f"<User: full name: {self.full_name}, email: {self.email}>"

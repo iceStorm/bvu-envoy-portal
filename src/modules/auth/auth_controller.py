@@ -44,8 +44,8 @@ def login():
         login_user(user, remember=form.remember)
 
         #  Tell Flask-Principal the identity changed
-        from flask_principal import identity_changed, Identity
-        identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
+        # from flask_principal import identity_changed, Identity
+        # identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
 
         # finally, redirect the user to desired page or index page
         next_url = request.args.get('next')
@@ -62,12 +62,12 @@ def logout():
     logout_user()
 
     # Remove session keys set by Flask-Principal
-    for key in ('identity.name', 'identity.auth_type'):
-        session.pop(key, None)
+    # for key in ('identity.name', 'identity.auth_type'):
+    #     session.pop(key, None)
 
     # Tell Flask-Principal the user is anonymous
-    from flask_principal import identity_changed, Identity, AnonymousIdentity
-    identity_changed.send(current_app._get_current_object(), identity=AnonymousIdentity())
+    # from flask_principal import identity_changed, Identity, AnonymousIdentity
+    # identity_changed.send(current_app._get_current_object(), identity=AnonymousIdentity())
 
     return redirect(location="/")
 

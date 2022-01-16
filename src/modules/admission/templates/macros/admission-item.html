@@ -25,10 +25,17 @@
         <span class="text-sm">Sửa thông tin</span>
       </a>
 
+      {% if not admission.finished %}
       <a href="{{ url_for('admission.mark_done', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
         <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
         <span class="text-sm">Đánh dấu là hoàn tất</span>
       </a>
+      {% else %}
+        <a href="{{ url_for('admission.revoke_done', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
+          <img src="{{ url_for('static', filename='icons/outline/refresh-outline.svg') }}" class="w-5">
+          <span class="text-sm">Thu hồi trạng thái hoàn tất</span>
+        </a>
+      {% endif %}
 
       <a href="{{ url_for('admission.delete', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
         <img src="{{ url_for('static', filename='icons/fluent/outline/delete.svg') }}" class="w-5">
@@ -84,7 +91,7 @@
     </p>
     <!-- remaining days -->
     <p class="flex-1 flex items-center justify-center gap-1 border-l-4 px-2 py-2 border-purple-400 bg-purple-500 bg-opacity-10">
-      <img src="{{ url_for('static', filename='icons/fluent/outline/arrow_down.svg') }}" class="w-4">
+      <img src="{{ url_for('static', filename='icons/outline/time-outline.svg') }}" class="w-4">
       <span class="">{{ (admission.end_date - admission.start_date).days }} ngày</span>
     </p>
   </div>
