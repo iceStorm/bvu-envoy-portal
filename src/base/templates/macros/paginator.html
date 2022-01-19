@@ -2,8 +2,8 @@
 
   <!-- prev item -->
   {% if pagination.has_prev %}
-    <a href="{{ pagination.prev().page }}" data-tippy-content="Trang trước"
-      class="pagination-item px-3 py-2 border border-gray-300 rounded-l hover:bg-gray-100 bg-white">
+    <a href="{{ url_for(route, page=pagination.prev().page) }}" data-tippy-content="Trang trước"
+      class="pagination-item px-3 py-2 border border-gray-300 hover:bg-gray-100 bg-white">
       <img src="{{ url_for('static', filename='icons/outline/chevron-back-outline.svg') }}" class="w-4">
     </a>
   {% endif %}
@@ -34,8 +34,8 @@
 
   <!-- next item -->
   {% if pagination.has_next %}
-    <a href="{{ pagination.next().page }}" data-tippy-content="Trang sau"
-      class="pagination-item px-3 py-2 border border-l-0 border-gray-300 rounded-r hover:bg-gray-100 bg-white">
+    <a href="{{ url_for(route, page=pagination.next().page)  }}" data-tippy-content="Trang sau"
+      class="pagination-item px-3 py-2 border border-l-0 border-gray-300 hover:bg-gray-100 bg-white">
       <img src="{{ url_for('static', filename='icons/outline/chevron-forward-outline.svg') }}" class="w-4">
     </a>
   {% endif %}

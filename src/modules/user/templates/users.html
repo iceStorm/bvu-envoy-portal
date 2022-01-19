@@ -21,67 +21,94 @@
 {% endblock %}
 
 
+{% block begin_body %}
+  <script>
+    Alpine.data('tableData', () => ({
+      onCheckboxChange(e) {
+        console.log(e.target.name);
+      },
+    }));
+  </script>
+{% endblock begin_body %}
+
 
 {% block content %}
-  <div class="flex items-center mb-5">
-    
-  </div>
+  <form action="" method="post" x-data="tableData" class="relative mb-10" id="users-form">
 
-  <table class="rounded-md border border-collapse border-gray-300 max-h-screen relative">
-    <thead class=" bg-primary text-white font-medium sticky top-12">
-      <tr class="p-5">
-        <td class="text-center px-2 py-2 border-r border-gray-300"><input type="checkbox" name="" id=""></td>
-        <!-- <td class="text-left pl-3 py-2 border-r border-gray-300">Họ</td>
-        <td class="text-left pl-3 py-2 border-r border-gray-300">Tên đệm & tên</td> -->
-        <td class="text-left pl-3 py-2 border-r border-gray-300">Họ và tên</td>
-        <td class="text-left pl-3 py-2 border-r border-gray-300">Email</td>
-        <td class="text-left pl-3 py-2 border-r border-gray-300">Số điện thoại</td>
-        <td class="text-left pl-3 py-2 border-r border-gray-300">Kiểu tài khoản</td>
-        <td class="text-left pl-3 py-2 border-r border-gray-300">Ngày kích hoạt</td>
-        <td class="text-center px-2 py-2 border-r border-gray-300">#</td>
-      </tr>
-    </thead>
-
-    <tbody>
-    {% for user in users %}
-      <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-blue-200 border-b border-gray-300 text-sm">
-        <td class="text-center py-2 border-r border-gray-300 font-bold"><input type="checkbox" name="" id=""></td>
-        <!-- <td class="py-2 pl-3 border-r border-gray-300">{{ user.last_name or '' }}</td>
-        <td class="py-2 pl-3 border-r border-gray-300">{{ user.first_name or '' }}</td> -->
-        <td class="py-2 pl-3 border-r border-gray-300"><a href="{{ url_for('user.detail', id=user.id) }}" class="font-bold">{{ user.full_name }}</a></td>
-        <td class="py-2 pl-3 border-r border-gray-300">{{ user.email }}</td>
-        <td class="py-2 pl-3 border-r border-gray-300">{{ user.phone_number }}</td>
-        <td class="py-2 pl-3 border-r border-gray-300">{{ user.role.name }}</td>
-        <td class="py-2 pl-3 border-r border-gray-300">{{ user.verified_time }}</td>
-        <td class="text-center py-2 border-r border-gray-300 relative flex justify-center items-center" x-data="{ open: false }">
-          <button @click="open = !open" class="hover:bg-gray-400 rounded-full p-1">
-            <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}" class="w-6">
-          </button>
-
-          <!-- menu -->
-          <div
-            x-show="open" x-transition.origin.top.right @click.outside="open = false"
-            class="absolute z-10 right-4 top-full w-max py-2 rounded shadow-lg flex flex-col gap-2 bg-white bg-opacity-25 backdrop-blur-md border border-gray-300">
-            <a href="{{ url_for('user.detail', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
-              <img src="{{ url_for('static', filename='icons/fluent/outline/eye_show.svg') }}" class="w-5">
-              <span class="text-sm">Xem chi tiết profile</span>
+    <table class="rounded-md border border-collapse border-gray-300 max-h-screen relative w-full">
+      <thead class=" bg-primary text-white font-medium sticky top-12 z-10 table-fixed">
+        <tr class="p-5">
+          <td class="text-center px-2 py-2 border-r border-gray-300">
+            <input type="checkbox" data-tippy-content="Chọn/Bỏ chọn tất cả dòng đang hiển thị">
+          </td>
+          <td class="text-left px-3 py-2 border-r border-gray-300">Họ và tên</td>
+          <td class="text-left px-3 py-2 border-r border-gray-300">Email</td>
+          <td class="text-left px-3 py-2 border-r border-gray-300">Số điện thoại</td>
+          <td class="text-left px-3 py-2 border-r border-gray-300">Kiểu tài khoản</td>
+          <td class="text-left px-3 py-2 border-r border-gray-300">Ngày kích hoạt</td>
+          <td class="text-center px-2 py-2 border-r border-gray-300">#</td>
+        </tr>
+      </thead>
+  
+      <tbody>
+      {% for user in users.items %}
+        <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-blue-200 border-b border-gray-300 text-sm">
+          <td class="text-center py-2 border-r border-gray-300 font-bold">
+            <input type="checkbox" name="user-id" value="{{ user.id }}" @change="onCheckboxChange">
+          </td>
+          <td class="py-2 px-3 border-r border-gray-300"><a href="{{ url_for('user.detail', id=user.id) }}" class="font-bold">{{ user.full_name }}</a></td>
+          <td class="py-2 px-3 border-r border-gray-300">{{ user.email }}</td>
+          <td class="py-2 px-3 border-r border-gray-300">{{ user.phone_number }}</td>
+          <td class="py-2 px-3 border-r border-gray-300">{{ user.role.name }}</td>
+          <td class="py-2 px-3 border-r border-gray-300">{{ user.verified_time }}</td>
+          <td class="text-center py-2 border-r border-gray-300 relative flex justify-center items-center" x-data="{ open: false }">
+            <a @click="open = !open" class="hover:bg-gray-400 rounded-full p-1 cursor-pointer">
+              <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}" class="w-6">
             </a>
-
-            {% if not user.activated %}
-            <a href="{{ url_for('user.activate', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
-              <img src="{{ url_for('static', filename='icons/fluent/outline/lock-open.svg') }}" class="w-5">
-              <span class="text-sm">Kích hoạt</span>
-            </a>
-            {% else %}
-              <a href="{{ url_for('user.deactivate', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
-                <img src="{{ url_for('static', filename='icons/fluent/outline/lock-closed.svg') }}" class="w-5">
-                <span class="text-sm">Khóa (ngưng kích hoạt)</span>
+  
+            <!-- menu -->
+            <div
+              x-show="open" x-transition.origin.top.right @click.outside="open = false"
+              class="absolute z-10 right-4 top-full w-max py-2 rounded shadow-lg flex flex-col gap-2 bg-white bg-opacity-25 backdrop-blur-md border border-gray-300">
+              <a href="{{ url_for('user.detail', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                <img src="{{ url_for('static', filename='icons/fluent/outline/eye_show.svg') }}" class="w-5">
+                <span class="text-sm">Xem chi tiết profile</span>
               </a>
-            {% endif %}
-          </div> <!-- menu -->
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+  
+              {% if not user.activated %}
+              <a href="{{ url_for('user.activate', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                <img src="{{ url_for('static', filename='icons/fluent/outline/lock-open.svg') }}" class="w-5">
+                <span class="text-sm">Kích hoạt</span>
+              </a>
+              {% else %}
+                <a href="{{ url_for('user.deactivate', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                  <img src="{{ url_for('static', filename='icons/fluent/outline/lock-closed.svg') }}" class="w-5">
+                  <span class="text-sm">Khóa (ngưng kích hoạt)</span>
+                </a>
+              {% endif %}
+            </div> <!-- menu -->
+          </td>
+        </tr>
+      {% else %}
+        <tr class="bg-white">
+          <td class="bg-white p-3" colspan="7">Chưa có thông tin.</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    
+    <div class="flex mt-5">
+      {{ paginator(users, route='user.list') }}
+    </div>
+
+    <!-- row select bubble -->
+    <!-- <div x-show="checkboxChecked.length > 0" x.transition.scale.origin.bottom.center
+      class="fixed bottom-4 right-4 max-w-md py-3 px-4 bg-white shadow-xl rounded border border-gray-200 flex justify-between gap-5">
+      <span class="border-r border-gray-300 pr-5">Đã chọn <span x-text="checkboxChecked.length"></span> mục</span>
+      <div class="flex items-center gap-2">
+        <button type="submit">Khóa tài khoản</button>
+        <button type="submit">Xóa tài khoản</button>
+      </div>
+    </div> -->
+  </form>
 {% endblock content %}

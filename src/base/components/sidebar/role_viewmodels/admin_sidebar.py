@@ -22,7 +22,7 @@ def admin_sidebar():
             ),
         ],),
 
-        NavItemGroup(label='Đại sứ - Học viên', items=[
+        NavItemGroup(label='Đại sứ', items=[
             NavItem(href='', title='Chờ xét duyệt',
                 icon=NavItemIcon(original='icons/fluent/outline/history.svg'),
                 counter=len(db.session.query(User).filter(User.activated == False, User.role_id == 3).all()),
@@ -44,17 +44,17 @@ def admin_sidebar():
         NavItemGroup(label='Người dùng', items=[
             NavItem(href=url_for('user.accounts_waiting'), title='Chờ xác thực',
                 icon=NavItemIcon(original='icons/fluent/outline/person_question_mark.svg'),
-                counter=len(db.session.query(User).filter(User.verified_time == None, User.role_id == 3).all()),
+                counter=len(db.session.query(User).filter(User.activated == False, User.verified_time == None, User.role_id == 3).all()),
                 show_counter_icon=True,
                 counter_is_urgent=True,
             ),
             NavItem(href=url_for('user.list'), title='Đang hoạt động',
-                icon=NavItemIcon(original='icons/fluent/outline/shield_checkmark.svg'),
-                counter=len(db.session.query(User).filter(User.activated == True).all()),
+                icon=NavItemIcon(original='icons/fluent/outline/person_available.svg'),
+                counter=len(db.session.query(User).filter(User.activated == True, ).all()),
             ),
             NavItem(href=url_for('user.disabled'), title='Tài khoản đã khóa',
-                icon=NavItemIcon(original='icons/fluent/outline/person_lock.svg'),
-                counter=len(db.session.query(User).filter(User.activated == False).all()),
+                icon=NavItemIcon(original='icons/fluent/outline/person_prohibited.svg'),
+                counter=len(db.session.query(User).filter(User.activated == False, User.verified_time != None).all()),
                 show_counter_icon=True,
             ),
         ],),

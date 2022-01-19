@@ -66,7 +66,7 @@ def list(type=0, page=1, max_per_page=1, start_date=None, end_date=None, status=
 
 
 
-@admission.route('/active', methods=['GET', 'POST'])
+@admission.route('/active/', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def active():
     return render_template("admissions.html")

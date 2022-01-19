@@ -5,8 +5,56 @@
 {% endblock title %}
 
 
+
+{% block header_actions %}
+    <!-- mark done/revoke -->
+    {% if not user.activated %}
+        <a href="{{ url_for('user.activate', id=user.id) }}"
+            class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Kích hoạt">
+            <img src="{{ url_for('static', filename='icons/fluent/outline/shield_checkmark.svg') }}" class="w-6">
+        </a>
+        {% else %}
+        <a href="{{ url_for('user.deactivate', id=user.id) }}"
+            class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Khóa tài khoản">
+            <img src="{{ url_for('static', filename='icons/fluent/outline/shield_locked.svg') }}" class="w-6">
+        </a>
+    {% endif %}
+
+    <!-- edit -->
+    <a href="{{ url_for('user.edit', id=user.id) }}"
+        class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Sửa thông tin">
+        <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
+    </a>
+{% endblock %}
+
+
 {% block content %}
 
-{{ user.full_name }}
+<div class="flex gap-6">
+    <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="w-40 border border-gray-300 rounded-md">
+
+    <!-- meta -->
+    <div class="flex flex-col">
+        <p class="flex items-center gap-5 mb-4">
+            <span class="text-2xl font-bold text-primary">{{ user.full_name }}</span>
+            <span class="rounded-full px-5 py-1.5 shadow-lg bg-white text-sm font-semibold">{{ user.role.name }}</span>
+        </p>
+
+        <div class="flex flex-col gap-1.5">
+            <p class="flex">
+                <span class="font-medium">Ngày tham gia:</span>&nbsp;<span class="font-bold">{{ user.verified_time or '<Đang chờ xác thực>' }}</span>
+            </p>
+            <p class="flex">
+                <span class="font-medium">Số điện thoại:</span>&nbsp;<span class="font-bold">{{ user.phone_number }}</span>
+            </p>
+            <p class="flex">
+                <span class="font-medium">Email:</span>&nbsp;<span class="font-bold">{{ user.email }}</span>
+            </p>
+            <p class="flex">
+                <span class="font-medium">Địa chỉ:</span>&nbsp;<span class="font-bold">{{ user.address or '' }}</span>
+            </p>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
