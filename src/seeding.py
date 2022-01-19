@@ -1,3 +1,4 @@
+import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -145,6 +146,7 @@ def seed_envoy_users(db: SQLAlchemy):
         raw_password='123456',
         role_id=3,
       )
+      temp_envoy.verified_time = datetime.datetime.now()
       temp_envoy.organization_representer_person_name = f'Envoy Representer {i}'
       envoy_users.append(temp_envoy)
 

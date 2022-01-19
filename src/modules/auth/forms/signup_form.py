@@ -198,11 +198,14 @@ class SignUpForm(FlaskForm):
         if User.is_organization_taxid_already_exists(self.organization_tax_id.data):
             self.organization_tax_id.errors.append('This tax id already exists')
             form_passed = False
-        
+
         if User.is_citizen_id_already_exists(self.citizen_id.data):
             self.citizen_id.errors.append('This citizen id already exists')
             form_passed = False
 
+        if User.is_address_already_exists(self.address.data):
+            self.address.errors.append('This address already exists')
+            form_passed = False
 
         # awalys return True
         return form_passed

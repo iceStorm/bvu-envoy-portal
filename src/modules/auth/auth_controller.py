@@ -97,7 +97,7 @@ def register():
         # all validation passed, let's continue handle the signup process
         confirmation_code = AuthService.gen_registration_code()
         # assigning the confirmation code to user's session cookie
-        session[SESSION_REGISTRATION_CONFIMATION_CODE] = confirmation_code
+        session[SESSION_REGISTRATION_CONFIRMATION_CODE] = confirmation_code
 
         # send confirmation email
         AuthService.send_register_confirm_email(
@@ -131,7 +131,7 @@ def verify_registration():
     from src.modules.auth.forms.verification_form import RegisterVerificationForm
     form = RegisterVerificationForm()
 
-    if not session.get(SESSION_REGISTRATION_EMAIL) or not session.get(SESSION_REGISTRATION_CONFIMATION_CODE):
+    if not session.get(SESSION_REGISTRATION_EMAIL) or not session.get(SESSION_REGISTRATION_CONFIRMATION_CODE):
         flash(message='It seems like you have already registered or your data has been corrupted, please try later', category=FlashCategory.warning(10000))
         return redirect('/')
 
@@ -143,7 +143,7 @@ def verify_registration():
         return render_template('verify-registration.html', form=form, email=session[SESSION_REGISTRATION_EMAIL])
 
     # form validated --> check if the provided code is correct
-    if form.verification_code.data != session.get('registration_code'):
+    if form.verification_code.data != session[SESSION_REGISTRATION_CONFIRMATION_CODE]:
         flash(message='The code you provided was incorrect', category=FlashCategory.warning())
         return render_template('verify-registration.html', form=form, email=session[SESSION_REGISTRATION_EMAIL])
 
@@ -157,7 +157,7 @@ def verify_registration():
         new_user.organization_name  = session[SESSION_REGISTRATION_ORGANIZATION_NAME]
         new_user.organization_representer_person_name = session[SESSION_REGISTRATION_ORGANIZATION_REPRESENTER_PERSON_NAME]
         new_user.organization_tax_id = session[SESSION_REGISTRATION_ORGANIZATION_TAX_ID]
-        new_user.activated = True # allow to login
+        new_user.activated = False # disallow to login
 
         # ??? check trùng thông tin trước khi thêm vào DB
 

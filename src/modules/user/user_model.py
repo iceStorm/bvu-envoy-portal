@@ -125,6 +125,13 @@ class User(UserMixin, db.Model):
         return db.session.query(User).filter(User.phone_number == phone).first() is not None
     
     @staticmethod
+    def is_address_already_exists(address: str) -> bool:
+        """
+        Checking if any address in DB matchs :address.
+        """
+        return db.session.query(User).filter(User.address == address).first() is not None
+
+    @staticmethod
     def is_citizen_id_already_exists(citizen_id: str) -> bool:
         """
         Checking if any citizen_id in DB matchs :citizen_id.

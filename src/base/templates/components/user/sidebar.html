@@ -27,7 +27,6 @@
                   bg-blue-50
                   text-primary
                   font-bold
-                  border-l-4 border-primary
                 {% endif %}
                 hover:text-primary hover:fill-primary hover:bg-blue-50">
                 <span class="flex items-center gap-2">
@@ -37,7 +36,9 @@
 
                 <!-- counter bagde -->
                 {% if item.show_counter_icon %}
-                  <span class="rounded text-xs font-medium bg-gray-200 p-1 px-2">{{ item.counter }}</span>
+                  <span class="rounded text-xs font-medium bg-gray-200 p-1 px-2 {% if item.counter_is_urgent %}
+                    bg-red-500 text-white
+                  {% endif %}">{{ item.counter }}</span>
                 {% endif %}
               </a>
             </li>

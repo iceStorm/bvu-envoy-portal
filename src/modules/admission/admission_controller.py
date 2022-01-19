@@ -14,9 +14,9 @@ from src.modules.admission.admission_service import AdmissionService
 admission = Blueprint('admission', __name__, template_folder='templates', static_folder='static', static_url_path='admission/static')
 
 
-@admission.route('',)
+@admission.route('')
 @admin_permission.require(http_exception=403)
-# @query_params 
+@query_params
 def list(type=0, page=1, max_per_page=1, start_date=None, end_date=None, status=-1):
     from .forms.admission_filter_form import AdmissionFilterForm
     form = AdmissionFilterForm()

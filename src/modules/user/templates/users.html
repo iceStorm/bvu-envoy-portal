@@ -1,6 +1,6 @@
 {% extends 'user.html' %}
 {% block title %}
-  Người dùng
+  {{ title or 'Người dùng' }}
 {% endblock title %} 
 
 
@@ -28,32 +28,32 @@
   </div>
 
   <table class="rounded-md border border-collapse border-gray-300 max-h-screen relative">
-    <thead class=" bg-primary text-white font-medium sticky top-0">
+    <thead class=" bg-primary text-white font-medium sticky top-12">
       <tr class="p-5">
-        <td class="pl-3 py-2">#</td>
-        <!-- <td class="text-left pl-3 py-2">Họ</td>
-        <td class="text-left pl-3 py-2">Tên đệm & tên</td> -->
-        <td class="text-left pl-3 py-2">Họ và tên</td>
-        <td class="text-left pl-3 py-2">Email</td>
-        <td class="text-left pl-3 py-2">Đã kích hoạt</td>
-        <td class="text-left pl-3 py-2">Số điện thoại</td>
-        <td class="text-left pl-3 py-2">Kiểu tài khoản</td>
-        <td class="text-center pl-3 py-2">#</td>
+        <td class="text-center px-2 py-2 border-r border-gray-300"><input type="checkbox" name="" id=""></td>
+        <!-- <td class="text-left pl-3 py-2 border-r border-gray-300">Họ</td>
+        <td class="text-left pl-3 py-2 border-r border-gray-300">Tên đệm & tên</td> -->
+        <td class="text-left pl-3 py-2 border-r border-gray-300">Họ và tên</td>
+        <td class="text-left pl-3 py-2 border-r border-gray-300">Email</td>
+        <td class="text-left pl-3 py-2 border-r border-gray-300">Số điện thoại</td>
+        <td class="text-left pl-3 py-2 border-r border-gray-300">Kiểu tài khoản</td>
+        <td class="text-left pl-3 py-2 border-r border-gray-300">Ngày kích hoạt</td>
+        <td class="text-center px-2 py-2 border-r border-gray-300">#</td>
       </tr>
     </thead>
 
     <tbody>
     {% for user in users %}
-      <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-purple-200 border-b border-gray-300 text-sm">
-        <td class="py-2 pl-3 font-bold">{{ loop.index }}</td>
-        <!-- <td class="py-2 pl-3">{{ user.last_name or '' }}</td>
-        <td class="py-2 pl-3">{{ user.first_name or '' }}</td> -->
-        <td class="py-2 pl-3">{{ user.full_name }}</td>
-        <td class="py-2 pl-3">{{ user.email }}</td>
-        <td class="py-2 pl-3">{{ user.activated }}</td>
-        <td class="py-2 pl-3">{{ user.phone_number }}</td>
-        <td class="py-2 pl-3">{{ user.role.name }}</td>
-        <td class="py-2 pl-3 relative flex justify-center items-center" x-data="{ open: false }">
+      <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-blue-200 border-b border-gray-300 text-sm">
+        <td class="text-center py-2 border-r border-gray-300 font-bold"><input type="checkbox" name="" id=""></td>
+        <!-- <td class="py-2 pl-3 border-r border-gray-300">{{ user.last_name or '' }}</td>
+        <td class="py-2 pl-3 border-r border-gray-300">{{ user.first_name or '' }}</td> -->
+        <td class="py-2 pl-3 border-r border-gray-300"><a href="{{ url_for('user.detail', id=user.id) }}" class="font-bold">{{ user.full_name }}</a></td>
+        <td class="py-2 pl-3 border-r border-gray-300">{{ user.email }}</td>
+        <td class="py-2 pl-3 border-r border-gray-300">{{ user.phone_number }}</td>
+        <td class="py-2 pl-3 border-r border-gray-300">{{ user.role.name }}</td>
+        <td class="py-2 pl-3 border-r border-gray-300">{{ user.verified_time }}</td>
+        <td class="text-center py-2 border-r border-gray-300 relative flex justify-center items-center" x-data="{ open: false }">
           <button @click="open = !open" class="hover:bg-gray-400 rounded-full p-1">
             <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}" class="w-6">
           </button>
@@ -78,11 +78,6 @@
                 <span class="text-sm">Khóa (ngưng kích hoạt)</span>
               </a>
             {% endif %}
-
-            <a href="{{ url_for('user.delete', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
-              <img src="{{ url_for('static', filename='icons/fluent/outline/delete.svg') }}" class="w-5">
-              <span class="text-sm">Xóa</span>
-            </a>
           </div> <!-- menu -->
         </td>
       </tr>

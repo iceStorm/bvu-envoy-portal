@@ -18,14 +18,16 @@ class NavItem:
     is_active: bool
     counter: int
     show_counter_icon: bool
+    counter_is_urgent: bool
 
-    def __init__(self, href: str, title: str, counter=0, show_counter_icon=False, icon: NavItemIcon = None, is_active: bool = False):
+    def __init__(self, href: str, title: str, counter=0, show_counter_icon=False, icon: NavItemIcon = None, is_active = False, counter_is_urgent=False):
         self.href = href
         self.title = title
         self.icon = icon
         self.is_active = is_active
         self.counter = counter
         self.show_counter_icon = show_counter_icon if counter == 0 else True
+        self.counter_is_urgent = counter_is_urgent
 
 
 class NavItemGroup:

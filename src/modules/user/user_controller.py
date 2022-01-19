@@ -13,20 +13,37 @@ user = Blueprint('user', __name__, template_folder='templates', static_folder='s
 @user.route('', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def list():
-    users = db.session.query(User).order_by(User.role_id.asc()).all()
-    return render_template("users.html", users=users)
+    users = db.session.query(User).filter(User.activated == True).order_by(User.role_id.asc()).all()
+    return render_template("users.html", users=users, title='Tài khoản đang hoạt động')
+
+
+
+@user.route('/disabled', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def disabled():
+    users = db.session.query(User).filter(User.activated == False).order_by(User.created_time.desc()).all()
+    return render_template("users.html", users=users, title='Tài khoản đã khóa')
+
+
+
+@user.route('/waiting', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=403)
+def accounts_waiting():
+    users = db.session.query(User).filter(User.activated == False, User.verified_time == None, User.role_id == 3).order_by(User.created_time.desc()).all()
+    return render_template("users.html", users=users, title='Đang chờ xác nhận tài khoản')
+
 
 
 @user.route('/<int:id>', methods=['GET'])
 @admin_permission.require(http_exception=403)
-def detail():
-    the_user = db.session.query(User).get(User.id == id)
+def detail(id: int):
+    the_user = db.session.query(User).filter(User.id == id).first()
 
     if not the_user:
         flash('The user no longer exists', category=FlashCategory.error(50000))
         return redirect(request.referrer or url_for('user.list'))
 
-    return render_template("users.html", user=the_user)
+    return render_template("profile.html", user=the_user)
 
 
 @user.route('/delete/<int:id>', methods=['GET', 'POST'])

@@ -1,4 +1,4 @@
-from .admission_model import Admission
+from .admission_model import Admission, AdmissionPresenter
 from src.main import db, logger
 from .forms.admission_form import AdmissionForm
 
@@ -49,6 +49,18 @@ class AdmissionService:
   def mark_done(model: Admission, revoke=False):
     try:
       model.finished = True if not revoke else False
+      db.session.commit()
+      return True
+    except Exception as e:
+      logger.exception(e)
+      db.session.rollback()
+      return False
+
+
+  @staticmethod
+  def apply_student(student_id: str, user_admission: AdmissionPresenter):
+    try:
+      user_admission.students.add()
       db.session.commit()
       return True
     except Exception as e:
