@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import uuid1, uuid4
 import bcrypt
 from sqlalchemy.orm import relationship
 from flask import request
@@ -13,7 +14,11 @@ from ..envoy.envoy_constants import *
 
 from src.modules.admission.admission_model import AdmissionPresenter
 from src.main import db
-bcrypt = Bcrypt()
+
+
+def gen_alternative_id():
+    return uuid1()
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'User'
@@ -21,6 +26,11 @@ class User(UserMixin, db.Model):
 
     # BASE USER FIELDS ----------------------------------------------------------------------------------------
     id = Column(Integer, primary_key=True)
+
+    # id sử dụng cho việc đăng nhập | admin có thể thay đổi id này để chặn các phiên đăng nhập cũ
+    # (đổi mật khẩu trên một máy client thì cần chặn các máy client khác | deactivate..)
+    alternative_id = Column(String(USER_ALTERNATIVE_ID_LENGTH), unique=True, nullable=False)
+
     email = Column(String(USER_EMAIL_LENGTH), nullable=False, unique=True, index=True)
     phone_number = Column(String(USER_PHONE_LENGTH), nullable=False, unique=True, index=True)
     first_name = Column(String(USER_FIRST_NAME_LENGTH), index=True)
@@ -73,8 +83,10 @@ class User(UserMixin, db.Model):
     def get_id(self):
         """
         Overriding the get_id to return id - that we used at the primary key. Use for flask-login.
+        Below using alternative_id for prevent old user sessions.
         """
-        return self.id
+        return self.alternative_id
+    
 
     @property
     def full_name(self):
@@ -101,14 +113,14 @@ class User(UserMixin, db.Model):
     @staticmethod
     def gen_password_hash(raw_password):
         # return generate_password_hash(raw_password)
-        return bcrypt.generate_password_hash(raw_password)
+        return Bcrypt().generate_password_hash(raw_password)
 
     def check_password(self, raw_password: str):
         """
         Checking if the raw_password matches the password of this User instance.
         """
         # return check_password_hash(self.password_hash, raw_password)
-        return bcrypt.check_password_hash(self.password_hash, raw_password) if self.password_hash is not None else None
+        return Bcrypt().check_password_hash(self.password_hash, raw_password) if self.password_hash is not None else None
 
     @staticmethod
     def is_email_already_exists(email: str) -> bool:

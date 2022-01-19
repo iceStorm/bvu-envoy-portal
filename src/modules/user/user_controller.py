@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from flask.templating import render_template
 from src.base.constants.base_constanst import FlashCategory
 
-from src.main import db, admin_permission, manager_permission
+from src.main import db, admin_permission, manager_permission, envoy_permission
 from src.modules.user.user_model import User
 from .user_service import UserService
 
@@ -34,7 +34,7 @@ def accounts_waiting():
 
 @user.route('/<int:id>', methods=['GET'])
 # @admin_permission.require(http_exception=403)
-@login_required
+@envoy_permission.require(http_exception=403)
 def detail(id: int):
     the_user = db.session.query(User).filter(User.id == id).first()
 
@@ -43,7 +43,7 @@ def detail(id: int):
         return redirect(request.referrer or url_for('user.list'))
 
     # đại sứ chỉ cho xem profile chính mình
-    if the_user.id != current_user.id:
+    if current_user.role.id == 3 and the_user.id != current_user.id:
         flash('Can only view your profile', category=FlashCategory.error())
         return redirect(request.referrer or url_for('user.list'))
 

@@ -5,7 +5,7 @@ from werkzeug.utils import redirect
 from src.main import limiter, logger
 from src.base.constants.base_constanst import FlashCategory
 from src.modules.auth.auth_service import AuthService
-from src.modules.user.user_model import User
+from src.modules.user.user_model import User, gen_alternative_id
 from .auth_constants import *
 
 # defining controller
@@ -158,6 +158,7 @@ def verify_registration():
         new_user.organization_representer_person_name = session[SESSION_REGISTRATION_ORGANIZATION_REPRESENTER_PERSON_NAME]
         new_user.organization_tax_id = session[SESSION_REGISTRATION_ORGANIZATION_TAX_ID]
         new_user.activated = False # disallow to login
+        new_user.alternative_id = gen_alternative_id()
 
         # ??? check trùng thông tin trước khi thêm vào DB
 

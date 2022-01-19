@@ -1,6 +1,8 @@
 import datetime
 from flask_sqlalchemy import SQLAlchemy
 
+from src.modules.user.user_model import gen_alternative_id
+
 
 def start_seeding(db: SQLAlchemy):
   seed_roles(db)
@@ -69,6 +71,8 @@ def seed_root_user(db: SQLAlchemy):
     )
 
     root_user.role_id = 1
+    root_user.alternative_id = gen_alternative_id()
+
     db.session.add(root_user)
     db.session.commit()
 
@@ -97,6 +101,7 @@ def seed_manager_users(db: SQLAlchemy):
       raw_password='123456',
     )
     manager_user_1.role_id = 2
+    manager_user_1.alternative_id = gen_alternative_id()
 
     manager_user_2 = User(
       first_name='Anh Tú',
@@ -107,6 +112,7 @@ def seed_manager_users(db: SQLAlchemy):
       raw_password='123456',
     )
     manager_user_2.role_id = 2
+    manager_user_2.alternative_id = gen_alternative_id()
 
     manager_user_3 = User(
       first_name='Anh Tuấn',
@@ -117,6 +123,7 @@ def seed_manager_users(db: SQLAlchemy):
       raw_password='123456',
     )
     manager_user_3.role_id = 2
+    manager_user_3.alternative_id = gen_alternative_id()
 
     db.session.add_all([manager_user_1, manager_user_2, manager_user_3])
     db.session.commit()
@@ -146,6 +153,7 @@ def seed_envoy_users(db: SQLAlchemy):
         raw_password='123456',
         role_id=3,
       )
+      temp_envoy.alternative_id = gen_alternative_id()
       temp_envoy.verified_time = datetime.datetime.now()
       temp_envoy.organization_representer_person_name = f'Envoy Representer {i}'
       envoy_users.append(temp_envoy)

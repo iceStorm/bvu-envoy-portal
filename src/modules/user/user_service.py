@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid1, uuid4
 from src.main import db, logger
-from src.modules.user.user_model import User
+from src.modules.user.user_model import User, gen_alternative_id
 from flask import current_app
 
 class UserService:
@@ -28,6 +28,7 @@ class UserService:
         """
         try:
             user.activated = False
+            user.alternative_id = gen_alternative_id() # lấy mã mới để loại bỏ các phiên đăng nhập cũ trên các máy client khác
             db.session.commit()
             return True
         except Exception as e:
@@ -42,7 +43,7 @@ class UserService:
         Xác thực lần đầu tài khoản đại sứ.
         """
         try:
-            user_random_password = ''.join(uuid4().hex.split('-'))[:10]
+            user_random_password = ''.join(uuid1().hex.split('-'))[:10]
 
             user.activated = True
             user.password_hash = user.gen_password_hash(user_random_password)
