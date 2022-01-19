@@ -1,4 +1,5 @@
 from flask import Blueprint, redirect, url_for, request, flash
+from flask_login import login_required, current_user
 from flask.templating import render_template
 from src.base.constants.base_constanst import FlashCategory
 
@@ -32,15 +33,22 @@ def accounts_waiting():
 
 
 @user.route('/<int:id>', methods=['GET'])
-@admin_permission.require(http_exception=403)
+# @admin_permission.require(http_exception=403)
+@login_required
 def detail(id: int):
     the_user = db.session.query(User).filter(User.id == id).first()
 
     if not the_user:
-        flash('The user no longer exists', category=FlashCategory.error(50000))
+        flash('The user no longer exists', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('user.list'))
+
+    # đại sứ chỉ cho xem profile chính mình
+    if the_user.id != current_user.id:
+        flash('Can only view your profile', category=FlashCategory.error())
         return redirect(request.referrer or url_for('user.list'))
 
     return render_template("profile.html", user=the_user)
+
 
 
 @user.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -49,7 +57,7 @@ def edit(id: int):
     the_user = db.session.query(User).filter(User.id == id).first()
 
     if not the_user:
-        flash('The user no longer exists', category=FlashCategory.error(50000))
+        flash('The user no longer exists', category=FlashCategory.error())
         return redirect(request.referrer or url_for('user.list'))
     
     return redirect(request.referrer or url_for('user.list'))
@@ -61,20 +69,20 @@ def activate(id: int):
     the_user = db.session.query(User).filter(User.id == id).first()
 
     if not the_user:
-        flash('The user no longer exists', category=FlashCategory.error(50000))
+        flash('The user no longer exists', category=FlashCategory.error())
         return redirect(request.referrer or url_for('user.list'))
     
     # verify new envoy account
     if (the_user.role_id == 3 and the_user.verified_time == None) and not UserService.verify(the_user):
-        flash('Error occured when verify the envoy', category=FlashCategory.error(50000))
+        flash('Error occured when verify the envoy', category=FlashCategory.error())
         return redirect(request.referrer or url_for('user.list'))
     
     # re-activate old account
     elif not UserService.activate(the_user):
-        flash('Error occured when activate the user', category=FlashCategory.error(50000))
+        flash('Error occured when activate the user', category=FlashCategory.error())
         return redirect(request.referrer or url_for('user.list'))
 
-    flash('Activated', category=FlashCategory.success(50000))
+    flash('Activated', category=FlashCategory.success())
     return redirect(request.referrer or url_for('user.list'))
 
 
@@ -84,16 +92,16 @@ def deactivate(id: int):
     the_user = db.session.query(User).filter(User.id == id).first()
 
     if not the_user:
-        flash('The user no longer exists', category=FlashCategory.error(50000))
+        flash('The user no longer exists', category=FlashCategory.error())
         return redirect(request.referrer or url_for('user.list'))
 
     if the_user.role_id == 1: # cannot deactivate the admin user
-        flash('Cannot deactivate the admin user', category=FlashCategory.error(50000))
+        flash('Cannot deactivate the admin user', category=FlashCategory.error())
         return redirect(request.referrer or url_for('user.list'))
 
     if not UserService.deactivate(the_user):
-        flash('Error occured when deactivate the user', category=FlashCategory.error(50000))
+        flash('Error occured when deactivate the user', category=FlashCategory.error())
         return redirect(request.referrer or url_for('user.list'))
     
-    flash('Deactivated', category=FlashCategory.success(50000))
+    flash('Deactivated', category=FlashCategory.success())
     return redirect(request.referrer or url_for('user.list'))

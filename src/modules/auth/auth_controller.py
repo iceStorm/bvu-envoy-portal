@@ -187,21 +187,3 @@ def reset_password():
     AuthService.send_reset_password_email(request.email)
     return "password reset", 200
 
-
-@auth.route('/<username>', methods=['GET', 'POST'])
-@limiter.limit('1/second; 15/minute; 20/day')
-def profile(username: str):
-    user = AuthService.get_user_from_username(username)
-
-    if not user:
-        flash('The user does not exist', category=FlashCategory.warning())
-        return redirect('/')
-
-    # anonymous viewing
-    if not current_user.is_authenticated or current_user.id != user.id:
-        return render_template('profile.html')
-
-    # self authenticated user
-    from .forms.profile_form import UpdateForm
-    form = UpdateForm()
-    return render_template('update.html', form=form)
