@@ -1,6 +1,6 @@
 {% extends 'user.html' %}
 {% block title %}
-  {% if form._editing %}
+  {% if form._model %}
     Chỉnh sửa thông tin đợt tuyển sinh
   {% else %}
     Thêm Đợt tuyển sinh
@@ -52,9 +52,10 @@
   @media (min-width: 768px) {
     .form-fields {
       grid-template-areas:
-      "first second"
-      "third fourth"
-      "fifth fifth"
+      "first first"
+      "second third"
+      "fourth fifth"
+      "sixth sixth"
     }
   }
 
@@ -77,4 +78,14 @@
     grid-area: sixth;
   }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+<script>
+  anElement = new AutoNumeric('input[name=rose]', {
+    currencySymbol: ' VNĐ',
+    currencySymbolPlacement: 's',
+    decimalPlaces: '0',
+    minimumValue: 0,
+  });
+</script>
 {% endblock content %}

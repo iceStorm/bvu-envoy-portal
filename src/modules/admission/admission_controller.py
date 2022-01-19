@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Blueprint, request, redirect
+from flask import Blueprint, request, redirect, jsonify
 from flask.helpers import flash, url_for
 from flask.templating import render_template
 
@@ -106,6 +106,7 @@ def add():
         start_date=form.start_date.data,
         end_date=form.end_date.data,
         type_id=form.type.data,
+        rose=form.rose.data,
         # slug=form.slug.data,
     )
     if not AdmissionService.add(new_addmission):
@@ -129,7 +130,6 @@ def edit(id: int):
 
     from .forms.admission_form import AdmissionForm
     form = AdmissionForm()
-    form._editing = True
     form._model = the_admission
 
     if request.method == 'GET':
@@ -139,6 +139,7 @@ def edit(id: int):
         form.start_date.process_data(the_admission.start_date)
         form.end_date.process_data(the_admission.end_date)
         form.description.process_data(the_admission.description)
+        form.rose.process_data(the_admission.rose)
         # form.slug.process_data(admission.slug)
         return render_template("add.html", form=form, editing=True)
 
@@ -211,3 +212,18 @@ def revoke_done(id: int):
 
     flash(message='Revoked', category=FlashCategory.success())
     return redirect(request.referrer or url_for('admission.list'))
+
+
+
+@admission.route('student-apply', methods=['POST'])
+def student_apply():
+    return jsonify({
+        'status': 'not implemented',
+    }), 501
+
+
+@admission.route('student-change-state', methods=['POST'])
+def student_change_state():
+    return jsonify({
+        'status': 'not implemented',
+    }), 501

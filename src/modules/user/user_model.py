@@ -11,7 +11,7 @@ from sqlalchemy import String, Integer, Boolean, DateTime, Column, ForeignKey
 from .user_constants import *
 from ..envoy.envoy_constants import *
 
-from src.modules.admission.admission_model import UserAdmission
+from src.modules.admission.admission_model import AdmissionPresenter
 from src.main import db
 bcrypt = Bcrypt()
 
@@ -30,7 +30,7 @@ class User(UserMixin, db.Model):
     username = Column(String(USER_USERNAME_LENGTH), index=True, unique=True)
     activated = Column(Boolean, nullable=False, default=False)
     created_time = Column(DateTime, nullable=False, default=datetime.now())
-    verification_code = Column(String(USER_VERIFICATION_CODE_LENGTH)) # use for confirming through email...
+    verified_time = Column(DateTime) # thời gian chấp nhận tài khoản được đăng ký
 
     # roleId:3 == Envoy
     role_id = Column(Integer, ForeignKey('Role.id'), nullable=False, default=3)
@@ -87,9 +87,9 @@ class User(UserMixin, db.Model):
 
     @property
     def students(self):
-        joined_admissions = db.session.query(UserAdmission).filter(
-            UserAdmission.user_id == self.id,
-            UserAdmission.student_id != None,
+        joined_admissions = db.session.query(AdmissionPresenter).filter(
+            AdmissionPresenter.user_id == self.id,
+            AdmissionPresenter.student_id != None,
         ).all()
         return joined_admissions
 
@@ -144,7 +144,6 @@ class User(UserMixin, db.Model):
         Checking if any organization_representer_person_name in DB matchs :name.
         """
         return db.session.query(User).filter(User.organization_representer_person_name == name).first() is not None
-
 
     @staticmethod
     def is_organization_taxid_already_exists(tax_id: str) -> bool:

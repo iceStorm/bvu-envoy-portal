@@ -56,10 +56,12 @@ class App(Flask):
         from .modules.auth.auth_controller import auth
         from .modules.admission.admission_controller import admission
         from .modules.user.user_controller import user
+        from .modules.mock.mock_controller import mock
         self.register_blueprint(home, url_prefix="/")
         self.register_blueprint(auth, url_prefix="/")
         self.register_blueprint(admission, url_prefix="/admissions")
         self.register_blueprint(user, url_prefix="/users")
+        self.register_blueprint(mock, url_prefix="/mocks")
 
 
     def register_cors(self):

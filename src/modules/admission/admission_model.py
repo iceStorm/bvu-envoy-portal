@@ -1,5 +1,5 @@
 from typing import Union
-from sqlalchemy import Integer, String, DateTime, Boolean, Column, ForeignKey, Date, UniqueConstraint
+from sqlalchemy import Integer, String, DateTime, Boolean, Column, ForeignKey, Date, UniqueConstraint, event, DDL
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 
@@ -36,18 +36,19 @@ class Admission(db.Model):
     start_date = Column(Date, nullable=False, index=True)
     end_date = Column(Date, nullable=False, index=True)
     finished = Column(Boolean, default=False, nullable=False)
+    rose = Column(Integer, nullable=False)
 
     type_id = Column(Integer, ForeignKey("AdmissionType.id"), nullable=False)
     type = relationship("AdmissionType", backref="admissions")
 
-    def __init__(self, name: str, type_id: int, description: str, start_date: datetime.date, end_date: datetime.date):
+    def __init__(self, name: str, type_id: int, description: str, rose: int, start_date: datetime.date, end_date: datetime.date):
         self.name = name
         # self.slug = slug if slug else self.get_slug_by_name()
         self.description = description
         self.start_date = start_date
         self.end_date = end_date
         self.type_id = type_id
-
+        self.rose = rose
 
     # def get_slug_by_name(self):
     #     """
@@ -89,27 +90,52 @@ class Admission(db.Model):
         return db.session.query(Admission).filter(Admission.finished == False).all()
 
 
-class UserAdmission(db.Model):
-    # (student_id, admission_id) count not be same on each record (each student can only subscribe to an envoy in an admission), 
-    # means at least they have to be in a composite primary key/composite unique constraint.
-    __tablename__ = 'UserAdmission'
 
+# class Student(db.Model):
+#     __tablename__ = 'Student'
+#     __table_args__ = {'extend_existing': True}
+
+#     id = Column(Integer, primary_key=True)
+#     first_name = Column(String(ADMISSION_STUDENT_FIRST_NAME_LENGTH), nullable=False)
+#     last_name = Column(String(ADMISSION_STUDENT_LAST_NAME_LENGTH), nullable=False)
+
+
+
+class AdmissionPresenter(db.Model):
+    __tablename__ = 'AdmissionPresenter'
+    __table_args__ = {'extend_existing': True}
+
+    """
+    Học viên không được đăng ký 2 lần vào một Chiến dịch tuyển sinh.
+    Ở mỗi chiến dịch tuyển sinh, học viên chỉ được đăng ký với một đại sứ.
+    """
     id = Column(Integer, primary_key=True)
-    user_joined_time = Column(DateTime, nullable=False,default=datetime.datetime.now())
-    student_joined_time = Column(DateTime)
+    # mã giới thiệu đại sứ thuộc chiến dịch tuyển sinh --> gửi cho EMS/học viên nhập ở xettuyen
+    referral_code = Column(String(ADMISSION_REFERRAL_CODE_LENGTH), unique=True)
 
-    # user here could be envoy/manager
-    user_id = Column(Integer, ForeignKey("User.id", ondelete='CASCADE'), nullable=False)
-    user = relationship("User", backref="user_admissions")
+    user = relationship("User", backref='joined_admissions')
+    user_id = Column(Integer, ForeignKey("User.id"), nullable=False)
 
-    admission_id = Column(Integer, ForeignKey("Admission.id", ondelete='CASCADE'), nullable=False)
-    admission = relationship("Admission", backref="user_admissions")
+    admssion = relationship("Admission", backref='joined_users')
+    admission_id = Column(Integer, ForeignKey('Admission.id'), nullable=False)
 
-    # applied student to this admission, with this envoy id
-    # student id could be null
-    student_id = Column(String(ADMISSION_STUDENT_ID_LENGTH))
+    # extra fields
+    user_joined_time = Column(DateTime) # thời điểm đại sứ tham gia chiến dịch (khi đại sứ đề xuất tham gia chiến dịch, chờ admin chấp thuận xong rồi cập nhật)
 
     __table_args__ = (
-        UniqueConstraint(admission_id, student_id),
+        UniqueConstraint(admission_id, user_id),
         {'extend_existing': True, },
     )
+
+
+class StudentPresenter(db.Model):
+    __tablename__ = 'StudentPresenter'
+    __table_args__ = {'extend_existing': True}
+
+    # student = relationship("Student", backref='joined_admissions')
+    student_id = Column(String(ADMISSION_STUDENT_ID_LENGTH), primary_key=True)
+    student_joined_time = Column(DateTime, nullable=False, default=datetime.datetime.now()) # thời điểm học viên đăng ký chọn đại sứ theo chiến dịch (mã giới thiệu)
+    student_paid_time = Column(DateTime) # thời điểm học viên nhập học thành công
+
+    presenter = relationship("AdmissionPresenter", backref='applied_students')
+    presenter_id = Column(Integer, ForeignKey('AdmissionPresenter.id'), primary_key=True)

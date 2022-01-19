@@ -1,6 +1,6 @@
 # export APP_CONFIG_FILE=config/default.py
 # export FLASK_ENV=default
-# export FLASK_APP=src/src.py
+export FLASK_APP=index.py
 
 # adding paths
 # ROOT_DIR=.

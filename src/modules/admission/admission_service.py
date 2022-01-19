@@ -24,6 +24,7 @@ class AdmissionService:
       old_model.start_date = form.start_date.data
       old_model.end_date = form.end_date.data
       old_model.type_id = form.type.data
+      old_model.rose = form.rose.data
       db.session.commit()
       return True
     except Exception as e:

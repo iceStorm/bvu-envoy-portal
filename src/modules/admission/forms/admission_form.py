@@ -1,23 +1,25 @@
 import datetime
+from warnings import filters
 from flask_wtf import FlaskForm
 
 from wtforms.validators import DataRequired, Length, InputRequired
-from wtforms.fields import StringField
+from wtforms.fields import StringField, IntegerField
 from wtforms.fields.html5 import DateTimeLocalField, DateField
 
 from flask_ckeditor import CKEditorField
 
-from .fields.admission_types_field import AdmissionTypesField
+
 from ..admission_constants import *
 from src.base.helpers.validators import *
 
 from src.main import db
 from src.modules.admission.admission_model import Admission
+from .fields.rose_field import RoseField
+from .fields.admission_types_field import AdmissionTypesField
 
 
 
 def validate_name(form, field):
-    print('post_validate_name')
     if form._model:
         if db.session.query(Admission).filter(Admission.name == field.data, Admission.id != form._model.id).first():
             raise ValidationError('This name is already exists')
@@ -25,8 +27,6 @@ def validate_name(form, field):
         raise ValidationError('This name is already exists')
 
 def validate_slug(form, field):
-    print('post_validate_slug')
-
     slug_regex_pattern = '([a-z0-9]|\-){5,}'
     if not re.match(slug_regex_pattern, field.data):
         raise ValidationError('Slug format not valid. Allow only ascii, at least 5 letters.')
@@ -35,9 +35,12 @@ def validate_slug(form, field):
         raise ValidationError('This slug is already exists')
 
 
+def filter_rose(value: str):
+    num = value.replace(',', '').replace('VNĐ', '').strip()
+    return num
+
 
 class AdmissionForm(FlaskForm):
-    _editing = False
     _model: Admission = None
 
     name = StringField(
@@ -57,32 +60,6 @@ class AdmissionForm(FlaskForm):
         ],
     )
 
-    # slug = StringField(
-    #     label='Slug',
-    #     validators=[
-    #         Length(max=ADMISSION_SLUG_LENGTH),
-    #         validate_slug,
-    #     ],
-    #     description={
-    #         'icon': {
-    #             'origin': 'icons/fluent/outline/text_case_lowercase.svg',
-    #         },
-    #         'suffix': {
-    #             'origin': 'icons/fluent/outline/link.svg',
-    #             'alternate': 'icons/fluent/outline/link_dismiss.svg',
-    #         },
-    #         'tooltip': """
-    #             Đường dẫn ngắn (shortlink).
-    #             <a href="https://www.regextester.com/96861" target="_blank" class="link underline">
-    #                 Kiểm tra tại đây.
-    #             </a>
-    #         """,
-    #     },
-    #     filters=[
-    #         lambda str: str.strip() if str else '',
-    #     ],
-    # )
-
     type = AdmissionTypesField(
         label='Đối tượng tuyển sinh',
         validators=[
@@ -93,6 +70,26 @@ class AdmissionForm(FlaskForm):
                 'origin': 'icons/fluent/outline/hat_graduation.svg',
             },
         },
+    )
+
+    rose = RoseField(
+        label='Chiết khẩu (VNĐ)',
+        validators=[
+            InputRequired(),
+        ],
+        render_kw={ 'maxlength': 11 },
+        description={
+            'icon': {
+                'origin': 'icons/fluent/outline/people_money.svg',
+            },
+            'tooltip': 'Số tiền hoa hồng đại sứ nhận được trên mỗi lượt sinh viên nhập học thành công trong chiến dịch này.',
+        },
+        # filters=[
+        #     filter_rose,
+        # ],
+        post_filters=[
+            filter_rose,
+        ],
     )
 
     start_date = DateField(

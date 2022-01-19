@@ -8,23 +8,23 @@ var __markAsModule = (target) => __defProp(target, "__esModule", { value: true }
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
-var __reExport = (target, module2, desc) => {
-  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
-    for (let key of __getOwnPropNames(module2))
+var __reExport = (target, module, desc) => {
+  if (module && typeof module === "object" || typeof module === "function") {
+    for (let key of __getOwnPropNames(module))
       if (!__hasOwnProp.call(target, key) && key !== "default")
-        __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
+        __defProp(target, key, { get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable });
   }
   return target;
 };
-var __toModule = (module2) => {
-  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
+var __toModule = (module) => {
+  return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
 };
 
 // src/js/app.js
 var require_app = __commonJS({
-  "src/js/app.js"(exports2, module2) {
+  "src/js/app.js"(exports, module) {
     "use strict";
-    module2.exports = class App {
+    module.exports = class App {
       constructor({
         backendEndpoint = "/",
         scrollTopButton = {

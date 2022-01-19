@@ -38,7 +38,7 @@
         <td class="text-left pl-3 py-2">Đã kích hoạt</td>
         <td class="text-left pl-3 py-2">Số điện thoại</td>
         <td class="text-left pl-3 py-2">Kiểu tài khoản</td>
-        <td class="text-left pl-3 py-2">#</td>
+        <td class="text-center pl-3 py-2">#</td>
       </tr>
     </thead>
 
@@ -53,8 +53,8 @@
         <td class="py-2 pl-3">{{ user.activated }}</td>
         <td class="py-2 pl-3">{{ user.phone_number }}</td>
         <td class="py-2 pl-3">{{ user.role.name }}</td>
-        <td class="py-2 pl-3 relative" x-data="{ open: false }">
-          <button @click="open = !open">
+        <td class="py-2 pl-3 relative flex justify-center items-center" x-data="{ open: false }">
+          <button @click="open = !open" class="hover:bg-gray-400 rounded-full p-1">
             <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}" class="w-6">
           </button>
 
