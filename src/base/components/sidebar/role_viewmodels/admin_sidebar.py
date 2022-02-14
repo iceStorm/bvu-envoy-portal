@@ -3,7 +3,7 @@ from flask import url_for
 from src.base.components.sidebar.sidebar_viewmodel import NavItem, NavItemGroup, NavItemIcon
 from src.main import db
 
-from src.modules.admission.admission_model import Admission
+from src.modules.admission.admission_model import Admission, AdmissionPresenter
 from src.modules.user.user_model import User
 
 
@@ -23,17 +23,17 @@ def admin_sidebar():
         ],),
 
         NavItemGroup(label='Đại sứ', items=[
-            NavItem(href='', title='Chờ xét duyệt',
+            NavItem(href=url_for('admission.waiting'), title='Chờ xét duyệt',
                 icon=NavItemIcon(original='icons/fluent/outline/history.svg'),
-                counter=len(db.session.query(User).filter(User.activated == False, User.role_id == 3).all()),
+                counter=len(db.session.query(AdmissionPresenter).filter(AdmissionPresenter.user_joined_time == None).all()),
                 show_counter_icon=True,
                 counter_is_urgent=True,
             ),
-            NavItem(href='', title='Danh sách Đại sứ',
-                icon=NavItemIcon(original='icons/fluent/outline/people_team.svg'),
-                show_counter_icon=True,
-                counter=len(db.session.query(User).filter(User.role_id == 3, User.activated == True).all()),
-            ),
+            # NavItem(href='', title='Danh sách Đại sứ',
+            #     icon=NavItemIcon(original='icons/fluent/outline/people_team.svg'),
+            #     show_counter_icon=True,
+            #     counter=len(db.session.query(User).filter(User.role_id == 3, User.activated == True).all()),
+            # ),
             NavItem(href='', title='Danh sách Học viên',
                 icon=NavItemIcon(original='icons/fluent/outline/people_community.svg'),
                 show_counter_icon=True,

@@ -2,21 +2,46 @@
 
 {% block title %}Dashboard{% endblock title %}
 
-{% block content %}
 
-    <div class="flex flex-col justify-between items-center relative gap-y-3.5">
-        <form method="post" action="{{ url_for('auth.logout') }}">
-            <button type="submit"  class="
-            shadow-xl text-white font-bold btn
-            bg-primary-dark
-            rounded-full px-9 py-3
-            focus:outline-none
-            focus:ring-2
-            focus:ring-offset-2
-            focus:ring-indigo-500">
-            Đăng xuất (Envoy)
-            </button>
-        </form>
+{% block content %}
+<div class="flex flex-col">
+    <div class="mb-10">
+        <h1 class="font-bold text-xl">Xin chào, {{ current_user.full_name }} 👋</h1>
+        <p class="font-light">Khám phá bảng tin của bạn.</p>
+    </div>
+    
+    <!-- stats -->
+    <div class="flex gap-10 justify-between">
+        <div class="card cursor-pointer shadow hover:shadow-xl transition duration-300 shadow-gray-200 border-l-4 border-primary flex flex-1 flex-wrap gap-5 w-full h-full bg-white rounded px-7 py-5">
+            <div class="card-img bg-blue-50 fill-primary rounded px-3 flex items-center justify-center">
+                {{ get_svg_content('icons/fluent/outline/hat_graduation.svg', width=42, height=42, classes='') | safe }}
+            </div>
+            <div class="flex flex-col gap-1 text-primary">
+                <p class="font-medium">Chiến dịch tuyển sinh đã tham gia</p>
+                <p class="text-4xl font-bold">{{ current_user.joined_admissions | length }}</p>
+            </div>
+        </div>
+
+        <div class="card cursor-pointer shadow hover:shadow-xl transition duration-300 shadow-gray-200 border-l-4 border-blue-400 flex flex-1 flex-wrap gap-5 w-full h-full bg-white rounded px-7 py-5">
+            <div class="card-img bg-blue-50 fill-blue-400 rounded px-3 flex items-center justify-center">
+                {{ get_svg_content('icons/fluent/outline/person_available.svg', width=42, height=42, classes='') | safe }}
+            </div>
+           <div class="flex flex-col gap-1 text-blue-500">
+                <p class="font-medium">Học viên đang đăng ký</p>
+                <p class="text-4xl font-bold">{{ current_user.applied_students | length }}</p>
+           </div>
+        </div>
+
+        <div class="card cursor-pointer shadow hover:shadow-xl transition duration-300 shadow-gray-200 border-l-4 border-green-400 flex flex-1 flex-wrap gap-5 w-full h-full bg-white rounded px-7 py-5">
+            <div class="card-img bg-green-50 fill-green-400 rounded px-3 flex items-center justify-center">
+                {{ get_svg_content('icons/fluent/outline/person_money.svg', width=42, height=42, classes='') | safe }}
+            </div>
+            <div class="flex flex-col gap-1 text-green-600">
+                <p class="font-medium">Học viên nhập học thành công</p>
+                <p class="text-4xl font-bold">{{ current_user.applied_students | length }}</p>
+            </div>
+        </div>
     </div>
 
+</div>
 {% endblock %}

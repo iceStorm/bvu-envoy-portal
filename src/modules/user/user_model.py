@@ -12,7 +12,7 @@ from sqlalchemy import String, Integer, Boolean, DateTime, Column, ForeignKey
 from .user_constants import *
 from ..envoy.envoy_constants import *
 
-from src.modules.admission.admission_model import AdmissionPresenter
+from src.modules.admission.admission_model import AdmissionPresenter, StudentPresenter
 from src.main import db
 
 
@@ -99,9 +99,9 @@ class User(UserMixin, db.Model):
 
     @property
     def students(self):
-        joined_admissions = db.session.query(AdmissionPresenter).filter(
-            AdmissionPresenter.user_id == self.id,
-            AdmissionPresenter.student_id != None,
+        joined_admissions = db.session.query(StudentPresenter).filter(
+            StudentPresenter.presenter_id == self.id,
+            StudentPresenter.student_id != None,
         ).all()
         return joined_admissions
 

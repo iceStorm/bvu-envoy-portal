@@ -5,30 +5,46 @@
 
 
 {% block header_actions %}
-<!-- mark done/revoke -->
-{% if not admission.finished %}
-<a href="{{ url_for('admission.mark_done', id=admission.id) }}"
-  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Đánh dấu hoàn tất">
-  <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
-</a>
+{% if current_user.role.code == 'admin' %}
+  {% if not admission.finished %}
+  <a href="{{ url_for('admission.mark_done', id=admission.id) }}"
+    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Đánh dấu hoàn tất">
+    <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
+  </a>
+  {% else %}
+  <a href="{{ url_for('admission.revoke_done', id=admission.id) }}"
+    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Bỏ hoàn tất">
+    <img src="{{ url_for('static', filename='icons/outline/refresh-outline.svg') }}" class="w-5">
+  </a>
+  {% endif %}
+
+  <!-- edit -->
+  <a href="{{ url_for('admission.edit', id=admission.id) }}"
+    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Sửa thông tin">
+    <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
+  </a>
+
+  <!-- delete -->
+  <a href="{{ url_for('admission.delete', id=admission.id) }}"
+    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Xóa">
+    <img src="{{ url_for('static', filename='icons/fluent/outline/delete.svg') }}" class="w-5">
+  </a>
+
+
 {% else %}
-<a href="{{ url_for('admission.revoke_done', id=admission.id) }}"
-  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Bỏ hoàn tất">
-  <img src="{{ url_for('static', filename='icons/outline/refresh-outline.svg') }}" class="w-5">
-</a>
+  {% if admission.registered_by_user(current_user.id) %}
+    <a href="{{ url_for('admission.envoy_leave', id=admission.id) }}"
+      class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Rời chiến dịch">
+      <img src="{{ url_for('static', filename='icons/outline/exit-outline.svg') }}" class="w-5">
+    </a>
+  {% else %}
+    <a href="{{ url_for('admission.envoy_register', id=admission.id) }}"
+      class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Tham gia chiến dịch">
+      <img src="{{ url_for('static', filename='icons/outline/enter-outline.svg') }}" class="w-5">
+    </a>
+  {% endif %}
 {% endif %}
 
-<!-- edit -->
-<a href="{{ url_for('admission.edit', id=admission.id) }}"
-  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Sửa thông tin">
-  <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
-</a>
-
-<!-- delete -->
-<a href="{{ url_for('admission.delete', id=admission.id) }}"
-  class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Xóa">
-  <img src="{{ url_for('static', filename='icons/fluent/outline/delete.svg') }}" class="w-5">
-</a>
 {% endblock %}
 
 

@@ -1,4 +1,3 @@
-
 {% macro admission_item(admission) %}
 <div x-data="{ open: false }"
  class="admission-item bg-white rounded p-3 shadow flex flex-col gap-5 overflow-hidden" style="min-height: 100px;">
@@ -20,27 +19,29 @@
         <span class="text-sm">Xem chi tiết</span>
       </a>
 
-      <a href="{{ url_for('admission.edit', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
-        <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
-        <span class="text-sm">Sửa thông tin</span>
-      </a>
+      {% if current_user.role.code == 'admin' %}
+        <a href="{{ url_for('admission.edit', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
+          <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
+          <span class="text-sm">Sửa thông tin</span>
+        </a>
 
-      {% if not admission.finished %}
-      <a href="{{ url_for('admission.mark_done', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
-        <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
-        <span class="text-sm">Đánh dấu là hoàn tất</span>
-      </a>
-      {% else %}
-        <a href="{{ url_for('admission.revoke_done', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
-          <img src="{{ url_for('static', filename='icons/outline/refresh-outline.svg') }}" class="w-5">
-          <span class="text-sm">Thu hồi trạng thái hoàn tất</span>
+        {% if not admission.finished %}
+        <a href="{{ url_for('admission.mark_done', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
+          <img src="{{ url_for('static', filename='icons/fluent/outline/checkmark.svg') }}" class="w-5">
+          <span class="text-sm">Đánh dấu là hoàn tất</span>
+        </a>
+        {% else %}
+          <a href="{{ url_for('admission.revoke_done', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
+            <img src="{{ url_for('static', filename='icons/outline/refresh-outline.svg') }}" class="w-5">
+            <span class="text-sm">Thu hồi trạng thái hoàn tất</span>
+          </a>
+        {% endif %}
+
+        <a href="{{ url_for('admission.delete', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
+          <img src="{{ url_for('static', filename='icons/fluent/outline/delete.svg') }}" class="w-5">
+          <span class="text-sm">Xóa</span>
         </a>
       {% endif %}
-
-      <a href="{{ url_for('admission.delete', id=admission.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-200">
-        <img src="{{ url_for('static', filename='icons/fluent/outline/delete.svg') }}" class="w-5">
-        <span class="text-sm">Xóa</span>
-      </a>
     </div>
   </div>
   

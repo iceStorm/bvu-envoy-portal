@@ -1,5 +1,5 @@
 from .admission_model import Admission, AdmissionPresenter
-from src.main import db, logger
+from src.main import db, logger, db_session
 from .forms.admission_form import AdmissionForm
 
 class AdmissionService:
@@ -67,3 +67,32 @@ class AdmissionService:
       logger.exception(e)
       db.session.rollback()
       return False
+
+
+  @staticmethod
+  def envoy_apply(envoy_id: int, admission_id: int):
+    try:
+      presenter = AdmissionPresenter()
+      presenter.admission_id = admission_id
+      presenter.user_id = envoy_id
+
+      db_session.add(presenter)
+      db.session.commit()
+      return presenter
+    except Exception as e:
+      logger.exception(e)
+      db.session.rollback()
+      return None
+
+        
+  @staticmethod
+  def envoy_leave(presenter: AdmissionPresenter):
+    try:
+      db_session.delete(presenter)
+      db.session.commit()
+      return True
+    except Exception as e:
+      logger.exception(e)
+      db.session.rollback()
+    return False
+

@@ -102,6 +102,8 @@ def seed_manager_users(db: SQLAlchemy):
     )
     manager_user_1.role_id = 2
     manager_user_1.alternative_id = gen_alternative_id()
+    manager_user_1.verified_time = datetime.datetime.now()
+
 
     manager_user_2 = User(
       first_name='Anh Tú',
@@ -113,6 +115,8 @@ def seed_manager_users(db: SQLAlchemy):
     )
     manager_user_2.role_id = 2
     manager_user_2.alternative_id = gen_alternative_id()
+    manager_user_2.verified_time = datetime.datetime.now()
+
 
     manager_user_3 = User(
       first_name='Anh Tuấn',
@@ -124,6 +128,8 @@ def seed_manager_users(db: SQLAlchemy):
     )
     manager_user_3.role_id = 2
     manager_user_3.alternative_id = gen_alternative_id()
+    manager_user_3.verified_time = datetime.datetime.now()
+
 
     db.session.add_all([manager_user_1, manager_user_2, manager_user_3])
     db.session.commit()

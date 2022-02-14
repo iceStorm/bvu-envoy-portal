@@ -3,7 +3,7 @@ from sqlalchemy import Integer, String, DateTime, Boolean, Column, ForeignKey, D
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 
-from src.main import db
+from src.main import db_session, db
 
 import datetime
 from .admission_constants import *
@@ -21,7 +21,7 @@ class AdmissionType(db.Model):
         """
         Check whether the given :name is already in the DB.
         """
-        return db.session.query(AdmissionType).filter(AdmissionType.name == name).first() is not None
+        return db_session.query(AdmissionType).filter(AdmissionType.name == name).first() is not None
 
 
 class Admission(db.Model):
@@ -50,27 +50,12 @@ class Admission(db.Model):
         self.type_id = type_id
         self.rose = rose
 
-    # def get_slug_by_name(self):
-    #     """
-    #     Generating slug by name.
-    #     """
-    #     import unidecode
-    #     generated_slug = unidecode.unidecode(self.name.lower().replace(' ', '-'))
-
-    #     # check if the generated_slug is duplicated, appending a ordinay number
-    #     while True:
-    #         duplicated_slug = db.session.query(Admission).filter(Admission.slug == generated_slug).first()
-    #         if duplicated_slug:
-    #             generated_slug += '-'
-    #         else:
-    #             return generated_slug
-
     @staticmethod
     def get_available_items_to_new_registration():
         """
         Getting list of all available Admissions to clients to register.
         """
-        return db.session.query(Admission).filter(
+        return db_session.query(Admission).filter(
         Admission.finished == False, 
         Admission.end_date >= datetime.datetime.now()
         ).all()
@@ -80,25 +65,21 @@ class Admission(db.Model):
         """
         Getting all finished admissions.
         """
-        return db.session.query(Admission).filter(Admission.finished == True).all()
+        return db_session.query(Admission).filter(Admission.finished == True).all()
     
     @staticmethod
     def running_items(self):
         """
         Getting all closed but not finished admissions (on hold for handling bonus for envoy...).
         """
-        return db.session.query(Admission).filter(Admission.finished == False).all()
+        return db_session.query(Admission).filter(Admission.finished == False).all()
 
-
-
-# class Student(db.Model):
-#     __tablename__ = 'Student'
-#     __table_args__ = {'extend_existing': True}
-
-#     id = Column(Integer, primary_key=True)
-#     first_name = Column(String(ADMISSION_STUDENT_FIRST_NAME_LENGTH), nullable=False)
-#     last_name = Column(String(ADMISSION_STUDENT_LAST_NAME_LENGTH), nullable=False)
-
+    def registered_by_user(self, user_id: int) -> bool:
+        presenter = db_session.query(AdmissionPresenter).filter(
+            AdmissionPresenter.user_id == user_id,
+            AdmissionPresenter.admission_id == self.id,
+        ).first() != None
+        return presenter
 
 
 class AdmissionPresenter(db.Model):
@@ -116,7 +97,7 @@ class AdmissionPresenter(db.Model):
     user = relationship("User", backref='joined_admissions')
     user_id = Column(Integer, ForeignKey("User.id"), nullable=False)
 
-    admssion = relationship("Admission", backref='joined_users')
+    admission = relationship("Admission", backref='joined_users')
     admission_id = Column(Integer, ForeignKey('Admission.id'), nullable=False)
 
     # extra fields

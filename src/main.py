@@ -2,6 +2,7 @@
 Entrypoint of the application.
 """
 
+from operator import imod
 import sys
 import os
 from pathlib import Path
@@ -18,6 +19,11 @@ logger.basicConfig(format='%(asctime)s - %(message)s', level=logger.INFO,)
 print("\n[DEFINING DATABASE INSTANCE...]")
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
+
+from sqlalchemy.orm.scoping import scoped_session
+def get_db_session() -> scoped_session:
+    return db.session
+db_session = get_db_session()
 
 
 # INIT RATE LIMITING

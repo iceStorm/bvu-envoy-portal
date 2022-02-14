@@ -1,7 +1,11 @@
 {% extends "user.html" %}
 
 {% block title %}
-    Profile người dùng
+    {% if current_user.id == user.id %}
+        Hồ sơ của tôi
+    {% else %}
+        Profile người dùng
+    {% endif %}
 {% endblock title %}
 
 
@@ -34,7 +38,7 @@
 {% block content %}
 
 <div class="flex gap-6">
-    <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="w-40 border border-gray-300 rounded-md">
+    <img src="{{ url_for('auth.static', filename='default_user.jpg') }}" class="w-40 border border-gray-200 rounded  ">
 
     <!-- meta -->
     <div class="flex flex-col">
@@ -43,21 +47,43 @@
             <span class="rounded-full px-5 py-1.5 shadow-lg bg-white text-sm font-semibold">{{ user.role.name }}</span>
         </p>
 
-        <div class="flex flex-col gap-1.5">
-            <p class="flex">
-                <span class="font-medium">Ngày tham gia:</span>&nbsp;<span class="font-bold">{{ user.verified_time or '<Đang chờ xác thực>' }}</span>
-            </p>
-            <p class="flex">
-                <span class="font-medium">Số điện thoại:</span>&nbsp;<span class="font-bold">{{ user.phone_number }}</span>
-            </p>
-            <p class="flex">
-                <span class="font-medium">Email:</span>&nbsp;<span class="font-bold">{{ user.email }}</span>
-            </p>
-            <p class="flex">
-                <span class="font-medium">Địa chỉ:</span>&nbsp;<span class="font-bold">{{ user.address or '' }}</span>
-            </p>
+        <div class="flex justify-between gap-10">
+            <div class="flex flex-col gap-1">
+                <p class="flex">
+                    <span class="font-normal">Ngày tham gia:</span>&nbsp;<span class="font-bold">{{ user.verified_time or '<Đang chờ xác thực>' }}</span>
+                </p>
+                <p class="flex">
+                    <span class="font-normal">Số điện thoại:</span>&nbsp;<span class="font-bold">{{ user.phone_number }}</span>
+                </p>
+                <p class="flex">
+                    <span class="font-normal">Email:</span>&nbsp;<span class="font-bold">{{ user.email }}</span>
+                </p>
+                <p class="flex">
+                    <span class="font-normal">Địa chỉ:</span>&nbsp;<span class="font-bold">{{ user.address or '' }}</span>
+                </p>
+            </div>
+    
+            {% if user.role.code == 'envoy' %}
+                <!-- envoy detail meta -->
+                <div class="flex flex-col gap-1">
+                    <p class="flex">
+                        <span class="font-normal">Tên tổ chức:</span>&nbsp;<span class="font-bold">{{ user.organization_name }}</span>
+                    </p>
+                    <p class="flex">
+                        <span class="font-normal">Mã số thuế:</span>&nbsp;<span class="font-bold">{{ user.organization_tax_id }}</span>
+                    </p>
+                    <p class="flex">
+                        <span class="font-normal">Số CMND/CCCD:</span>&nbsp;<span class="font-bold">{{ user.citizen_id }}</span>
+                    </p>
+                    <!-- <p class="flex">
+                        <span class="font-normal">Địa chỉ:</span>&nbsp;<span class="font-bold">{{ user.address or '' }}</span>
+                    </p> -->
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
+
+{% include 'profile-detail-envoy.html' %}
 
 {% endblock %}

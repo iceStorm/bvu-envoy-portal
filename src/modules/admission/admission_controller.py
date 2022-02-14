@@ -3,21 +3,23 @@ import datetime
 from flask import Blueprint, request, redirect, jsonify
 from flask.helpers import flash, url_for
 from flask.templating import render_template
+from flask_login import current_user
 
-from src.main import admin_permission, manager_permission, db
+from src.main import admin_permission, manager_permission, db, envoy_permission, db_session
 from src.base.constants.base_constanst import FlashCategory
 from src.base.decorators.query_params import query_params
-from src.modules.admission.admission_model import Admission
+from src.modules.admission.admission_model import Admission, AdmissionPresenter
 from src.modules.admission.admission_service import AdmissionService
+from src.modules.user.user_model import User
 
 # defining controller
 admission = Blueprint('admission', __name__, template_folder='templates', static_folder='static', static_url_path='admission/static')
 
 
 @admission.route('')
-@admin_permission.require(http_exception=403)
+@envoy_permission.require(http_exception=403)
 @query_params
-def list(type=0, page=1, max_per_page=1, start_date=None, end_date=None, status=-1):
+def list(type=0, page=1, max_per_page=10, start_date=None, end_date=None, status=-1):
     from .forms.admission_filter_form import AdmissionFilterForm
     form = AdmissionFilterForm()
     
@@ -38,8 +40,13 @@ def list(type=0, page=1, max_per_page=1, start_date=None, end_date=None, status=
     form.max_per_page.process_data(max_per_page)
     form.status.process_data(status)
 
-    query = db.session.query(Admission)
+    query = db_session.query(Admission)
     print('\ntype:', type, 'per_page:', max_per_page)
+
+    # ignore admissions that current envoy user joined
+    if current_user.role.code == 'envoy':
+        query = query.join(AdmissionPresenter, AdmissionPresenter.admission_id == Admission.id, isouter=True)
+        query = query.filter(AdmissionPresenter.user_id == None)
 
     # 1. only filter types if the type is not 0
     # 2. only start_date or end_date provided --> find exact
@@ -48,7 +55,7 @@ def list(type=0, page=1, max_per_page=1, start_date=None, end_date=None, status=
     if type != '0' and type != 0:
         print(type, type != 0)
         query = query.filter(Admission.type_id == type)
-
+  
     if start_date:
         query = query.filter(Admission.start_date == start_date) if not end_date \
             else query.filter(Admission.start_date >= start_date)
@@ -66,17 +73,21 @@ def list(type=0, page=1, max_per_page=1, start_date=None, end_date=None, status=
 
 
 
-@admission.route('/active/', methods=['GET', 'POST'])
-@admin_permission.require(http_exception=403)
-def active():
-    return render_template("admissions.html")
+@admission.route('/waiting')
+@envoy_permission.require(http_exception=403)
+@query_params
+def waiting(page=1, max_per_page=10):
+    query = db_session.query(AdmissionPresenter).filter(AdmissionPresenter.user_joined_time == None)
+    pagination = query.paginate(page=int(page or 1), max_per_page=int(max_per_page or 3), error_out=False)
+    print(pagination.items)
+    return render_template("waiting.html", presenters=pagination)
 
 
 
 @admission.route('/<int:id>', methods=['GET', 'POST'])
-@admin_permission.require(http_exception=403)
+@envoy_permission.require(http_exception=403)
 def detail(id):
-    the_admission = db.session.query(Admission).filter(Admission.id == id).first()
+    the_admission = db_session.query(Admission).filter(Admission.id == id).first()
 
     if not the_admission:
         flash('The admission no longer exists', category=FlashCategory.error())
@@ -107,7 +118,6 @@ def add():
         end_date=form.end_date.data,
         type_id=form.type.data,
         rose=form.rose.data,
-        # slug=form.slug.data,
     )
     if not AdmissionService.add(new_addmission):
         flash(message='Error occur when adding Admission', category=FlashCategory.error())
@@ -121,7 +131,7 @@ def add():
 @admission.route('/edit/<int:id>', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def edit(id: int):
-    the_admission = db.session.query(Admission).filter(Admission.id == id).first()
+    the_admission = db_session.query(Admission).filter(Admission.id == id).first()
 
     if not the_admission:
         flash('The admission no longer exists', category=FlashCategory.error())
@@ -159,7 +169,7 @@ def edit(id: int):
 @admission.route('/delete/<int:id>', methods=['GET'])
 @admin_permission.require(http_exception=403)
 def delete(id: int):
-    the_admission = db.session.query(Admission).filter(Admission.id == id).first()
+    the_admission = db_session.query(Admission).filter(Admission.id == id).first()
 
     if not the_admission:
         flash('The admission no longer exists', category=FlashCategory.error())
@@ -177,7 +187,7 @@ def delete(id: int):
 @admission.route('/mark_done/<int:id>', methods=['GET'])
 @admin_permission.require(http_exception=403)
 def mark_done(id: int):
-    admission = db.session.query(Admission).filter(Admission.id == id).first()
+    admission = db_session.query(Admission).filter(Admission.id == id).first()
 
     if not admission:
         flash('The admission no longer exists', category=FlashCategory.error())
@@ -200,7 +210,7 @@ def mark_done(id: int):
 @admission.route('/revoke_done/<int:id>', methods=['GET'])
 @admin_permission.require(http_exception=403)
 def revoke_done(id: int):
-    admission = db.session.query(Admission).filter(Admission.id == id).first()
+    admission = db_session.query(Admission).filter(Admission.id == id).first()
 
     if not admission:
         flash('The admission no longer exists', category=FlashCategory.error())
@@ -213,6 +223,86 @@ def revoke_done(id: int):
     flash(message='Revoked', category=FlashCategory.success())
     return redirect(request.referrer or url_for('admission.list'))
 
+
+
+@admission.route('envoy-apply/<int:id>', methods=['GET'])
+@envoy_permission.require(http_exception=403)
+def envoy_register(id: int):
+    admission = db_session.query(Admission).filter(Admission.id == id).first()
+
+    if not admission:
+        flash('The admission no longer exists', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('admission.list'))
+    
+    if not AdmissionService.envoy_apply(envoy_id=current_user.id, admission_id=id):
+        flash('Error applying to the admission', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('admission.list'))
+    
+    flash('Requested, please wait for admin approval', category=FlashCategory.success())
+    return redirect(request.referrer or url_for('admission.list'))
+
+
+@admission.route('approve-envoy/<int:envoy_id>/<int:admission_id>', methods=['GET'])
+@admin_permission.require(http_exception=403)
+def approve_envoy(admission_id: int, envoy_id: int):
+    print(admission_id, envoy_id)
+
+    presenter = db_session.query(AdmissionPresenter).filter(
+        AdmissionPresenter.user_id == envoy_id,
+        AdmissionPresenter.admission_id == admission_id,
+    ).first()
+
+    print(presenter)
+    if presenter == None:
+        flash('The presenter no longer exists', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('admission.list'))
+    
+    presenter.user_joined_time = datetime.datetime.now()
+    db_session.commit()
+
+    flash('Approved', category=FlashCategory.success())
+    return redirect(request.referrer or url_for('admission.list'))
+
+
+
+@admission.route('unapprove-envoy/<int:envoy_id>/<int:admission_id>', methods=['GET'])
+@admin_permission.require(http_exception=403)
+def unapprove_envoy(envoy_id: int, admission_id: int):
+    presenter = db_session.query(AdmissionPresenter).filter(
+        AdmissionPresenter.user_id == envoy_id,
+        AdmissionPresenter.admission_id == admission_id,
+    ).first()
+
+    if presenter == None:
+        flash('The presenter no longer exists', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('admission.list'))
+    
+    db_session.delete(presenter)
+    db_session.commit()
+
+    flash('Declined', category=FlashCategory.error())
+    return redirect(request.referrer or url_for('admission.list'))
+
+
+
+@admission.route('envoy-leave/<int:id>', methods=['GET'])
+@envoy_permission.require(http_exception=403)
+def envoy_leave(id: int):
+    presenter = db_session.query(AdmissionPresenter).filter(
+        AdmissionPresenter.user_id == current_user.id,
+        AdmissionPresenter.admission_id == id,
+    ).first()
+
+    if not presenter:
+        flash('The admission no longer exists', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('admission.list'))
+    
+    if not AdmissionService.envoy_leave(presenter=presenter):
+        flash('Error leaving the admission', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('admission.list'))
+    
+    flash('Left', category=FlashCategory.success())
+    return redirect(request.referrer or url_for('admission.list'))
 
 
 @admission.route('student-apply', methods=['POST'])

@@ -13,7 +13,7 @@ def extract_avatar_url(full_avatar_url: str):
         return 'default_user.jpg'
 
 
-def get_svg_content(url: str, classes=''):
+def get_svg_content(url: str, width=24, height=24, classes=''):
     # logger.info(f'\nGetting svg content: {url}...')
     try:
         path = Path(__file__).parent / f'../static/{url}'
@@ -25,6 +25,9 @@ def get_svg_content(url: str, classes=''):
         # remove the 'fill' attributes
         svg = ''.join(svg.split('fill="none"'))
         svg = ''.join(svg.split('fill="#212121"'))
+
+        svg = f'width={width}'.join(svg.split('width="24"'))
+        svg = f'height={height}'.join(svg.split('height="24"'))
 
         # print(svg)
         return svg

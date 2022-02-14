@@ -14,7 +14,7 @@ user = Blueprint('user', __name__, template_folder='templates', static_folder='s
 @user.route('', methods=['GET', 'POST'])
 @admin_permission.require(http_exception=403)
 def list():
-    users = db.session.query(User).filter(User.activated == True).order_by(User.role_id.asc())
+    users = db.session.query(User).filter(User.activated == True).order_by(User.role_id.asc(), User.verified_time.desc())
     return render_template("users.html", users=users.paginate(), title='Tài khoản đang hoạt động')
 
 
@@ -33,8 +33,7 @@ def accounts_waiting():
 
 
 @user.route('/<int:id>', methods=['GET'])
-# @admin_permission.require(http_exception=403)
-@envoy_permission.require(http_exception=403)
+@manager_permission.require(http_exception=403)
 def detail(id: int):
     the_user = db.session.query(User).filter(User.id == id).first()
 
@@ -48,6 +47,12 @@ def detail(id: int):
         return redirect(request.referrer or url_for('user.list'))
 
     return render_template("profile.html", user=the_user)
+
+
+@user.route('/profile', methods=['GET'])
+@envoy_permission.require(http_exception=403)
+def profile():
+    return render_template("profile.html", user=current_user)
 
 
 

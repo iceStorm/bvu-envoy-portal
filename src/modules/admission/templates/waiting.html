@@ -1,23 +1,11 @@
 {% extends 'user.html' %}
 {% block title %}
-  {{ title or 'Người dùng' }}
+  {{ title or 'Chờ duyệt' }}
 {% endblock title %} 
 
 
 {% block header_actions %}
-  <input type="search" name="user-search-query" id="user-search-box"
-    placeholder="Tìm kiếm người dùng..." data-tippy-content="Nhập từ khóa muốn tìm kiếm ở bất kì trường nào"
-    class="border border-gray-200 px-3 py-1.5 mr-3 text-sm max-w-md w-full focus:outline-none focus:ring-1 focus:ring-primary">
 
-  <a href="{{ url_for('admission.add') }}"
-    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Nhập từ file excel">
-    <img src="{{ url_for('static', filename='icons/outline/cloud-upload-outline.svg') }}" class="w-8">
-  </a>
-
-  <a href="{{ url_for('admission.add') }}"
-    class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer h-full" data-tippy-content="Xuất ra file excel">
-    <img src="{{ url_for('static', filename='icons/outline/cloud-download-outline.svg') }}" class="w-8">
-  </a>
 {% endblock %}
 
 
@@ -42,25 +30,25 @@
             <input type="checkbox" data-tippy-content="Chọn/Bỏ chọn tất cả dòng đang hiển thị">
           </td>
           <td class="text-left px-3 py-2 border-r border-gray-300">Họ và tên</td>
+          <td class="text-left px-3 py-2 border-r border-gray-300">Tên tổ chức</td>
           <td class="text-left px-3 py-2 border-r border-gray-300">Email</td>
           <td class="text-left px-3 py-2 border-r border-gray-300">Số điện thoại</td>
-          <td class="text-left px-3 py-2 border-r border-gray-300">Kiểu tài khoản</td>
-          <td class="text-left px-3 py-2 border-r border-gray-300">Ngày kích hoạt</td>
+          <td class="text-left px-3 py-2 border-r border-gray-300">Tên chiến dịch</td>
           <td class="text-center px-2 py-2 border-r border-gray-300">#</td>
         </tr>
       </thead>
   
       <tbody>
-      {% for user in users.items %}
+      {% for presenter in presenters.items %}
         <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-blue-200 border-b border-gray-300 text-sm">
           <td class="text-center py-2 border-r border-gray-300 font-bold">
-            <input type="checkbox" name="user-id" value="{{ user.id }}" @change="onCheckboxChange">
+            <input type="checkbox" name="presenter-id" value="{{ presenter.id }}" @change="onCheckboxChange">
           </td>
-          <td class="py-2 px-3 border-r border-gray-300"><a href="{{ url_for('user.detail', id=user.id) }}" class="font-bold">{{ user.full_name }}</a></td>
-          <td class="py-2 px-3 border-r border-gray-300">{{ user.email }}</td>
-          <td class="py-2 px-3 border-r border-gray-300">{{ user.phone_number }}</td>
-          <td class="py-2 px-3 border-r border-gray-300">{{ user.role.name }}</td>
-          <td class="py-2 px-3 border-r border-gray-300">{{ user.verified_time }}</td>
+          <td class="py-2 px-3 border-r border-gray-300"><a href="{{ url_for('user.detail', id=presenter.user_id) }}" class="font-bold">{{ presenter.user.full_name }}</a></td>
+          <td class="py-2 px-3 border-r border-gray-300">{{ presenter.user.organization_name }}</td>
+          <td class="py-2 px-3 border-r border-gray-300">{{ presenter.user.email }}</td>
+          <td class="py-2 px-3 border-r border-gray-300">{{ presenter.user.phone_number }}</td>
+          <td class="py-2 px-3 border-r border-gray-300"><a href="{{ url_for('admission.detail', id=presenter.admission_id) }}" class="font-bold">{{ presenter.admission.name }}</a></td>
           <td class="text-center py-2 border-r border-gray-300 relative flex justify-center items-center" x-data="{ open: false }">
             <a @click="open = !open" class="hover:bg-gray-400 rounded-full p-1 cursor-pointer select-none">
               <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}" class="w-6">
@@ -70,22 +58,21 @@
             <div
               x-show="open" x-transition.origin.top.right @click.outside="open = false"
               class="absolute z-10 right-4 top-full w-max py-2 rounded shadow-lg flex flex-col gap-2 bg-white bg-opacity-25 backdrop-blur-md border border-gray-300">
-              <a href="{{ url_for('user.detail', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+              <a href="{{ url_for('user.detail', id=presenter.user_id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
                 <img src="{{ url_for('static', filename='icons/fluent/outline/eye_show.svg') }}" class="w-5">
                 <span class="text-sm">Xem chi tiết profile</span>
               </a>
   
-              {% if not user.activated %}
-              <a href="{{ url_for('user.activate', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
-                <img src="{{ url_for('static', filename='icons/fluent/outline/lock-open.svg') }}" class="w-5">
-                <span class="text-sm">Kích hoạt</span>
+              <a href="{{ url_for('admission.approve_envoy', admission_id=presenter.admission_id, envoy_id=presenter.user_id) }}"
+                class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                <img src="{{ url_for('static', filename='icons/outline/checkmark-outline.svg') }}" class="w-5">
+                <span class="text-sm">Chấp thuận</span>
               </a>
-              {% else %}
-                <a href="{{ url_for('user.deactivate', id=user.id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
-                  <img src="{{ url_for('static', filename='icons/fluent/outline/lock-closed.svg') }}" class="w-5">
-                  <span class="text-sm">Khóa (ngưng kích hoạt)</span>
-                </a>
-              {% endif %}
+              <a href="{{ url_for('admission.unapprove_envoy', admission_id=presenter.admission_id, envoy_id=presenter.user_id) }}"
+                class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                <img src="{{ url_for('static', filename='icons/outline/close-outline.svg') }}" class="w-5">
+                <span class="text-sm">Từ chối</span>
+              </a>
             </div> <!-- menu -->
           </td>
         </tr>
@@ -98,7 +85,7 @@
     </table>
     
     <div class="flex mt-5">
-      {{ paginator(users, route='user.list') }}
+      {{ paginator(presenters, route='admission.waiting') }}
     </div>
 
     <!-- row select bubble -->
