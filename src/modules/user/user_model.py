@@ -99,11 +99,14 @@ class User(UserMixin, db.Model):
 
     @property
     def students(self):
-        joined_admissions = db.session.query(StudentPresenter).filter(
-            StudentPresenter.presenter_id == self.id,
-            StudentPresenter.student_id != None,
-        ).all()
-        return joined_admissions
+        applied_students = db_session.query(AdmissionPresenter)\
+        .join(
+            StudentPresenter, AdmissionPresenter.id == StudentPresenter.presenter_id, isouter=True,
+        )\
+        .filter(AdmissionPresenter.user_id != None, AdmissionPresenter.user_id == current_user.id)
+        
+        print(applied_students)
+        return applied_students.all()
     
     
     @property
@@ -131,6 +134,14 @@ class User(UserMixin, db.Model):
             AdmissionPresenter.admission_id == admission_id,
             AdmissionPresenter.user_joined_time != None,
         ).first() is not None
+
+    def get_if_joined_admission(self, admission_id: int):
+        return db_session.query(AdmissionPresenter).filter(
+            AdmissionPresenter.user_id == self.id, 
+            AdmissionPresenter.admission_id == admission_id,
+            AdmissionPresenter.user_joined_time != None,
+        ).first()
+
 
     @property
     def profile_url(self):

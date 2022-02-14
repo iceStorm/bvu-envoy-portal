@@ -50,7 +50,14 @@
 
 
 {% block content %}
-<h1 class="font-bold text-3xl mb-10">{{ admission.name }}</h1>
+<h1 class="font-bold text-3xl mb-5">{{ admission.name }}</h1>
+{% if current_user.role.name != 'admin' %}
+    {% set presenter = current_user.get_if_joined_admission(admission.id) %}
+
+    {% if presenter != None %}
+      <h1 class="text-xl mb-10">Mã giới thiệu: <span class="font-bold">{{ presenter.referral_code }}</span></h1>
+    {% endif %}
+{% endif %}
 
 <div class="tab_wrapper demo">
 

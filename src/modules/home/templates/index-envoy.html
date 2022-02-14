@@ -28,7 +28,7 @@
             </div>
            <div class="flex flex-col gap-1 text-blue-500">
                 <p class="font-medium">Học viên đã đăng ký</p>
-                <p class="text-4xl font-bold">{{ current_user.applied_students | length }}</p>
+                <p class="text-4xl font-bold">{{ current_user.students | length }}</p>
            </div>
         </div>
 
@@ -38,7 +38,7 @@
             </div>
             <div class="flex flex-col gap-1 text-green-600">
                 <p class="font-medium">Học viên nhập học thành công</p>
-                <p class="text-4xl font-bold">{{ current_user.applied_students | length }}</p>
+                <p class="text-4xl font-bold">{{ current_user.paid_students | length }}</p>
             </div>
         </div>
     </div>

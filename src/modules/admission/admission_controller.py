@@ -1,11 +1,12 @@
 import datetime
+from uuid import uuid1
 
 from flask import Blueprint, request, redirect, jsonify
 from flask.helpers import flash, url_for
 from flask.templating import render_template
 from flask_login import current_user
 
-from src.main import admin_permission, manager_permission, db, envoy_permission, db_session
+from src.main import admin_permission, manager_permission, db, envoy_permission, db_session, limiter
 from src.base.constants.base_constanst import FlashCategory
 from src.base.decorators.query_params import query_params
 from src.modules.admission.admission_model import Admission, AdmissionPresenter
@@ -376,6 +377,7 @@ def approve_envoy(admission_id: int, envoy_id: int):
         return redirect(request.referrer or url_for('admission.list'))
     
     presenter.user_joined_time = datetime.datetime.now()
+    presenter.referral_code = uuid1().hex[:30]
     db_session.commit()
 
     flash('Approved', category=FlashCategory.success())
@@ -421,17 +423,3 @@ def envoy_leave(id: int):
     
     flash('Left', category=FlashCategory.success())
     return redirect(request.referrer or url_for('admission.list'))
-
-
-@admission.route('student-apply', methods=['POST'])
-def student_apply():
-    return jsonify({
-        'status': 'not implemented',
-    }), 501
-
-
-@admission.route('student-change-state', methods=['POST'])
-def student_change_state():
-    return jsonify({
-        'status': 'not implemented',
-    }), 501
