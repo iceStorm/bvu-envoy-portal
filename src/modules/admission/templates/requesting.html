@@ -1,0 +1,77 @@
+{% extends 'user.html' %}
+{% from 'macros/admission-item.html' import admission_item with context %}
+
+{% block title %}
+  Đang chờ xét duyệt
+{% endblock title %}
+
+
+
+{% block header_actions %}
+
+{% endblock %}
+
+
+
+{% block content %}
+  <div class="flex flex-col h-full gap-10 -mt-2">
+
+    <!-- filter form -->
+    <div class="flex flex-col gap-5">
+      <form action="" method="get" class="flex justify-between gap-2 w-full">
+        <!-- page field -->
+        <input type="hidden" name="page" id="page">
+  
+        <div class="form-fields flex items-center gap-2">
+          {% for field in filter_form if field.name != 'csrf_token' %}
+            {{ form_field(field, False, '') }}
+          {% endfor %}
+        </div>
+  
+        <!-- buttons -->
+        <div class="pt-3 flex gap-2 ml-3">
+          <button type="submit" href="{{ url_for('admission.add') }}"
+            class="btn w-fit m-auto flex items-center gap-2 bg-primary text-white py-2.5 px-5 rounded shadow">
+            <img src="{{ url_for('static', filename='icons/fluent/outline/filter.svg') }}" class="w-6 invert">
+            <span>Lọc</span>
+          </button>
+  
+          <a href="{{ url_for('admission.list') }}"
+            class="btn w-fit m-auto flex items-center gap-2 bg-primary text-white py-2.5 px-5 rounded shadow">
+            <img src="{{ url_for('static', filename='icons/outline/refresh-outline.svg') }}" class="w-6 invert">
+            <span>Đặt lại</span>
+          </a>
+        </div>
+      </form>
+
+      <!-- paginator -->
+      {% if admissions.total > 0 %}
+       <div class="flex flex-col gap-2">
+        <div class="mr-3 text-sm">
+          Bộ lọc đang hiển thị {{ admissions.items | length }} trên tổng số {{ admissions.total }} kết quả.
+        </div>
+
+        <div class="flex items-center mr-6">
+          {{ paginator(admissions, route='admission.envoy_requesting') }}
+        </div>
+       </div>
+      {% endif %}
+    </div>
+
+    <!-- grid items -->
+    <div class="flex flex-col flex-auto gap-5">
+      <!-- admissions grid -->
+      <div class="grid grid-cols-3 gap-10">
+        {% for admission in admissions.items %}
+          {{ admission_item(admission) }}
+        {% else %}
+          <div class="flex items-center">
+            <span>Chưa có thông tin.&nbsp;</span>
+            <a href="{{ url_for('admission.add') }}" class="link underline">Thêm mới.</a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+{% endblock content %}

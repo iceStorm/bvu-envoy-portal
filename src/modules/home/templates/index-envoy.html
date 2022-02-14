@@ -18,7 +18,7 @@
             </div>
             <div class="flex flex-col gap-1 text-primary">
                 <p class="font-medium">Chiến dịch tuyển sinh đã tham gia</p>
-                <p class="text-4xl font-bold">{{ current_user.joined_admissions | length }}</p>
+                <p class="text-4xl font-bold">{{ current_user.accepted_admissions | length }}</p>
             </div>
         </div>
 
@@ -27,7 +27,7 @@
                 {{ get_svg_content('icons/fluent/outline/person_available.svg', width=42, height=42, classes='') | safe }}
             </div>
            <div class="flex flex-col gap-1 text-blue-500">
-                <p class="font-medium">Học viên đang đăng ký</p>
+                <p class="font-medium">Học viên đã đăng ký</p>
                 <p class="text-4xl font-bold">{{ current_user.applied_students | length }}</p>
            </div>
         </div>

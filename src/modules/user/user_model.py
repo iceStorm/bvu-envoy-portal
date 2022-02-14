@@ -3,7 +3,7 @@ from uuid import uuid1, uuid4
 import bcrypt
 from sqlalchemy.orm import relationship
 from flask import request
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from flask_bcrypt import Bcrypt
 from sqlalchemy import String, Integer, Boolean, DateTime, Column, ForeignKey
 
@@ -13,7 +13,7 @@ from .user_constants import *
 from ..envoy.envoy_constants import *
 
 from src.modules.admission.admission_model import AdmissionPresenter, StudentPresenter
-from src.main import db
+from src.main import db, db_session
 
 
 def gen_alternative_id():
@@ -104,6 +104,33 @@ class User(UserMixin, db.Model):
             StudentPresenter.student_id != None,
         ).all()
         return joined_admissions
+    
+    
+    @property
+    def accepted_admissions(self):
+        joined_admissions = db.session.query(AdmissionPresenter).filter(
+            AdmissionPresenter.user_id == self.id,
+            AdmissionPresenter.user_joined_time != None,
+        ).all()
+        return joined_admissions
+
+    
+    @property
+    def paid_students(self):
+        paid_stds = db_session.query(AdmissionPresenter).join(
+            StudentPresenter, AdmissionPresenter.id ==  StudentPresenter.presenter_id,
+        )\
+        .filter(AdmissionPresenter.user_id != current_user.id)\
+        .filter(StudentPresenter.student_paid_time != None).all()
+        return paid_stds
+
+
+    def is_in_admission(self, admission_id: int):
+        return db_session.query(AdmissionPresenter).filter(
+            AdmissionPresenter.user_id == self.id, 
+            AdmissionPresenter.admission_id == admission_id,
+            AdmissionPresenter.user_joined_time != None,
+        ).first() is not None
 
     @property
     def profile_url(self):

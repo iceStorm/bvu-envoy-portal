@@ -22,29 +22,26 @@ def envoy_sidebar():
                 show_counter_icon=True,
                 counter=len(db_session.query(Admission).filter(
                     Admission.finished == False,
-                    # Admission.end_date >= datetime.datetime.today()
                 ).all()),
             ),
         ],),
 
         NavItemGroup(label='Đại sứ - Học viên', items=[
-            NavItem(href='', title='Chờ xét duyệt',
+            NavItem(href=url_for('admission.envoy_requesting'), title='Chờ xét duyệt',
                 icon=NavItemIcon(original='icons/fluent/outline/history.svg'),
-                counter=len(db_session.query(User).filter(User.activated == False, User.role_id == 3).all()),
+                counter=len(db_session.query(AdmissionPresenter).filter(
+                    AdmissionPresenter.user_joined_time == None,
+                    AdmissionPresenter.user_id == current_user.id,
+                ).all()),
                 show_counter_icon=True,
             ),
-            NavItem(href=url_for('admission.list'), title='Chiến dịch đã tham gia',
+            NavItem(href=url_for('admission.envoy_joined'), title='Chiến dịch đã tham gia',
                 icon=NavItemIcon(original='icons/fluent/outline/hat_graduation.svg'),
                 show_counter_icon=True,
                 counter=len(db_session.query(AdmissionPresenter).filter(
                     AdmissionPresenter.user_id == current_user.id,
                     AdmissionPresenter.user_joined_time != None,
                 ).all()),
-            ),
-            NavItem(href='', title='Danh sách Học viên',
-                icon=NavItemIcon(original='icons/fluent/outline/people_community.svg'),
-                show_counter_icon=True,
-                counter=len(db_session.query(User).filter(User.role_id == 3, User.activated == True).all()),
             ),
         ],),
     ]

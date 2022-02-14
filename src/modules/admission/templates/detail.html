@@ -50,5 +50,117 @@
 
 
 {% block content %}
-  {{ admission.name }}  
+<h1 class="font-bold text-3xl mb-10">{{ admission.name }}</h1>
+
+<div class="tab_wrapper demo">
+
+  <ul class="tab_list">
+    <li class="active">Thông tin</li>
+    <li>Quy chế</li>
+    {% if current_user.role.code == 'admin' %}
+      <li>Đại sứ</li>
+    {% endif %}
+
+    {% if current_user.role.code == 'admin' or (current_user.role.code == 'envoy' and current_user.is_in_admission(admission.id)) %}
+      <li>Học viên</li>
+    {% endif %}
+  </ul>
+
+  <div class="content_wrapper">
+    <div class="tab_content active">
+      <h3>
+        <div class="flex justify-between gap-10">
+          <div class="flex flex-col gap-1">
+              <p class="flex">
+                  <span class="font-normal">Đối tượng tuyển sinh:</span>&nbsp;<span class="font-bold">{{ admission.type.name }}</span>
+              </p>
+              <p class="flex">
+                  <span class="font-normal">Ngày bắt đầu:</span>&nbsp;<span class="font-bold">{{ admission.start_date.strftime('%d/%m/%Y') }}</span>
+              </p>
+              <p class="flex">
+                <span class="font-normal">Ngày kết thúc:</span>&nbsp;<span class="font-bold">{{ admission.end_date.strftime('%d/%m/%Y') }}</span>
+              </p>
+              <p class="flex">
+                  <span class="font-normal">Hoa hồng:</span>&nbsp;<span class="font-bold">{{ "{0:,}".format(admission.rose) }}đ/Học viên nhập học thành công</span>
+              </p>
+          </div>
+        </div>
+      </h3>
+    </div>
+
+    <div class="tab_content">
+      {{ admission.description | safe }}
+    </div>
+
+    {% if current_user.role.code == 'admin' %}
+    <div class="tab_content">
+      <table class="rounded-md border border-collapse border-gray-300 max-h-screen relative w-full">
+        <thead class=" bg-primary text-white font-medium sticky top-12 z-10 table-fixed">
+          <tr class="p-5">
+            <td class="text-center px-2 py-2 border-r border-gray-300">
+              <input type="checkbox" data-tippy-content="Chọn/Bỏ chọn tất cả dòng đang hiển thị">
+            </td>
+            <td class="text-left px-3 py-2 border-r border-gray-300">Họ và tên</td>
+            <td class="text-left px-3 py-2 border-r border-gray-300">Tên tổ chức</td>
+            <td class="text-left px-3 py-2 border-r border-gray-300">Email</td>
+            <td class="text-left px-3 py-2 border-r border-gray-300">Số điện thoại</td>
+            <td class="text-center px-2 py-2 border-r border-gray-300">#</td>
+          </tr>
+        </thead>
+    
+        <tbody>
+        {% for presenter in admission.joined_users %}
+          <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-blue-200 border-b border-gray-300 text-sm">
+            <td class="text-center py-2 border-r border-gray-300 font-bold">
+              <input type="checkbox" name="presenter-id" value="{{ presenter.id }}" @change="onCheckboxChange">
+            </td>
+            <td class="py-2 px-3 border-r border-gray-300"><a href="{{ url_for('user.detail', id=presenter.user_id) }}" class="font-bold">{{ presenter.user.full_name }}</a></td>
+            <td class="py-2 px-3 border-r border-gray-300">{{ presenter.user.organization_name }}</td>
+            <td class="py-2 px-3 border-r border-gray-300">{{ presenter.user.email }}</td>
+            <td class="py-2 px-3 border-r border-gray-300">{{ presenter.user.phone_number }}</td>
+            <td class="text-center py-2 border-r border-gray-300 relative flex justify-center items-center" x-data="{ open: false }">
+              <a @click="open = !open" class="hover:bg-gray-400 rounded-full p-1 cursor-pointer select-none">
+                <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}" class="w-6">
+              </a>
+    
+              <!-- menu -->
+              <div
+                x-show="open" x-transition.origin.top.right @click.outside="open = false"
+                class="absolute z-10 right-4 top-full w-max py-2 rounded shadow-lg flex flex-col gap-2 bg-white bg-opacity-25 backdrop-blur-md border border-gray-300">
+                <a href="{{ url_for('user.detail', id=presenter.user_id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                  <img src="{{ url_for('static', filename='icons/fluent/outline/eye_show.svg') }}" class="w-5">
+                  <span class="text-sm">Xem chi tiết profile</span>
+                </a>
+                <a href="{{ url_for('admission.unapprove_envoy', admission_id=presenter.admission_id, envoy_id=presenter.user_id) }}"
+                  class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                  <img src="{{ url_for('static', filename='icons/outline/close-outline.svg') }}" class="w-5">
+                  <span class="text-sm">Mời ra khỏi chiến dịch</span>
+                </a>
+              </div> <!-- menu -->
+            </td>
+          </tr>
+        {% else %}
+          <tr class="bg-white">
+            <td class="bg-white p-3" colspan="7">Chưa có thông tin.</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <div class="tab_content">
+      <h3>Học viên.</h3>
+    </div>
+  </div>
+
+</div>
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='libraries/tabs/css/style.css') }}">
+<script src="{{ url_for('static', filename='libraries/tabs/js/jquery.multipurpose_tabcontent.js') }}"></script>
+
+<script>
+  $(".demo").champ();
+</script>
 {% endblock content %}

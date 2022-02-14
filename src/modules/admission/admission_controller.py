@@ -72,6 +72,120 @@ def list(type=0, page=1, max_per_page=10, start_date=None, end_date=None, status
     return render_template("admissions.html", filter_form=form, admissions=pagination)
 
 
+@admission.route('/requesting')
+@envoy_permission.require(http_exception=403)
+@query_params
+def envoy_requesting(type=0, page=1, max_per_page=10, start_date=None, end_date=None, status=-1):
+    from .forms.admission_filter_form import AdmissionFilterForm
+    form = AdmissionFilterForm()
+    
+    # checking request param data types
+    try:
+        if start_date:
+            start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        if end_date:
+            end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+    except Exception as e:
+        flash('Filter value invalid', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('admission.list'))
+    
+    # request param types passed
+    form.type.process_data(type)
+    form.start_date.process_data(start_date)
+    form.end_date.process_data(end_date)
+    form.max_per_page.process_data(max_per_page)
+    form.status.process_data(status)
+
+    query = db_session.query(Admission)
+    print('\ntype:', type, 'per_page:', max_per_page)
+
+    # ignore admissions that current envoy user joined
+    if current_user.role.code == 'envoy':
+        query = query.join(AdmissionPresenter, Admission.id == AdmissionPresenter.admission_id)
+        query = query.filter(AdmissionPresenter.user_joined_time == None, AdmissionPresenter.user_id == current_user.id)
+
+    # 1. only filter types if the type is not 0
+    # 2. only start_date or end_date provided --> find exact
+    # 3. both start_date and end_date are provided --> find between
+
+    if type != '0' and type != 0:
+        print(type, type != 0)
+        query = query.filter(Admission.type_id == type)
+  
+    if start_date:
+        query = query.filter(Admission.start_date == start_date) if not end_date \
+            else query.filter(Admission.start_date >= start_date)
+
+    if end_date:
+        query = query.filter(Admission.end_date == end_date) if not start_date\
+            else query.filter(Admission.end_date <= end_date)
+    
+    if status != '-1' and status != -1:
+        query = query.filter(Admission.finished == (bool(int(status))))
+
+    print(query.as_scalar())
+    pagination = query.order_by(Admission.start_date.desc()).paginate(page=int(page or 1), max_per_page=int(max_per_page or 3), error_out=False)
+    return render_template("requesting.html", filter_form=form, admissions=pagination)
+
+
+
+@admission.route('/joined')
+@envoy_permission.require(http_exception=403)
+@query_params
+def envoy_joined(type=0, page=1, max_per_page=10, start_date=None, end_date=None, status=-1):
+    from .forms.admission_filter_form import AdmissionFilterForm
+    form = AdmissionFilterForm()
+    
+    # checking request param data types
+    try:
+        if start_date:
+            start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        if end_date:
+            end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+    except Exception as e:
+        flash('Filter value invalid', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('admission.list'))
+    
+    # request param types passed
+    form.type.process_data(type)
+    form.start_date.process_data(start_date)
+    form.end_date.process_data(end_date)
+    form.max_per_page.process_data(max_per_page)
+    form.status.process_data(status)
+
+    query = db_session.query(Admission)
+    print('\ntype:', type, 'per_page:', max_per_page)
+
+    # ignore admissions that current envoy user joined
+    if current_user.role.code == 'envoy':
+        query = query.join(AdmissionPresenter, Admission.id == AdmissionPresenter.admission_id)
+        query = query.filter(AdmissionPresenter.user_joined_time != None, AdmissionPresenter.user_id == current_user.id)
+
+
+    # 1. only filter types if the type is not 0
+    # 2. only start_date or end_date provided --> find exact
+    # 3. both start_date and end_date are provided --> find between
+
+    if type != '0' and type != 0:
+        print(type, type != 0)
+        query = query.filter(Admission.type_id == type)
+  
+    if start_date:
+        query = query.filter(Admission.start_date == start_date) if not end_date \
+            else query.filter(Admission.start_date >= start_date)
+
+    if end_date:
+        query = query.filter(Admission.end_date == end_date) if not start_date\
+            else query.filter(Admission.end_date <= end_date)
+    
+    if status != '-1' and status != -1:
+        query = query.filter(Admission.finished == (bool(int(status))))
+
+    print(query.as_scalar())
+    pagination = query.order_by(Admission.start_date.desc()).paginate(page=int(page or 1), max_per_page=int(max_per_page or 3), error_out=False)
+    return render_template("joined.html", filter_form=form, admissions=pagination)
+
+
 
 @admission.route('/waiting')
 @envoy_permission.require(http_exception=403)
@@ -232,6 +346,10 @@ def envoy_register(id: int):
 
     if not admission:
         flash('The admission no longer exists', category=FlashCategory.error())
+        return redirect(request.referrer or url_for('admission.list'))
+    
+    if admission.end_date < datetime.datetime.now().date():
+        flash('The admission no longer accepts jonining', category=FlashCategory.error())
         return redirect(request.referrer or url_for('admission.list'))
     
     if not AdmissionService.envoy_apply(envoy_id=current_user.id, admission_id=id):
