@@ -15,6 +15,7 @@ click-repl==0.2.0
 clickclick==20.10.2
 connexion==2.7.0
 cryptography==36.0.1
+Deprecated==1.2.13
 Flask==2.0.2
 Flask-Assets==2.0
 Flask-Bcrypt==0.7.1
@@ -36,7 +37,9 @@ isodate==0.6.0
 itsdangerous==2.0.1
 Jinja2==3.0.3
 jinja2-getenv-extension==0.0.4
+jsonpickle==2.1.0
 jsonschema==3.2.0
+jwcrypto==1.0
 kombu==5.2.3
 limits==2.1.0
 Mako==1.1.4
@@ -67,4 +70,6 @@ vine==5.0.0
 wcwidth==0.2.5
 webassets==2.0
 Werkzeug==2.0.2
+wrapt==1.13.3
 WTForms==2.3.3
+WTForms-JSON==0.3.3
