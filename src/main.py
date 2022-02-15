@@ -88,6 +88,8 @@ def init_db(app: App):
     print("\n\n[MIGRATING THE DATABASE...]")
     migrate = Migrate()
     with app.app_context():
+        db.create_all()
+
         # allow dropping column for sqlite
         if db.engine.url.drivername == 'sqlite':
             migrate.init_app(app, db, render_as_batch=True)
