@@ -21,153 +21,11 @@
 
 <script>
     Alpine.data('rootData', () => ({
-        qrOpen: false,
         avatarOpen: false,
-        filterOpen: false,
     }));
 </script>
 
 <body class="overflow-hidden" x-data="rootData" >
-
-    <!-- QR CODE MODAL -->
-    <div x-show="qrOpen" x-transition.origin.top-center class="qrcode-modal overflow-auto fixed z-50 flex justify-center items-center w-screen h-screen top-0 left-0">
-        <!-- overlay -->
-        <div class="qrcode-modal-overlay bg-black bg-opacity-50 backdrop-blur-md absolute w-full h-full top-0 left-0"></div>
-        <!-- content -->
-        <div class="qrcode-modal-content bg-white flex flex-col relative z-10 m-auto" @click.outside="qrOpen = false"
-            style="min-height: 300px; min-width: 800px;">
-            <!-- header -->
-            <div class="qrcode-modal-header p-7 py-4 flex items-center justify-between">
-                <h1 class="text-xl font-black">Chia sẻ mã QR.</h1>
-                <button @click="qrOpen = false">
-                    <img src="{{ url_for('static', filename='icons/outline/close-outline.svg') }}" class="w-8">
-                </button>
-            </div>
-            <!-- body -->
-            <div class="qrcode-modal-body flex-auto px-7 py-7 flex gap-10">
-                <div class="border border-gray-200 p-3" style="flex-basis: 200px;" id="qrcode-canvas">
-                </div>
-                <script type="text/javascript">
-                    const qrCode = new QRCodeStyling({
-                        "width": 300,
-                        "height": 300,
-                        "data": "{{ current_user.email }}",
-                        "margin": 0,
-                        "qrOptions": {
-                            "typeNumber": "0",
-                            "mode": "Byte",
-                            "errorCorrectionLevel": "Q"
-                        },
-                        "imageOptions": {
-                            "hideBackgroundDots": true,
-                            "imageSize": 0.4,
-                            "margin": 0
-                        },
-                        "dotsOptions": {
-                            "type": "classy-rounded",
-                            "color": "#013364"
-                        },
-                        "backgroundOptions": {
-                            "color": "#ffffff"
-                        },
-                        "image": "{{ url_for('static', filename='logo.png') }}",
-                        "dotsOptionsHelper": {
-                            "colorType": {
-                                "single": true,
-                                "gradient": false
-                            },
-                            "gradient": {
-                                "linear": true,
-                                "radial": false,
-                                "color1": "#6a1a4c",
-                                "color2": "#6a1a4c",
-                                "rotation": "0"
-                            }
-                        },
-                        "cornersSquareOptions": {
-                            "type": "",
-                            "color": "#013364",
-                            "gradient": null
-                        },
-                        "cornersSquareOptionsHelper": {
-                            "colorType": {
-                                "single": true,
-                                "gradient": false
-                            },
-                            "gradient": {
-                                "linear": true,
-                                "radial": false,
-                                "color1": "#000000",
-                                "color2": "#000000",
-                                "rotation": "0"
-                            }
-                        },
-                        "cornersDotOptions": {
-                            "type": "",
-                            "color": "#013364"
-                        },
-                        "cornersDotOptionsHelper": {
-                            "colorType": {
-                                "single": true,
-                                "gradient": false
-                            },
-                            "gradient": {
-                                "linear": true,
-                                "radial": false,
-                                "color1": "#000000",
-                                "color2": "#000000",
-                                "rotation": "0"
-                            }
-                        },
-                        "backgroundOptionsHelper": {
-                            "colorType": {
-                                "single": true,
-                                "gradient": false
-                            },
-                            "gradient": {
-                                "linear": true,
-                                "radial": false,
-                                "color1": "#ffffff",
-                                "color2": "#ffffff",
-                                "rotation": "0"
-                            }
-                        }
-                    });
-                    qrCode.append(document.getElementById("qrcode-canvas"));
-                </script>
-
-                <div class="flex-auto flex flex-col justify-between gap-7">
-                    <div class="flex flex-col gap-1">
-                        <h1><span class="select-none">Tên đại sứ: </span><span class="font-semibold">{{ current_user.full_name }}</span></h1>
-                        <h1><span class="select-none">Email: </span><span class="font-semibold">{{ current_user.email }}</span></h1>
-                        <h1><span class="select-none">Số điện thoại: </span><span class="font-semibold">{{ current_user.phone_number }}</span></h1>
-                    </div>
-
-                    <!-- stats -->
-                    <div class="flex items-center gap-6">
-                        <div class="p-2 px-4 border border-purple-100 bg-purple-50 text-purple-500 font-medium">
-                            {{ current_user.user_admissions | length }} admissions
-                        </div>
-                        <!-- students counter -->
-                        <div class="p-2 px-4 border border-green-100 bg-green-50 text-green-500 font-medium">
-                            {{ current_user.user_admissions | length }} students
-                        </div>
-                    </div>
-                    
-                    <div class="flex flex-col justify-end">
-                        <span class="pb-1">Profile đại sứ:</span>
-                        <div class="relative outline-2 border-opacity-50 shadow-2xl border border-gray-300 overflow-hidden pr-10">
-                            <input type="text" readonly value="{{ current_user.profile_url }}"
-                                class="py-2 px-4 w-full font-semibold text-primary focus:outline-none">
-                            <button class="p-2 px-4 h-full absolute right-0 top-1/2 -translate-y-1/2 border-l border-gray-200 bg-gray-100 hover:bg-gray-200">
-                                <img src="{{ url_for('static', filename='icons/outline/copy-outline.svg') }}" class="w-5">
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- ROOT -->
     {% block begin_body %}{% endblock begin_body %}
@@ -207,12 +65,6 @@
                     <div class="flex justify-center items-center border-r border-gray-200">
                         {% block header_actions %} {% endblock %}
                     </div>
-
-                    <!-- qr code -->
-                    <!-- <div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer" data-tippy-content="Mã QR code đến profile này"
-                        @click="qrOpen = !qrOpen">
-                        <img src="{{ url_for('static', filename='icons/fluent/outline/qr_code.svg') }}" class="w-5">
-                    </div> -->
                 
                     <!-- profile avatar -->
                     <div class="hover:bg-gray-200 p-2 px-4 flex items-center cursor-pointer" @click="avatarOpen = true">

@@ -64,7 +64,7 @@ class UserService:
 
 
     @staticmethod
-    def send_register_success_email(receiver_email: str, receiver_name: str, password: str):
+    async def send_register_success_email(receiver_email: str, receiver_name: str, password: str):
         from flask_mail import Message
         from src.main import mail
         msg = Message(f'Thông báo xét duyệt tài khoản Đại sứ BVU', sender = current_app.config['MAIL_USERNAME'], recipients = [receiver_email])
@@ -75,4 +75,4 @@ class UserService:
         </br/>Tài khoản của bạn đã được chấp thuận, bây giờ bạn có thể đăng nhập vào website thông qua mật khẩu được cung cấp dưới đây:
         <h1>{password}</h1>
         """
-        mail.send(msg)
+        await mail.send(msg)

@@ -50,14 +50,115 @@
 
 
 {% block content %}
-<h1 class="font-bold text-3xl mb-5">{{ admission.name }}</h1>
+<div>
+  <h1 class="font-bold text-3xl mb-5">{{ admission.name }}</h1>
 {% if current_user.role.name != 'admin' %}
     {% set presenter = current_user.get_if_joined_admission(admission.id) %}
 
     {% if presenter != None %}
-      <h1 class="text-xl mb-10">Mã giới thiệu: <span class="font-bold">{{ presenter.referral_code }}</span></h1>
+      <div class="flex gap-5 mb-10">
+        <div id="qrcode-canvas" class="bg-white p-2 border border-gray-200"></canvas>
+        <script type="text/javascript">
+          const qrCode = new QRCodeStyling({
+              "width": 150,
+              "height": 150,
+              "data": "{{ presenter.referral_shareable_link }}",
+              "margin": 0,
+              "qrOptions": {
+                  "typeNumber": "0",
+                  "mode": "Byte",
+                  "errorCorrectionLevel": "Q"
+              },
+              "imageOptions": {
+                  "hideBackgroundDots": true,
+                  "imageSize": 0.4,
+                  "margin": 0
+              },
+              "dotsOptions": {
+                  "type": "classy-rounded",
+                  "color": "#013364"
+              },
+              "backgroundOptions": {
+                  "color": "#ffffff"
+              },
+              "image": "{{ url_for('static', filename='logo.png') }}",
+              "dotsOptionsHelper": {
+                  "colorType": {
+                      "single": true,
+                      "gradient": false
+                  },
+                  "gradient": {
+                      "linear": true,
+                      "radial": false,
+                      "color1": "#6a1a4c",
+                      "color2": "#6a1a4c",
+                      "rotation": "0"
+                  }
+              },
+              "cornersSquareOptions": {
+                  "type": "",
+                  "color": "#013364",
+                  "gradient": null
+              },
+              "cornersSquareOptionsHelper": {
+                  "colorType": {
+                      "single": true,
+                      "gradient": false
+                  },
+                  "gradient": {
+                      "linear": true,
+                      "radial": false,
+                      "color1": "#000000",
+                      "color2": "#000000",
+                      "rotation": "0"
+                  }
+              },
+              "cornersDotOptions": {
+                  "type": "",
+                  "color": "#013364"
+              },
+              "cornersDotOptionsHelper": {
+                  "colorType": {
+                      "single": true,
+                      "gradient": false
+                  },
+                  "gradient": {
+                      "linear": true,
+                      "radial": false,
+                      "color1": "#000000",
+                      "color2": "#000000",
+                      "rotation": "0"
+                  }
+              },
+              "backgroundOptionsHelper": {
+                  "colorType": {
+                      "single": true,
+                      "gradient": false
+                  },
+                  "gradient": {
+                      "linear": true,
+                      "radial": false,
+                      "color1": "#ffffff",
+                      "color2": "#ffffff",
+                      "rotation": "0"
+                  }
+              }
+          });
+          qrCode.append(document.getElementById("qrcode-canvas"));
+      </script>
+      </div>
+
+      <div class="flex flex-col">
+        <h1 class="text-lg mb-1">Mã giới thiệu: <span class="font-bold">{{ presenter.referral_code }}</span></h1>
+        <h1 class="text-lg mb-10">Link giới thiệu: <span class="font-bold">
+          <a href="{{ url_for('mock.student_apply', referral_code=presenter.referral_code) }}" target="_blank">
+            {{ presenter.referral_shareable_link }}
+          </a></span>
+        </h1>
+      </div>
     {% endif %}
 {% endif %}
+</div>
 
 <div class="tab_wrapper demo">
 
@@ -156,9 +257,67 @@
     </div>
     {% endif %}
 
-    <div class="tab_content">
-      <h3>Học viên.</h3>
-    </div>
+    {% if (current_user.role.code == 'envoy' and current_user.is_in_admission(admission.id)) or current_user.role.code == 'admin' %}
+      <div class="tab_content">
+        <table class="rounded-md border border-collapse border-gray-300 max-h-screen relative w-full">
+          <thead class=" bg-primary text-white font-medium sticky top-12 z-10 table-fixed">
+            <tr class="p-5">
+              <td class="text-center px-2 py-2 border-r border-gray-300">
+                <input type="checkbox" data-tippy-content="Chọn/Bỏ chọn tất cả dòng đang hiển thị">
+              </td>
+              <td class="text-left px-3 py-2 border-r border-gray-300">Mã học viên</td>
+              <td class="text-left px-3 py-2 border-r border-gray-300">Thời gian đăng ký</td>
+              <td class="text-left px-3 py-2 border-r border-gray-300">Thời gian nhập học</td>
+              {% if current_user.role.code == 'admin' %}
+              <td class="text-center px-2 py-2 border-r border-gray-300">#</td>
+              {% endif %}
+            </tr>
+          </thead>
+
+          {% set students = current_user.students if current_user.role.code == 'envoy' else admission.students %}
+      
+          <tbody>
+          {% for student in students %}
+            <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-blue-200 border-b border-gray-300 text-sm">
+              <td class="text-center py-2 border-r border-gray-300 font-bold">
+                <input type="checkbox" name="presenter-id" value="{{ presenter.id }}" @change="onCheckboxChange">
+              </td>
+              <td class="py-2 px-3 border-r border-gray-300">{{ student.student_id }}</td>
+              <td class="py-2 px-3 border-r border-gray-300">{{ student.student_joined_time.strftime('%d/%m/%Y %H:%m') }}</td>
+              <td class="py-2 px-3 border-r border-gray-300">{{ student.student_paid_time.strftime('%d/%m/%Y %H:%m') if student.student_paid_time else '' }}</td>
+
+              {% if current_user.role.code == 'admin' %}
+              <td class="text-center py-2 border-r border-gray-300 relative flex justify-center items-center" x-data="{ open: false }">
+                <a @click="open = !open" class="hover:bg-gray-400 rounded-full p-1 cursor-pointer select-none">
+                  <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}" class="w-6">
+                </a>
+      
+                <!-- menu -->
+                <div
+                  x-show="open" x-transition.origin.top.right @click.outside="open = false"
+                  class="absolute z-10 right-4 top-full w-max py-2 rounded shadow-lg flex flex-col gap-2 bg-white bg-opacity-25 backdrop-blur-md border border-gray-300">
+                  <a href="{{ url_for('mock.edit_student', student_id=student.student_id, presenter_id=student.presenter_id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                    <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
+                    <span class="text-sm">Sửa thông tin</span>
+                  </a>
+
+                  <a href="{{ url_for('mock.remove_student', student_id=student.student_id, presenter_id=student.presenter_id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+                    <img src="{{ url_for('static', filename='icons/outline/close-outline.svg') }}" class="w-5">
+                    <span class="text-sm">Xóa thông tin</span>
+                  </a>
+                </div> <!-- menu -->
+              </td>
+              {% endif %}
+            </tr>
+          {% else %}
+            <tr class="bg-white">
+              <td class="bg-white p-3" colspan="7">Chưa có thông tin.</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
   </div>
 
 </div>

@@ -95,7 +95,7 @@ class AuthService:
 
 
     @staticmethod
-    def send_register_confirm_email(receiver_email: str, receiver_name: str, code: str):
+    async def send_register_confirm_email(receiver_email: str, receiver_name: str, code: str):
         from flask_mail import Message
         from src.main import mail
         msg = Message(f'Xác minh đăng ký tài khoản Đại sứ BVU', sender = current_app.config['MAIL_USERNAME'], recipients = [receiver_email])
@@ -105,7 +105,7 @@ class AuthService:
         Vui lòng sao chép mã sau đây để hoàn tất quá trình đăng ký:
         <h1>{code}</h1>
         """
-        mail.send(msg)
+        await mail.send(msg)
 
     @staticmethod
     def gen_registration_code() -> str:

@@ -42,9 +42,10 @@ class App(Flask):
         """
         Registering jinja global functions (allow calling from any jinja templates)
         """
-        from .base.helpers.jinja_env_functions import extract_avatar_url, get_svg_content
+        from .base.helpers.jinja_env_functions import extract_avatar_url, get_svg_content, server_name
         self.jinja_env.globals.update(extract_avatar_url=extract_avatar_url)
         self.jinja_env.globals.update(get_svg_content=get_svg_content)
+        self.jinja_env.globals.update(server_name=server_name)
 
 
     def register_blueprints(self):

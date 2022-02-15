@@ -99,13 +99,11 @@ class User(UserMixin, db.Model):
 
     @property
     def students(self):
-        applied_students = db_session.query(AdmissionPresenter)\
+        applied_students = db_session.query(StudentPresenter)\
         .join(
-            StudentPresenter, AdmissionPresenter.id == StudentPresenter.presenter_id, isouter=True,
+            AdmissionPresenter, StudentPresenter.presenter_id == AdmissionPresenter.id, isouter=True,
         )\
-        .filter(AdmissionPresenter.user_id != None, AdmissionPresenter.user_id == current_user.id)
-        
-        print(applied_students)
+        .filter(AdmissionPresenter.id != None, AdmissionPresenter.user_id == current_user.id)
         return applied_students.all()
     
     
@@ -120,12 +118,12 @@ class User(UserMixin, db.Model):
     
     @property
     def paid_students(self):
-        paid_stds = db_session.query(AdmissionPresenter).join(
-            StudentPresenter, AdmissionPresenter.id ==  StudentPresenter.presenter_id,
+        paid_stds = db_session.query(StudentPresenter)\
+        .join(
+            AdmissionPresenter, StudentPresenter.presenter_id == AdmissionPresenter.id, isouter=True,
         )\
-        .filter(AdmissionPresenter.user_id != current_user.id)\
-        .filter(StudentPresenter.student_paid_time != None).all()
-        return paid_stds
+        .filter(AdmissionPresenter.id != None, AdmissionPresenter.user_id == current_user.id, StudentPresenter.student_paid_time != None)
+        return paid_stds.all()
 
 
     def is_in_admission(self, admission_id: int):

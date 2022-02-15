@@ -1,4 +1,5 @@
 from typing import Union
+from flask import request, url_for
 from sqlalchemy import Integer, String, DateTime, Boolean, Column, ForeignKey, Date, UniqueConstraint, event, DDL
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
@@ -81,6 +82,17 @@ class Admission(db.Model):
         ).first() != None
         return presenter
 
+    @property
+    def students(self):
+        applied_students = db_session.query(StudentPresenter)\
+        .join(
+            AdmissionPresenter, StudentPresenter.presenter_id == AdmissionPresenter.id, isouter=True,
+        )\
+        .filter(AdmissionPresenter.id != None)
+        return applied_students.all()
+    
+    
+
 
 class AdmissionPresenter(db.Model):
     __tablename__ = 'AdmissionPresenter'
@@ -107,6 +119,11 @@ class AdmissionPresenter(db.Model):
         UniqueConstraint(admission_id, user_id),
         {'extend_existing': True, },
     )
+
+    @property
+    def referral_shareable_link(self):
+        server_name = request.headers.get('host')
+        return server_name + url_for('mock.student_apply', referral_code=self.referral_code);
 
 
 class StudentPresenter(db.Model):

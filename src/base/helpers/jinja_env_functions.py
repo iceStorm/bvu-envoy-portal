@@ -12,6 +12,9 @@ def extract_avatar_url(full_avatar_url: str):
         print(f'Error to extract url [{full_avatar_url}]:', ect)
         return 'default_user.jpg'
 
+def server_name():
+    import socket
+    return socket.gethostname()
 
 def get_svg_content(url: str, width=24, height=24, classes=''):
     # logger.info(f'\nGetting svg content: {url}...')
