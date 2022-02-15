@@ -1,6 +1,6 @@
 from typing import Union
 from flask import request, url_for
-from sqlalchemy import Integer, String, DateTime, Boolean, Column, ForeignKey, Date, UniqueConstraint, event, DDL
+from sqlalchemy import Integer, String, DateTime, Boolean, Column, ForeignKey, Date, UniqueConstraint, delete, event, DDL
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 
@@ -135,5 +135,5 @@ class StudentPresenter(db.Model):
     student_joined_time = Column(DateTime, nullable=False, default=datetime.datetime.now()) # thời điểm học viên đăng ký chọn đại sứ theo chiến dịch (mã giới thiệu)
     student_paid_time = Column(DateTime) # thời điểm học viên nhập học thành công
 
-    presenter = relationship("AdmissionPresenter", backref='applied_students')
+    presenter = relationship("AdmissionPresenter", backref=db.backref('applied_students', cascade='all,delete'))
     presenter_id = Column(Integer, ForeignKey('AdmissionPresenter.id'), primary_key=True)

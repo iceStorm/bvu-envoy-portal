@@ -9,7 +9,7 @@ from flask_login import current_user
 from src.main import admin_permission, manager_permission, db, envoy_permission, db_session, limiter
 from src.base.constants.base_constanst import FlashCategory
 from src.base.decorators.query_params import query_params
-from src.modules.admission.admission_model import Admission, AdmissionPresenter
+from src.modules.admission.admission_model import Admission, AdmissionPresenter, StudentPresenter
 from src.modules.admission.admission_service import AdmissionService
 from src.modules.user.user_model import User
 
@@ -75,6 +75,16 @@ def list(type=0, page=1, max_per_page=10, start_date=None, end_date=None, status
     print(query.as_scalar())
     pagination = query.order_by(Admission.start_date.desc()).paginate(page=int(page or 1), max_per_page=int(max_per_page or 3), error_out=False)
     return render_template("admissions.html", filter_form=form, admissions=pagination)
+
+
+@admission.route('/students')
+@admin_permission.require(http_exception=403)
+@query_params
+def students(page=1, max_per_page=10):
+    query = db_session.query(StudentPresenter)
+    pagination = query.paginate(page=int(page or 1), max_per_page=int(max_per_page or 3), error_out=False)
+    return render_template('students.html', students=pagination)
+
 
 
 @admission.route('/requesting')

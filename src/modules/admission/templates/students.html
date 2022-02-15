@@ -1,0 +1,86 @@
+{% extends 'user.html' %}
+{% block title %}
+Học viêm
+{% endblock title %} 
+
+
+{% block header_actions %}
+{% endblock %}
+
+
+{% block begin_body %}
+  <script>
+    Alpine.data('tableData', () => ({
+      onCheckboxChange(e) {
+        console.log(e.target.name);
+      },
+    }));
+  </script>
+{% endblock begin_body %}
+
+
+{% block content %}
+<table class="rounded-md border border-collapse border-gray-300 max-h-screen relative w-full">
+  <thead class=" bg-primary text-white font-medium sticky top-12 z-10 table-fixed">
+    <tr class="p-5">
+      <td class="text-center px-2 py-2 border-r border-gray-300">
+        <input type="checkbox" data-tippy-content="Chọn/Bỏ chọn tất cả dòng đang hiển thị">
+      </td>
+      <td class="text-left px-3 py-2 border-r border-gray-300">Mã học viên</td>
+      <td class="text-left px-3 py-2 border-r border-gray-300">Thời gian đăng ký</td>
+      <td class="text-left px-3 py-2 border-r border-gray-300">Thời gian nhập học</td>
+      <td class="text-left px-3 py-2 border-r border-gray-300">Chiến dịch</td>
+      <td class="text-left px-3 py-2 border-r border-gray-300">Đại sứ</td>
+      <td class="text-center px-2 py-2 border-r border-gray-300">#</td>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for student in students.items %}
+    <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-blue-200 border-b border-gray-300 text-sm">
+      <td class="text-center py-2 border-r border-gray-300 font-bold">
+        <input type="checkbox" name="presenter-id" value="" @change="onCheckboxChange">
+      </td>
+      <td class="py-2 px-3 border-r border-gray-300">{{ student.student_id }}</td>
+      <td class="py-2 px-3 border-r border-gray-300">{{ student.student_joined_time.strftime('%d/%m/%Y %H:%m') }}</td>
+      <td class="py-2 px-3 border-r border-gray-300">{{ student.student_paid_time.strftime('%d/%m/%Y %H:%m') if student.student_paid_time else '' }}</td>
+      <td class="py-2 px-3 border-r border-gray-300">
+        <a href="{{ url_for('admission.detail', id=student.presenter.admission_id) }}" class="font-bold">{{ student.presenter.admission.name }}</a>
+      </td>
+      <td class="py-2 px-3 border-r border-gray-300">
+        <a href="{{ url_for('user.detail', id=student.presenter.user_id) }}" class="font-bold">{{ student.presenter.user.full_name }}</a>
+      </td>
+
+      <td class="text-center py-2 border-r border-gray-300 relative flex justify-center items-center" x-data="{ open: false }">
+        <a @click="open = !open" class="hover:bg-gray-400 rounded-full p-1 cursor-pointer select-none">
+          <img src="{{ url_for('static', filename='icons/fluent/outline/more_horizontal.svg') }}" class="w-6">
+        </a>
+
+        <!-- menu -->
+        <div
+          x-show="open" x-transition.origin.top.right @click.outside="open = false"
+          class="absolute z-10 right-4 top-full w-max py-2 rounded shadow-lg flex flex-col gap-2 bg-white bg-opacity-25 backdrop-blur-md border border-gray-300">
+          <a href="{{ url_for('mock.edit_student', student_id=student.student_id, presenter_id=student.presenter_id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+            <img src="{{ url_for('static', filename='icons/fluent/outline/text_edit_style.svg') }}" class="w-5">
+            <span class="text-sm">Sửa thông tin</span>
+          </a>
+
+          <a href="{{ url_for('mock.remove_student', student_id=student.student_id, presenter_id=student.presenter_id) }}" class="flex items-center gap-2 py-1 px-2 hover:bg-gray-300">
+            <img src="{{ url_for('static', filename='icons/outline/close-outline.svg') }}" class="w-5">
+            <span class="text-sm">Xóa thông tin</span>
+          </a>
+        </div> <!-- menu -->
+      </td>
+    </tr>
+  {% else %}
+    <tr class="bg-white">
+      <td class="bg-white p-3" colspan="7">Chưa có thông tin.</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<div class="flex mt-5">
+  {{ paginator(students, route='admission.students') }}
+</div>
+{% endblock content %}
