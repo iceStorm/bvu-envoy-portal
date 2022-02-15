@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, render_template, g, current_app, request, jsonify, flash
 from flask_login import current_user
 
@@ -8,8 +9,9 @@ from flask_login import current_user
 home = Blueprint('home', __name__, template_folder='templates', static_folder='static', static_url_path='home/static')
 
 
-from src.main import limiter
+from src.main import limiter, db_session
 from src.main import envoy_permission
+from src.modules.admission.admission_model import Admission, StudentPresenter
 
 
 @home.route("/", methods=["GET"])
@@ -18,7 +20,15 @@ def index():
     if not current_user.is_authenticated or not envoy_permission.can():
         return render_template('index.html')
 
-    return render_template(f"index-{current_user.role.code}.html")
+    running_admissions = db_session.query(Admission).filter(Admission.end_date >= datetime.now().date(), Admission.finished == False)
+    registered_students = db_session.query(StudentPresenter).all()
+    paid_students = db_session.query(StudentPresenter).filter(StudentPresenter.student_paid_time != None).all()
+
+    return render_template(f"index-{current_user.role.code}.html",
+        running_admissions=running_admissions.all(),
+        registered_students=registered_students,
+        paid_students=paid_students
+    )
 
 
 @home.route("/notifications", methods=["GET"])

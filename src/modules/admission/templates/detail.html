@@ -274,10 +274,8 @@
             </tr>
           </thead>
 
-          {% set students = current_user.students if current_user.role.code == 'envoy' else admission.students %}
-      
           <tbody>
-          {% for student in students %}
+          {% for student in (current_user.students_of(admission_id=admission.id) if current_user.role.code == 'envoy' else admission.students) %}
             <tr class="{% if loop.index % 2 == 0 %} bg-primary bg-opacity-10 {% endif %} hover:bg-blue-200 border-b border-gray-300 text-sm">
               <td class="text-center py-2 border-r border-gray-300 font-bold">
                 <input type="checkbox" name="presenter-id" value="{{ presenter.id }}" @change="onCheckboxChange">

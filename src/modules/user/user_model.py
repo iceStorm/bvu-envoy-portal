@@ -106,6 +106,15 @@ class User(UserMixin, db.Model):
         .filter(AdmissionPresenter.id != None, AdmissionPresenter.user_id == current_user.id)
         return applied_students.all()
     
+
+    def students_of(self, admission_id: int):
+        applied_students = db_session.query(StudentPresenter)\
+        .join(
+            AdmissionPresenter, StudentPresenter.presenter_id == AdmissionPresenter.id, isouter=True,
+        )\
+        .filter(AdmissionPresenter.id != None, AdmissionPresenter.user_id == self.id, AdmissionPresenter.admission_id == admission_id)
+        return applied_students.all()
+    
     
     @property
     def accepted_admissions(self):

@@ -57,17 +57,21 @@ def list(type=0, page=1, max_per_page=10, start_date=None, end_date=None, status
         print(type, type != 0)
         query = query.filter(Admission.type_id == type)
   
+    if status != '-1' and status != -1:
+        query = query.filter(Admission.finished == bool(int(status)))
+
+        # nếu lọc ra chiến dịch đang chạy, bên cạnh việc finished=False, cần end_date >= now()
+        if status == 0 or status == '0':
+            query = query.filter(Admission.end_date >= datetime.datetime.now().date())
+
     if start_date:
         query = query.filter(Admission.start_date == start_date) if not end_date \
             else query.filter(Admission.start_date >= start_date)
 
-    if end_date:
-        query = query.filter(Admission.end_date == end_date) if not start_date\
-            else query.filter(Admission.end_date <= end_date)
+    if end_date and not (status == 0 and status == '0'):
+            query = query.filter(Admission.end_date == end_date) if not start_date\
+                else query.filter(Admission.end_date <= end_date)
     
-    if status != '-1' and status != -1:
-        query = query.filter(Admission.finished == (bool(int(status))))
-
     print(query.as_scalar())
     pagination = query.order_by(Admission.start_date.desc()).paginate(page=int(page or 1), max_per_page=int(max_per_page or 3), error_out=False)
     return render_template("admissions.html", filter_form=form, admissions=pagination)
@@ -208,7 +212,6 @@ def detail(id):
         flash('The admission no longer exists', category=FlashCategory.error())
         return redirect(request.referrer or url_for('admission.list'))
 
-    # admission found
     return render_template("detail.html", admission=the_admission)
 
 

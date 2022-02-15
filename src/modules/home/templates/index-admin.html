@@ -3,8 +3,67 @@
 {% block title %}Dashboard{% endblock title %}
 
 {% block content %}
-<div class="flex flex-col justify-between items-center relative gap-y-3.5">
-    
-    
+<div class="flex gap-10 justify-between">
+  <a href="{{ url_for('admission.list') }}?status=0"
+    class="card shadow hover:shadow-xl transition duration-300 shadow-gray-200 border-l-4 border-primary flex flex-1 flex-wrap gap-5 w-full h-full bg-white rounded px-7 py-5">
+    <div class="card-img bg-blue-50 fill-primary rounded px-3 flex items-center justify-center">
+      {{ get_svg_content('icons/fluent/outline/hat_graduation.svg', width=42, height=42, classes='') | safe }}
+    </div>
+    <div class="flex flex-col gap-1 text-primary">
+      <p class="font-medium">Chiến dịch đang diễn ra</p>
+      <p class="text-4xl font-bold">{{ running_admissions | length }}</p>
+    </div>
+  </a>
+
+  <div class="card shadow hover:shadow-xl transition duration-300 shadow-gray-200 border-l-4 border-blue-400 flex flex-1 flex-wrap gap-5 w-full h-full bg-white rounded px-7 py-5">
+    <div class="card-img bg-blue-50 fill-blue-400 rounded px-3 flex items-center justify-center">
+      {{ get_svg_content('icons/fluent/outline/person_available.svg', width=42, height=42, classes='') | safe }}
+    </div>
+    <div class="flex flex-col gap-1 text-blue-500">
+        <p class="font-medium">Học viên đã đăng ký</p>
+        <p class="text-4xl font-bold">{{ registered_students | length }}</p>
+    </div>
+  </div>
+
+  <div class="card shadow hover:shadow-xl transition duration-300 shadow-gray-200 border-l-4 border-green-400 flex flex-1 flex-wrap gap-5 w-full h-full bg-white rounded px-7 py-5">
+    <div class="card-img bg-green-50 fill-green-400 rounded px-3 flex items-center justify-center">
+      {{ get_svg_content('icons/fluent/outline/person_money.svg', width=42, height=42, classes='') | safe }}
+    </div>
+    <div class="flex flex-col gap-1 text-green-600">
+        <p class="font-medium">Học viên nhập học thành công</p>
+        <p class="text-4xl font-bold">{{ paid_students | length }}</p>
+    </div>
+  </div>
 </div>
+
+<h1 class="mt-16 text-xl font-bold mb-2">Thống kê Học viên nhập học</h1>
+<canvas id="myChart" width="400" height="150" class="bg-white border border-gray-300 p-2"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+<script>
+const ctx = document.getElementById('myChart').getContext('2d');
+const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [
+        {% for admission in running_admissions %}
+          '{{ admission.name }}',
+        {% endfor %}
+      ],
+      datasets: [{
+        label: 'số lượng học viên đã đăng ký',
+        data: [
+          {% for admission in running_admissions %}
+            {{ admission.students |length }},
+          {% endfor %}
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      scaleSteps: 1,
+    },
+});
+</script>
 {% endblock %}

@@ -88,7 +88,7 @@ class Admission(db.Model):
         .join(
             AdmissionPresenter, StudentPresenter.presenter_id == AdmissionPresenter.id, isouter=True,
         )\
-        .filter(AdmissionPresenter.id != None)
+        .filter(AdmissionPresenter.id != None, AdmissionPresenter.admission_id == self.id)
         return applied_students.all()
     
     
