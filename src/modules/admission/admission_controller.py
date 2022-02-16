@@ -322,7 +322,7 @@ def mark_done(id: int):
         return redirect(request.referrer or url_for('admission.list'))
 
     # check if the end_date is met:
-    if not admission.end_date == datetime.datetime.today().date():
+    if not admission.end_date >= datetime.datetime.today().date():
         flash(message='End date not met. Please wait until the end date is met, or modify the end date to today.', category=FlashCategory.error())
         return redirect(request.referrer or url_for('admission.list'))
 
