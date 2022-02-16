@@ -101,9 +101,9 @@ def init_db(app: App):
     # from .modules.user.user_model import User
 
     # START SEEDING INITIAL DATA
-    # with app.app_context():
-    #     from .seeding import start_seeding
-    #     start_seeding(db)
+    with app.app_context():
+        from .seeding import start_seeding
+        start_seeding(db)
 
 
 def init_protections(app: App):

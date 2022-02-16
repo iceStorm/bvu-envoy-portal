@@ -26,6 +26,7 @@ class AuthService:
     @staticmethod
     def is_user_already_exists(email):
         print(f'Checking user exists on the system: {email}');
+        print(db.session.query(User).filter_by(email = email).first())
         return db.session.query(User).filter_by(email = email).first() is not None
 
     @staticmethod

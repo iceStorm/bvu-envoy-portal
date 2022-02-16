@@ -29,7 +29,7 @@ class User(UserMixin, db.Model):
 
     # id sử dụng cho việc đăng nhập | admin có thể thay đổi id này để chặn các phiên đăng nhập cũ
     # (đổi mật khẩu trên một máy client thì cần chặn các máy client khác | deactivate..)
-    alternative_id = Column(String(USER_ALTERNATIVE_ID_LENGTH), unique=True, nullable=False)
+    alternative_id = Column(String(), unique=True, nullable=False)
 
     email = Column(String(USER_EMAIL_LENGTH), nullable=False, unique=True, index=True)
     phone_number = Column(String(USER_PHONE_LENGTH), nullable=False, unique=True, index=True)
