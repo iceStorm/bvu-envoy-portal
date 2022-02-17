@@ -1,8 +1,9 @@
+from uuid import uuid1
 from flask import Blueprint, jsonify, request, render_template, flash, current_app, url_for, make_response, session
 from flask_login import login_required, current_user, logout_user, login_user
 from werkzeug.utils import redirect
 
-from src.main import limiter, logger
+from src.main import limiter, logger, db_session
 from src.base.constants.base_constanst import FlashCategory
 from src.modules.auth.auth_service import AuthService
 from src.modules.user.user_model import User, gen_alternative_id
@@ -181,10 +182,30 @@ def verify_registration():
 
 
 
-@auth.route('/reset-password', methods=['POST'])
-def reset_password():
-    from src.modules.auth.auth_service import AuthService
+@auth.route('/reset-password', methods=['GET', 'POST'])
+async def reset_password():
+    from .forms.reset_password_form import ResetPasswordForm
+    form = ResetPasswordForm()
 
-    AuthService.send_reset_password_email(request.email)
-    return "password reset", 200
+    if request.method == 'GET':
+        return render_template('password-reset.html', form=form)
 
+    if not form.validate_on_submit():
+        flash(message='Please ensure all fields are valid', category=FlashCategory.warning())
+        return render_template('password-reset.html', form=form)
+
+    try:
+        new_password = uuid1().hex
+        AuthService.send_reset_password_email(email=form.email.data, password=new_password)
+        the_user = AuthService.get_user_from_email(form.email.data)
+        if the_user != None:
+            the_user.alternative_id = gen_alternative_id()
+            the_user.password_hash = User.gen_password_hash(new_password)
+            db_session.commit()
+            flash(message='Your password has been reset, please check your email to get the new password', category=FlashCategory.success())
+            return render_template("password-reset.html", form=form)
+        else:
+            raise Exception()
+    except Exception as e:
+        flash(message='Error occurred while sending reset password email', category=FlashCategory.error())
+        return render_template('password-reset.html', form=form)

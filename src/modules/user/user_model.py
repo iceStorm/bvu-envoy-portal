@@ -17,7 +17,7 @@ from src.main import db, db_session
 
 
 def gen_alternative_id():
-    return uuid1()
+    return uuid1().hex
 
 
 class User(UserMixin, db.Model):
