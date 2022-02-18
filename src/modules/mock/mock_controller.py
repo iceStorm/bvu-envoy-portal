@@ -36,6 +36,10 @@ def student_apply(referral_code: Union[str, None]):
         flash('Referral code invalid', category=FlashCategory.warning())
         return render_template('apply.html', form=form)
 
+    if presenter.admission.finished or presenter.admission.end_date < datetime.datetime.now().date():
+        flash('The admission no longer opens', category=FlashCategory.warning())
+        return render_template('apply.html', form=form)
+
     if db_session.query(StudentPresenter).filter(
         StudentPresenter.presenter_id == presenter.id, 
         StudentPresenter.student_id == form.student_id.data
@@ -108,11 +112,3 @@ def remove_student(student_id: int, presenter_id: int):
 
     flash('Deleted', category=FlashCategory.success())
     return redirect(request.referrer or '/')
-
-
-@mock.route('/student-change-state', methods=['POST'])
-@limiter.limit('1/second; 100/day')
-def student_paid():
-    return jsonify({
-        'status': 'not implemented',
-    }), 501
