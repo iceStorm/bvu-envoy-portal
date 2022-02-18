@@ -31,19 +31,22 @@ def student_apply(referral_code: Union[str, None]):
         flash(message='Please ensure all fields are valid', category=FlashCategory.warning())
         return render_template('apply.html', form=form)
 
+    # referral codes are unique
     presenter = db_session.query(AdmissionPresenter).filter(AdmissionPresenter.referral_code == form.referral_code.data).first()
     if presenter == None:
         flash('Referral code invalid', category=FlashCategory.warning())
         return render_template('apply.html', form=form)
 
-    if presenter.admission.finished or presenter.admission.end_date < datetime.datetime.now().date():
+    if presenter.admission.finished or presenter.admission.end_date < datetime.now().date():
         flash('The admission no longer opens', category=FlashCategory.warning())
         return render_template('apply.html', form=form)
 
-    if db_session.query(StudentPresenter).filter(
-        StudentPresenter.presenter_id == presenter.id, 
-        StudentPresenter.student_id == form.student_id.data
-    ).first() != None:
+    query = db_session.query(StudentPresenter).filter(
+        StudentPresenter.presenter_id == presenter.id,
+        StudentPresenter.student_id == form.student_id.data,
+    )
+    print(query)
+    if query.first() != None:
         flash('Already applied to this presenter', category=FlashCategory.error())
         return render_template('apply.html', form=form)
 
